@@ -2,6 +2,8 @@
 
 The backend is an ASP.NET Core Web API responsible for authentication, authorization, workout management, trainer-athlete relationships, notifications, analytics, validation, and logging.
 
+Repository: `TrackMe-api`
+
 ## Recommended Project Structure
 
 ```text

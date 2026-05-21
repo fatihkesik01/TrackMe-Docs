@@ -26,3 +26,8 @@ packages/
 # Logs
 *.log
 logs/
+
+# Local sibling project repositories created from this docs workspace
+TrackMe-mobilapp/
+TrackMe-app/
+TrackMe-api/

@@ -11,6 +11,7 @@ This repository contains the product, architecture, database, API, module, mobil
 - [System Architecture](docs/02-system-architecture.md)
 - [Backend Architecture](docs/03-backend-architecture.md)
 - [Mobile Architecture](docs/04-mobile-architecture.md)
+- [Web App Architecture](docs/04-web-architecture.md)
 - [Database Design](docs/05-database-design.md)
 - [API Analysis](docs/06-api-analysis.md)
 - [Business Rules](docs/07-business-rules.md)
@@ -39,11 +40,19 @@ This repository contains the product, architecture, database, API, module, mobil
 
 ## Core Stack
 
-- Mobile: .NET MAUI for Android and iOS
+- Mobile: React Native for Android and iOS
+- Web App: React.js
 - Backend: ASP.NET Core Web API
 - Database: PostgreSQL
 - Authentication: JWT, refresh tokens, role based authorization
 - Hosting: Hostinger VPS, Docker, Nginx, HTTPS
+
+## Application Repositories
+
+- TrackMe Docs: `https://github.com/fatihkesik01/TrackMe-docs`
+- TrackMe Mobile App: `https://github.com/fatihkesik01/TrackMe-mobilapp`
+- TrackMe Web App: `https://github.com/fatihkesik01/TrackMe-app`
+- TrackMe API: `https://github.com/fatihkesik01/TrackMe-api`
 
 ## Core Roles
 

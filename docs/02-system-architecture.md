@@ -4,7 +4,8 @@ TrackMe uses a modular client-server architecture.
 
 ## High-Level Components
 
-- .NET MAUI mobile app
+- React Native mobile app
+- React.js web app
 - ASP.NET Core Web API
 - PostgreSQL database
 - Firebase Cloud Messaging for push notifications
@@ -16,9 +17,10 @@ TrackMe uses a modular client-server architecture.
 
 ```mermaid
 flowchart LR
-    Athlete[Athlete Mobile App] --> API[ASP.NET Core Web API]
-    Trainer[Trainer Mobile App] --> API
-    Admin[Admin Panel / Admin Client] --> API
+    Athlete[Athlete React Native App] --> API[ASP.NET Core Web API]
+    Trainer[Trainer React Native App] --> API
+    Web[React.js Web App] --> API
+    Admin[Admin Web Panel] --> Web
     API --> DB[(PostgreSQL)]
     API --> FCM[Firebase Cloud Messaging]
     API --> Logs[Application Logs]
@@ -29,6 +31,7 @@ flowchart LR
 
 - Keep business logic in backend services.
 - Keep mobile UI fast and focused.
+- Keep web UI clean for admin, trainer, and management workflows.
 - Keep database relational and analytics-friendly.
 - Keep modules isolated by responsibility.
 - Use clear authorization boundaries.
