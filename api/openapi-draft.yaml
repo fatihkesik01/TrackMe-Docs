@@ -1,0 +1,213 @@
+openapi: 3.0.3
+info:
+  title: TrackMe API
+  version: 0.1.0
+  description: Draft API contract for TrackMe mobile workout tracking and coach-athlete management.
+servers:
+  - url: https://api.trackme.app
+security:
+  - bearerAuth: []
+paths:
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Register a new user.
+      responses:
+        "201":
+          description: User registered.
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Login and receive access and refresh tokens.
+      responses:
+        "200":
+          description: Login successful.
+  /api/auth/refresh:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Rotate refresh token and issue a new access token.
+      responses:
+        "200":
+          description: Token refreshed.
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Revoke current refresh token.
+      responses:
+        "204":
+          description: Logged out.
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get authenticated user identity.
+      responses:
+        "200":
+          description: Current user.
+  /api/athletes/me/profile:
+    get:
+      tags: [Athletes]
+      summary: Get current athlete profile.
+      responses:
+        "200":
+          description: Athlete profile.
+    put:
+      tags: [Athletes]
+      summary: Update current athlete profile.
+      responses:
+        "200":
+          description: Athlete profile updated.
+  /api/trainers/me/athletes:
+    get:
+      tags: [Trainers]
+      summary: List accepted athletes for current trainer.
+      responses:
+        "200":
+          description: Athlete list.
+  /api/relationships/requests:
+    post:
+      tags: [Relationships]
+      summary: Create trainer-athlete connection request.
+      responses:
+        "201":
+          description: Request created.
+    get:
+      tags: [Relationships]
+      summary: List relationship requests for current user.
+      responses:
+        "200":
+          description: Request list.
+  /api/relationships/{id}/accept:
+    post:
+      tags: [Relationships]
+      summary: Accept relationship request.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Request accepted.
+  /api/exercises:
+    get:
+      tags: [Exercises]
+      summary: Search exercise library.
+      responses:
+        "200":
+          description: Exercise list.
+    post:
+      tags: [Exercises]
+      summary: Create exercise.
+      responses:
+        "201":
+          description: Exercise created.
+  /api/workout-programs:
+    post:
+      tags: [WorkoutPrograms]
+      summary: Create workout program.
+      responses:
+        "201":
+          description: Program created.
+  /api/workout-programs/{id}:
+    get:
+      tags: [WorkoutPrograms]
+      summary: Get workout program detail.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Program detail.
+    put:
+      tags: [WorkoutPrograms]
+      summary: Update workout program.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Program updated.
+  /api/workout-programs/{id}/assignments:
+    post:
+      tags: [WorkoutPrograms]
+      summary: Assign program to athlete.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "201":
+          description: Assignment created.
+  /api/workout-sessions:
+    post:
+      tags: [WorkoutTracking]
+      summary: Start workout session.
+      responses:
+        "201":
+          description: Workout session started.
+  /api/workout-sessions/{id}:
+    get:
+      tags: [WorkoutTracking]
+      summary: Get workout session detail.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Workout session detail.
+    patch:
+      tags: [WorkoutTracking]
+      summary: Update workout session draft.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Workout session updated.
+  /api/workout-sessions/{id}/complete:
+    post:
+      tags: [WorkoutTracking]
+      summary: Complete workout session.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Workout completed.
+  /api/analytics/athletes/{athleteId}/overview:
+    get:
+      tags: [Analytics]
+      summary: Get athlete analytics overview.
+      parameters:
+        - name: athleteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Analytics overview.
+  /api/notifications:
+    get:
+      tags: [Notifications]
+      summary: Get current user notifications.
+      responses:
+        "200":
+          description: Notification list.
+  /api/notifications/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: Mark notification as read.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Notification marked as read.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
