@@ -2,7 +2,7 @@
 
 The mobile app should be built with React Native for Android and iOS.
 
-Repository: `TrackMe-mobile`
+Repository: `TrackMe-Mobile`
 
 The mobile architecture should prioritize fast workout logging, simple UI, low friction, quick set entry, and a smooth workout experience.
 
@@ -19,7 +19,7 @@ The mobile architecture should prioritize fast workout logging, simple UI, low f
 ## Suggested Project Structure
 
 ```text
-TrackMe-mobile/
+TrackMe-Mobile/
   src/
     app/
     features/

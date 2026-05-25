@@ -1,6 +1,6 @@
 # EF Core Migration Strategy
 
-TrackMe uses PostgreSQL, but the application schema is managed from the `TrackMe-api` repository with Entity Framework Core migrations.
+TrackMe uses PostgreSQL, but the application schema is managed from the `TrackMe-Api` repository with Entity Framework Core migrations.
 
 ## Source Of Truth
 

@@ -45,7 +45,7 @@ The application repository owns schema changes through EF Core migrations.
 
 Recommended flow:
 
-1. Update domain entities and DbContext configuration in `TrackMe-api`.
+1. Update domain entities and DbContext configuration in `TrackMe-Api`.
 2. Generate a migration with `dotnet ef migrations add <Name>`.
 3. Review the generated migration before committing it.
 4. Apply it with `dotnet ef database update` in local/dev environments.

@@ -51,9 +51,9 @@ This repository contains the product, architecture, database, API, module, mobil
 ## Application Repositories
 
 - TrackMe Docs: `https://github.com/fatihkesik01/TrackMe-Docs`
-- TrackMe Mobile App: `https://github.com/fatihkesik01/TrackMe-mobile`
-- TrackMe Web App: `https://github.com/fatihkesik01/TrackMe-web`
-- TrackMe API: `https://github.com/fatihkesik01/TrackMe-api`
+- TrackMe Mobile App: `https://github.com/fatihkesik01/TrackMe-Mobile`
+- TrackMe Web App: `https://github.com/fatihkesik01/TrackMe-Web`
+- TrackMe API: `https://github.com/fatihkesik01/TrackMe-Api`
 
 ## Core Roles
 
