@@ -6,8 +6,9 @@ TrackMe uses a modular client-server architecture.
 
 - React Native mobile app
 - React.js web app
-- ASP.NET Core Web API
+- ASP.NET Core 10 Web API
 - PostgreSQL database
+- Entity Framework Core migrations
 - Firebase Cloud Messaging for push notifications
 - Docker runtime on VPS
 - Nginx reverse proxy
@@ -17,7 +18,7 @@ TrackMe uses a modular client-server architecture.
 
 ```mermaid
 flowchart LR
-    Athlete[Athlete React Native App] --> API[ASP.NET Core Web API]
+    Athlete[Athlete React Native App] --> API[ASP.NET Core 10 Web API]
     Trainer[Trainer React Native App] --> API
     Web[React.js Web App] --> API
     Admin[Admin Web Panel] --> Web
@@ -58,7 +59,7 @@ flowchart LR
 2. API validates token, role, and ownership.
 3. Controller maps request to application service.
 4. Service validates business rules.
-5. Repository or DbContext persists relational data.
+5. EF Core DbContext persists relational data through migration-managed schema.
 6. Domain events may trigger notifications or analytics updates.
 7. API returns response DTO.
 

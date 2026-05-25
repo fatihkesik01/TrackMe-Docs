@@ -31,7 +31,7 @@ This repository contains the product, architecture, database, API, module, mobil
 
 - [Backend Modules](backend/modules/README.md)
 - [Database ERD](database/erd.md)
-- [PostgreSQL Schema Draft](database/schema.sql)
+- [EF Core Migration Strategy](database/migration-strategy.md)
 - [API OpenAPI Draft](api/openapi-draft.yaml)
 - [Mobile Screens](mobile/screens.md)
 - [Mobile Navigation](mobile/navigation.md)
@@ -42,8 +42,9 @@ This repository contains the product, architecture, database, API, module, mobil
 
 - Mobile: React Native for Android and iOS
 - Web App: React.js
-- Backend: ASP.NET Core Web API
+- Backend: ASP.NET Core 10 Web API
 - Database: PostgreSQL
+- Persistence: Entity Framework Core migrations
 - Authentication: JWT, refresh tokens, role based authorization
 - Hosting: Hostinger VPS, Docker, Nginx, HTTPS
 

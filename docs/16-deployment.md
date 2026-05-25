@@ -9,20 +9,22 @@ TrackMe is planned for Hostinger VPS hosting.
 - Nginx reverse proxy
 - HTTPS certificate
 - PostgreSQL
-- ASP.NET Core Web API container
+- ASP.NET Core 10 Web API container
+- React web container
 
 ## Runtime Components
 
 ```text
-Nginx -> TrackMe API -> PostgreSQL
-                 |
+Nginx -> TrackMe Web
+  |
+  -> TrackMe API -> PostgreSQL
                  -> Firebase Cloud Messaging
 ```
 
 ## Environment Variables
 
 - ASPNETCORE_ENVIRONMENT
-- CONNECTION_STRINGS__POSTGRES
+- ConnectionStrings__Postgres
 - JWT__ISSUER
 - JWT__AUDIENCE
 - JWT__SECRET
@@ -36,18 +38,25 @@ Nginx -> TrackMe API -> PostgreSQL
 - Secrets must not be committed.
 - Database backups must be scheduled.
 - Logs must be retained.
-- Migrations should run in a controlled deployment step.
+- EF Core migrations should run in a controlled deployment step.
 - Production CORS settings must be restrictive.
 
 ## Docker Compose Draft
 
 ```yaml
 services:
+  web:
+    image: trackme-web:latest
+    restart: always
+    depends_on:
+      - api
+
   api:
     image: trackme-api:latest
     restart: always
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=trackme;Username=trackme;Password=change_me
     depends_on:
       - postgres
 

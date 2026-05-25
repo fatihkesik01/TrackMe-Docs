@@ -2,7 +2,7 @@
 
 The web app should be built with React.js.
 
-Repository: `TrackMe-app`
+Repository: `TrackMe-web`
 
 The web app should focus on workflows that benefit from larger screens, tables, filters, reports, and management views.
 
@@ -26,7 +26,7 @@ Athletes may use the web app later, but the first product priority for athletes 
 ## Suggested Project Structure
 
 ```text
-TrackMe-app/
+TrackMe-web/
   src/
     app/
     features/

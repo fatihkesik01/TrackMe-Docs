@@ -1,6 +1,6 @@
 # Database Design
 
-TrackMe uses PostgreSQL.
+TrackMe uses PostgreSQL with Entity Framework Core migrations.
 
 The database should support scalability, relational consistency, workout history, analytics queries, and notification systems.
 
@@ -14,6 +14,7 @@ The database should support scalability, relational consistency, workout history
 - Soft delete for important records
 - Efficient workout history queries
 - Unique exercise naming
+- Schema changes should be generated and reviewed as EF Core migrations.
 
 ## Main Tables
 
@@ -37,6 +38,20 @@ The database should support scalability, relational consistency, workout history
 - notifications
 - trainer_notes
 - progress_records
+
+## Migration Workflow
+
+The application repository owns schema changes through EF Core migrations.
+
+Recommended flow:
+
+1. Update domain entities and DbContext configuration in `TrackMe-api`.
+2. Generate a migration with `dotnet ef migrations add <Name>`.
+3. Review the generated migration before committing it.
+4. Apply it with `dotnet ef database update` in local/dev environments.
+5. Run production migrations as a controlled deployment step.
+
+Hand-written SQL files are not the source of truth for the application schema.
 
 ## Relationship Summary
 

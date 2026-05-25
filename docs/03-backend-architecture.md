@@ -1,8 +1,10 @@
 # Backend Architecture
 
-The backend is an ASP.NET Core Web API responsible for authentication, authorization, workout management, trainer-athlete relationships, notifications, analytics, validation, and logging.
+The backend is an ASP.NET Core 10 Web API responsible for authentication, authorization, workout management, trainer-athlete relationships, notifications, analytics, validation, and logging.
 
 Repository: `TrackMe-api`
+
+Current implementation starts as a single deployable API project and should evolve toward the layered structure below as modules grow.
 
 ## Recommended Project Structure
 
@@ -79,7 +81,8 @@ Responsibilities:
 Responsibilities:
 
 - PostgreSQL persistence
-- Entity Framework Core configuration
+- Entity Framework Core 10 configuration
+- Code-first migrations as the source of database schema changes
 - Firebase Cloud Messaging integration
 - JWT and password hashing services
 - Logging providers
@@ -95,6 +98,7 @@ Responsibilities:
 - Soft delete should be used for important business records.
 - Audit fields should exist on core tables.
 - Exercise names and slugs must be unique.
+- Database tables should be changed through EF Core migrations, not hand-written deployment SQL.
 
 ## Suggested Middleware
 

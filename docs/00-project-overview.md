@@ -24,9 +24,9 @@ The purpose of TrackMe is not to generate AI workout programs. The primary goal 
 
 TrackMe is split into separate repositories:
 
-- `TrackMe-mobilapp`: React Native mobile application for athletes and trainers.
-- `TrackMe-app`: React.js web application, primarily for admin and trainer workflows.
-- `TrackMe-api`: ASP.NET Core Web API backend.
+- `TrackMe-mobile`: React Native mobile application for athletes and trainers.
+- `TrackMe-web`: React.js web application, primarily for admin and trainer workflows.
+- `TrackMe-api`: ASP.NET Core 10 Web API backend.
 - `TrackMe-docs`: Product and technical documentation.
 
 ## Product Direction
