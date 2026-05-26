@@ -2,6 +2,31 @@
 
 The API should be designed around role-based access, ownership validation, and predictable resource boundaries.
 
+## Current MVP API
+
+The deployed MVP API is an ASP.NET Core 10 minimal API with EF Core 10 and PostgreSQL.
+
+Runtime URLs:
+
+- API base URL: `http://187.77.92.30:5050`
+- Health: `GET /health`
+- Scalar API reference: `GET /scalar/v1`
+- OpenAPI JSON: `GET /openapi/v1.json`
+
+Currently implemented resource endpoints:
+
+- `GET /api/dashboard`
+- `GET /api/trainers`
+- `POST /api/trainers`
+- `GET /api/athletes`
+- `POST /api/athletes`
+- `GET /api/programs`
+- `POST /api/programs`
+- `GET /api/sessions`
+- `POST /api/sessions`
+
+The sections below describe the target API shape for the full product.
+
 ## API Design Principles
 
 - REST-style endpoints

@@ -18,6 +18,15 @@ The database should support scalability, relational consistency, workout history
 
 ## Main Tables
 
+Current MVP tables:
+
+- trainers
+- athletes
+- workout_programs
+- workout_sessions
+
+Target product tables:
+
 - users
 - roles
 - user_roles

@@ -46,7 +46,21 @@ This repository contains the product, architecture, database, API, module, mobil
 - Database: PostgreSQL
 - Persistence: Entity Framework Core migrations
 - Authentication: JWT, refresh tokens, role based authorization
-- Hosting: Hostinger VPS, Docker, Nginx, HTTPS
+- Hosting: Hostinger VPS and Docker Compose
+- API reference: Scalar over the generated OpenAPI document
+
+## Current VPS Runtime
+
+The current MVP deployment runs directly on the VPS IP without a domain or Nginx reverse proxy.
+
+- Web: `http://187.77.92.30:8080`
+- API: `http://187.77.92.30:5050`
+- Health: `http://187.77.92.30:5050/health`
+- Scalar API reference: `http://187.77.92.30:5050/scalar/v1`
+- OpenAPI JSON: `http://187.77.92.30:5050/openapi/v1.json`
+- PostgreSQL: internal Docker network plus `127.0.0.1:15432` on the VPS for SSH tunnel access only
+
+Nginx and HTTPS are deferred until a domain is attached.
 
 ## Application Repositories
 

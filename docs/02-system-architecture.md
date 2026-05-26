@@ -11,8 +11,7 @@ TrackMe uses a modular client-server architecture.
 - Entity Framework Core migrations
 - Firebase Cloud Messaging for push notifications
 - Docker runtime on VPS
-- Nginx reverse proxy
-- HTTPS termination
+- Nginx reverse proxy and HTTPS termination after a domain is attached
 
 ## Context Diagram
 
@@ -25,7 +24,17 @@ flowchart LR
     API --> DB[(PostgreSQL)]
     API --> FCM[Firebase Cloud Messaging]
     API --> Logs[Application Logs]
-    Nginx[Nginx + HTTPS] --> API
+    Domain[Future domain + HTTPS] --> API
+```
+
+## Current MVP Runtime
+
+The current deployment intentionally skips Nginx until the domain is ready.
+
+```text
+Web: http://187.77.92.30:8080
+API: http://187.77.92.30:5050
+PostgreSQL: Docker internal network, plus VPS localhost:15432 for SSH tunnel access
 ```
 
 ## Architecture Goals

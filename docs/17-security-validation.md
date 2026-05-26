@@ -8,10 +8,17 @@ Security must be designed into every TrackMe module.
 - Users can only access their own data.
 - Role validation is required.
 - Ownership validation is required.
-- HTTPS is required.
+- HTTPS is required once the application is served through a real public domain.
 - JWT secrets must be secure.
 - Input validation is required.
 - Sensitive actions must be logged.
+
+## Current MVP Security Notes
+
+- The current VPS deployment is IP-and-port based while the domain is pending.
+- PostgreSQL is not exposed publicly; DBeaver access uses SSH tunnel through the `deploy` user.
+- Secrets live in server-side `.env` files and GitHub Actions secrets, not in repositories.
+- CORS is restricted to the deployed web origin.
 
 ## Validation Areas
 

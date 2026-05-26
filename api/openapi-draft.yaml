@@ -4,7 +4,10 @@ info:
   version: 0.1.0
   description: Draft API contract for TrackMe mobile workout tracking and coach-athlete management.
 servers:
+  - url: http://187.77.92.30:5050
+    description: Current MVP VPS deployment
   - url: https://api.trackme.app
+    description: Future production domain
 security:
   - bearerAuth: []
 paths:

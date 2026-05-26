@@ -17,10 +17,11 @@ dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
 
 ## Deployment Workflow
 
-- Build API and web containers.
-- Start PostgreSQL with persistent volume.
-- Apply reviewed EF Core migrations as a controlled release step.
-- Start or restart API and web containers.
+- GitHub Actions SSHs into the VPS as `deploy`.
+- The API repository is updated under `/opt/trackme/TrackMe-Api`.
+- PostgreSQL is started with the persistent Docker volume.
+- The workflow runs `dotnet restore` and `dotnet ef database update` in a .NET 10 SDK container on the `trackme-network` Docker network.
+- The API container is rebuilt and restarted after migrations complete.
 
 ## Rules
 
@@ -28,3 +29,22 @@ dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
 - Review generated migrations before commit.
 - Keep destructive migrations explicit and planned.
 - Back up production data before schema changes.
+
+## Current Production Access
+
+PostgreSQL is available to the API through Docker networking with:
+
+```text
+Host=postgres;Port=5432;Database=trackme;Username=trackme
+```
+
+For DBeaver, use an SSH tunnel to the VPS and connect to:
+
+```text
+Host=localhost
+Port=15432
+Database=trackme
+Username=trackme
+```
+
+The database port is bound to `127.0.0.1` on the VPS only. It is not exposed publicly.
