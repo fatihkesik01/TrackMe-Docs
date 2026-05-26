@@ -22,50 +22,50 @@ Phase 1 web gaps, ship the first mobile skeleton, and harden the backend for pro
 ## API Tasks
 
 ### Program Structure
-- [ ] Add `WorkoutProgramDay` entity — (program_id, day_number, title, notes)
-- [ ] Add `WorkoutProgramExercise` entity — (day_id, exercise_id, order_index, sets, reps, target_rpe, rest_seconds, notes)
-- [ ] EF Core migration for program structure tables
-- [ ] `GET /api/programs/{id}` — program detail with days and planned exercises
-- [ ] `POST /api/programs/{id}/days` — add day to program
-- [ ] `PUT /api/programs/{id}/days/{dayId}` — update day
-- [ ] `DELETE /api/programs/{id}/days/{dayId}` — remove day
-- [ ] `POST /api/programs/{id}/days/{dayId}/exercises` — add planned exercise to day
-- [ ] `PUT /api/programs/{id}/days/{dayId}/exercises/{exerciseId}` — update planned exercise
-- [ ] `DELETE /api/programs/{id}/days/{dayId}/exercises/{exerciseId}` — remove planned exercise
-- [ ] `GET /api/sessions/{id}` — session detail with exercises and set logs
-- [ ] `PUT /api/sessions/{sessionId}/exercises/{exerciseId}/sets/{setId}` — update a set log
-- [ ] `DELETE /api/sessions/{sessionId}/exercises/{exerciseId}` — remove exercise from session
+- [x] Add `WorkoutProgramDay` entity — (program_id, day_number, title, notes)
+- [x] Add `WorkoutProgramExercise` entity — (day_id, exercise_id, order_index, sets, reps, target_rpe, rest_seconds, notes)
+- [x] EF Core migration for program structure tables
+- [x] `GET /api/programs/{id}` — program detail with days and planned exercises
+- [x] `POST /api/programs/{id}/days` — add day to program
+- [x] `PUT /api/programs/{id}/days/{dayId}` — update day
+- [x] `DELETE /api/programs/{id}/days/{dayId}` — remove day
+- [x] `POST /api/programs/{id}/days/{dayId}/exercises` — add planned exercise to day
+- [x] `PUT /api/programs/{id}/days/{dayId}/exercises/{exerciseId}` — update planned exercise
+- [x] `DELETE /api/programs/{id}/days/{dayId}/exercises/{exerciseId}` — remove planned exercise
+- [x] `GET /api/sessions/{id}` — session detail with exercises and set logs
+- [x] `PUT /api/sessions/{sessionId}/exercises/{exerciseId}/sets/{setId}` — update a set log
+- [x] `DELETE /api/sessions/{sessionId}/exercises/{exerciseId}` — remove exercise from session
 
 ### Pagination
-- [ ] Add cursor-based or offset pagination to `GET /api/athletes`
-- [ ] Add pagination to `GET /api/trainers`
-- [ ] Add pagination to `GET /api/exercises`
-- [ ] Add pagination to `GET /api/programs`
-- [ ] Add pagination to `GET /api/sessions`
-- [ ] Add pagination to `GET /api/relationships/requests`
-- [ ] Standardize page response envelope: `{ data, page, pageSize, total }`
+- [x] Add cursor-based or offset pagination to `GET /api/athletes`
+- [x] Add pagination to `GET /api/trainers`
+- [x] Add pagination to `GET /api/exercises`
+- [x] Add pagination to `GET /api/programs`
+- [x] Add pagination to `GET /api/sessions`
+- [x] Add pagination to `GET /api/relationships/requests`
+- [x] Standardize page response envelope: `{ data, page, pageSize, total }`
 
 ### Rate Limiting
-- [ ] Add rate limiting middleware
-- [ ] Stricter limit on `POST /api/auth/login` (e.g. 10 req/min per IP)
-- [ ] General API limit (e.g. 120 req/min per IP)
+- [x] Add rate limiting middleware
+- [x] Stricter limit on `POST /api/auth/login` (10 req/min per IP)
+- [x] General API limit (120 req/min per IP)
 
 ### User Profile Management
-- [ ] `PATCH /api/auth/profile` — update full name, goal (athlete), bio
-- [ ] `POST /api/auth/change-password` — current password + new password
-- [ ] Validate current password before allowing change
+- [x] `PATCH /api/auth/profile` — update full name, goal (athlete), bio
+- [x] `POST /api/auth/change-password` — current password + new password
+- [x] Validate current password before allowing change
 
 ### Notification Foundation
-- [ ] Add `Notification` entity — (user_id, type, title, body, is_read, created_at, read_at)
-- [ ] EF migration for notifications table
-- [ ] `GET /api/notifications` — paginated list for current user
-- [ ] `POST /api/notifications/{id}/read` — mark as read
-- [ ] `POST /api/notifications/read-all` — mark all as read
-- [ ] Trigger notification on: relationship request received, relationship accepted
-- [ ] Trigger notification on: program assigned to athlete
+- [x] Add `Notification` entity — (user_id, type, title, body, is_read, created_at, read_at)
+- [x] EF migration for notifications table
+- [x] `GET /api/notifications` — paginated list for current user
+- [x] `POST /api/notifications/{id}/read` — mark as read
+- [x] `POST /api/notifications/read-all` — mark all as read
+- [x] Trigger notification on: relationship request received, relationship accepted
+- [x] Trigger notification on: program assigned to athlete
 
 ### Maintenance
-- [ ] Add background job or startup task to prune expired refresh tokens (older than 30 days)
+- [x] Add background job to prune expired/revoked refresh tokens (runs every 24 h)
 - [ ] Add `GET /api/health` detail endpoint (db ping, version, uptime)
 
 ---
@@ -132,19 +132,20 @@ Phase 1 web gaps, ship the first mobile skeleton, and harden the backend for pro
 
 ## Architecture Tasks
 
-- [ ] Extract endpoint groups from `Program.cs` into separate files
-  - `AuthEndpoints.cs`
-  - `TrainerEndpoints.cs`
-  - `AthleteEndpoints.cs`
-  - `RelationshipEndpoints.cs`
-  - `ExerciseEndpoints.cs`
-  - `ProgramEndpoints.cs`
-  - `SessionEndpoints.cs`
-  - `AnalyticsEndpoints.cs`
-  - `NotificationEndpoints.cs`
-- [ ] Move entity classes to `Models/Entities/`
-- [ ] Move services (`JwtTokenService`, `PasswordHasher`, etc.) to `Services/`
-- [ ] Move `TrackMeDbContext` + `OnModelCreating` config to `Data/`
+- [x] Extract endpoint groups from `Program.cs` into separate files
+  - `Endpoints/AuthEndpoints.cs`
+  - `Endpoints/TrainerEndpoints.cs`
+  - `Endpoints/AthleteEndpoints.cs`
+  - `Endpoints/RelationshipEndpoints.cs`
+  - `Endpoints/ExerciseEndpoints.cs`
+  - `Endpoints/ProgramEndpoints.cs`
+  - `Endpoints/SessionEndpoints.cs`
+  - `Endpoints/AnalyticsEndpoints.cs`
+  - `Endpoints/NotificationEndpoints.cs`
+  - `Endpoints/EndpointHelpers.cs` (shared validation + notification helpers)
+- [x] Move entity classes to `Models/` (individual files per entity)
+- [x] Move services (`JwtTokenService`, `PasswordHasher`, etc.) to `Services/`
+- [x] Move `TrackMeDbContext` + `OnModelCreating` config to `Data/`
 
 ---
 
