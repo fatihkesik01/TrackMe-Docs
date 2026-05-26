@@ -196,31 +196,53 @@ Startup migration: `db.Database.MigrateAsync()` on app boot.
 
 ---
 
-## Pending ⏳ (Phase 1 Remaining Work)
+## Completed ✅ (Phase 1 Final Sprint — 2026-05-26)
 
-### API
-- [ ] `GET /api/programs/{id}` — program detail with day and exercise structure
-- [ ] `WorkoutProgramDay` entity — structured day inside a program
-- [ ] `WorkoutProgramExercise` entity — planned exercise inside a day (sets, reps, target RPE, rest)
-- [ ] EF migration for program structure
-- [ ] POST /api/programs/{id}/days
-- [ ] POST /api/programs/{id}/days/{dayId}/exercises
-- [ ] GET /api/sessions/{id} — single session detail with exercises and sets
-- [ ] PUT /api/sessions/{id}/exercises/{exId}/sets/{setId} — update a logged set
-- [ ] DELETE /api/sessions/{id}/exercises/{exId} — remove exercise from session
+### API — Program Structure
+- [x] `WorkoutProgramDay` entity (program_id, day_number, title, notes) + unique index
+- [x] `WorkoutProgramExercise` entity (day_id, exercise_id, sets, reps, target_rpe, rest_seconds)
+- [x] Migration: `AddProgramStructure` → `workout_program_days`, `workout_program_exercises`
+- [x] `GET /api/programs/{id}` — full program detail with ordered days + planned exercises
+- [x] `POST /api/programs/{id}/days` — create program day (duplicate day_number guard)
+- [x] `POST /api/programs/{id}/days/{dayId}/exercises` — add exercise to program day
 
-### Web UI
-- [ ] Analytics display panel (weekly sessions, avg RPE, total duration, latest session)
-- [ ] Session detail view (exercise list + set rows)
-- [ ] Program detail view (day list + planned exercises)
-- [ ] Add exercise to session (selector + inline set rows)
+### API — Session Detail & Set Management
+- [x] `GET /api/sessions/{id}` — full session with exercises + set logs
+- [x] `PUT /api/sessions/{id}/exercises/{exId}/sets/{setId}` — update a set log
+- [x] `DELETE /api/sessions/{id}/exercises/{exId}` — remove exercise from session
 
-### Verification
-- [ ] Confirm GitHub Actions deploy succeeds after Phase 1 push
-- [ ] Verify all 6 migrations in `__EFMigrationsHistory` via DBeaver
-- [ ] Verify `workout_session_exercises` and `workout_set_logs` tables in DBeaver
-- [ ] Verify analytics endpoint returns correct data against test sessions
-- [ ] Verify browser UI: login, register, session log, relationship flow
+### Web — i18n (Turkish / English)
+- [x] `src/i18n.js` — complete TR/EN translation map (50+ strings)
+- [x] `src/LanguageContext.jsx` — React context with `useLanguage()` hook, localStorage persist
+- [x] `src/main.jsx` — wrapped with `<LanguageProvider>`
+- [x] Language toggle button (Globe icon) in topbar AND auth screen
+- [x] All static UI strings replaced with `t()` calls
+- [x] Default language: Turkish (`tr`)
+
+### Web — UI Redesign
+- [x] Dark navy gradient sidebar (`#0f172a → #16213e`) with teal active indicator
+- [x] Clean `#f0f4f8` workspace background
+- [x] Stat cards: icon box + stacked label/value, hover lift animation
+- [x] Gradient teal buttons with subtle box-shadow
+- [x] Focus ring on all form inputs (teal outline)
+- [x] Hover state on all list rows (table-row, session-card, exercise-row)
+- [x] Refined typography (letter-spacing -0.025em, 800 weight headings)
+- [x] `lang-toggle` button style for language switcher
+
+### Web — api.js additions
+- [x] `api.program(id)` — fetch program detail
+- [x] `api.createProgramDay(programId, payload)`
+- [x] `api.addProgramDayExercise(programId, dayId, payload)`
+- [x] `api.session(id)` — fetch session detail
+- [x] `api.updateSetLog(sessionId, exerciseId, setId, payload)`
+- [x] `api.removeSessionExercise(sessionId, exerciseId)`
+
+### Verification Checklist
+- [ ] GitHub Actions deploy succeeds for both API and Web
+- [ ] DBeaver: 7 migrations in `__EFMigrationsHistory` (including `AddProgramStructure`)
+- [ ] DBeaver: `workout_program_days` + `workout_program_exercises` tables visible
+- [ ] Browser: language toggle switches TR ↔ EN correctly
+- [ ] Browser: session log, relationship flow, exercise add all working
 
 ---
 
@@ -245,8 +267,7 @@ Phase 2 begins after Phase 1 remaining work is complete.
 
 ### Phase 2 Priorities
 
-1. **Program structure** — complete WorkoutProgramDay + WorkoutProgramExercise (carries over from Phase 1 pending)
-2. **Pagination** — cursor or offset on all list endpoints
+1. **Pagination** — cursor or offset on all list endpoints
 3. **Rate limiting** — login endpoint at minimum
 4. **Notification system** — in-app notifications (trainer invites, session reminders)
 5. **Advanced analytics** — per-exercise trend, RPE trend, volume load chart data
