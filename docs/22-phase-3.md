@@ -1,188 +1,158 @@
-# Phase 3 — Mobile, Push Notifications & Scale
+# Phase 3 - Web Admin, Analytics & Production Scale
 
-Phase 3 completes the mobile experience, delivers push notifications, ships the admin panel,
-and prepares TrackMe for public-facing production scale.
+Phase 3 is being executed as web-first. The mobile app is intentionally deferred; the current
+web app already behaves well on mobile-sized screens, and native mobile will be started later
+with Expo/React Native.
+
+Status: in progress.
 
 ---
 
 ## Phase 3 Scope
 
-- Take over the React Native mobile skeleton that was intentionally deferred from Phase 2.
-- Full React Native mobile app for athletes and trainers.
-- Firebase Cloud Messaging push notifications.
-- Admin panel for user and system management.
-- Program templates and periodization foundation.
-- Advanced analytics with chart-ready data.
-- Architecture and performance hardening for production scale.
-- Public-ready auth features (email verification, password reset).
+- Ship an Admin panel for user, exercise, and system management.
+- Add advanced analytics endpoints suitable for charts.
+- Add program templates and periodization foundation.
+- Add public-ready auth features such as password reset and email verification.
+- Improve production reliability, observability, and backup posture.
+- Keep Expo/React Native mobile out of this phase until explicitly started.
 
 ---
 
 ## API Tasks
 
-### Push Notifications (FCM)
-- [ ] Add `DeviceToken` entity — (user_id, token, platform, created_at, updated_at)
-- [ ] EF migration for device tokens
-- [ ] `POST /api/notifications/device-token` — register / update device token
-- [ ] `DELETE /api/notifications/device-token` — unregister on logout
-- [ ] Integrate Firebase Admin SDK
-- [ ] Trigger FCM push on: relationship request, relationship accepted, program assigned, session reminder
-- [ ] Handle FCM delivery failures (log, retry once, discard)
-
 ### Admin Panel API
-- [ ] `GET /api/admin/users` — paginated user list with role filter
-- [ ] `PATCH /api/admin/users/{id}` — update user active state, role
-- [ ] `DELETE /api/admin/users/{id}` — soft delete user
-- [ ] `GET /api/admin/stats` — system-wide stats (users, sessions last 30d, active trainers, active athletes)
-- [ ] `GET /api/admin/exercises` — all exercises including inactive
-- [ ] `POST /api/admin/exercises/{id}/restore` — restore soft-deleted exercise
-- [ ] Require Admin role on all /api/admin routes
+- [x] `GET /api/admin/users` - paginated user list with role/search/status filters
+- [x] `PATCH /api/admin/users/{id}` - update full name, active state, role
+- [x] `DELETE /api/admin/users/{id}` - soft deactivate user and revoke refresh tokens
+- [x] `GET /api/admin/stats` - system-wide stats
+- [x] `GET /api/admin/exercises` - all exercises including inactive
+- [x] `POST /api/admin/exercises/{id}/restore` - restore soft-deleted exercise
+- [x] Require Admin role on all `/api/admin/*` routes
 
 ### Program Templates
-- [ ] Add `ProgramTemplate` entity — (trainer_id, title, description, is_public, created_at)
+- [ ] Add `ProgramTemplate` entity - trainer_id, title, description, is_public, created_at
 - [ ] Add `ProgramTemplateDay` and `ProgramTemplateExercise` entities
 - [ ] EF migration for template tables
-- [ ] `GET /api/templates` — list public templates + own templates
-- [ ] `POST /api/templates` — create template from scratch
-- [ ] `POST /api/programs` extended — `templateId` field to clone from template
-- [ ] `POST /api/templates/{id}/publish` — make template public (Admin or original author)
+- [ ] `GET /api/templates` - list public templates + own templates
+- [ ] `POST /api/templates` - create template from scratch
+- [ ] `POST /api/programs` extended - `templateId` field to clone from template
+- [ ] `POST /api/templates/{id}/publish` - make template public
 
 ### Advanced Analytics
-- [ ] `GET /api/analytics/athletes/{athleteId}/rpe-trend` — RPE per session over date range
-- [ ] `GET /api/analytics/athletes/{athleteId}/volume` — total volume (sets × reps × weight) over date range
-- [ ] `GET /api/analytics/athletes/{athleteId}/exercise/{exerciseId}/progress` — weight/reps trend for specific exercise
-- [ ] `GET /api/analytics/athletes/{athleteId}/consistency` — session frequency and streak
-- [ ] `GET /api/analytics/trainers/me/overview` — trainer dashboard: athlete count, active programs, avg RPE across all athletes
+- [ ] `GET /api/analytics/athletes/{athleteId}/rpe-trend` - RPE per session over date range
+- [ ] `GET /api/analytics/athletes/{athleteId}/volume` - total volume over date range
+- [ ] `GET /api/analytics/athletes/{athleteId}/exercise/{exerciseId}/progress` - exercise trend
+- [ ] `GET /api/analytics/athletes/{athleteId}/consistency` - frequency and streak
+- [ ] `GET /api/analytics/trainers/me/overview` - trainer dashboard overview
 
 ### Public-Ready Auth
-- [ ] Email verification on register (send verification email, confirm token)
-- [ ] `POST /api/auth/forgot-password` — send reset link to email
-- [ ] `POST /api/auth/reset-password` — consume token, set new password
+- [ ] Email verification on register
+- [ ] `POST /api/auth/forgot-password` - send reset token/link
+- [ ] `POST /api/auth/reset-password` - consume token, set new password
 - [ ] Add `email_verified_at` field to users table
-- [ ] Block unverified users from non-auth endpoints (configurable flag per environment)
+- [ ] Block unverified users from non-auth endpoints when production flag is enabled
 
 ### Performance & Reliability
-- [ ] Add response caching for `GET /api/exercises` (short TTL, invalidate on write)
+- [ ] Add response caching for `GET /api/exercises`
 - [ ] Add connection pooling tuning for PostgreSQL
-- [ ] Add health check with db latency, memory usage
-- [ ] Add structured logging (request id, user id, duration per request)
-- [ ] Add OpenTelemetry traces for slow endpoint detection
+- [ ] Extend health check with db latency and memory usage
+- [ ] Add structured request logging
+- [ ] Add slow endpoint tracing/logging
 
 ---
 
-## Mobile Tasks (Full App)
+## Web Tasks
 
-### Auth
-- [ ] Login screen
-- [ ] Register screen (athlete / trainer toggle)
-- [ ] Forgot password screen
-- [ ] Secure token storage (Expo SecureStore or Keychain)
-- [ ] Auto token refresh on 401 (interceptor)
+### Admin Panel
+- [x] Add Admin-only navigation item
+- [x] Admin dashboard stats: total users, active users, sessions last 30d, inactive exercises
+- [x] User list with role filter and search
+- [x] User active toggle and deactivation action
+- [x] User role selector and save action
+- [x] Exercise audit list with active/inactive filter
+- [x] Restore inactive exercises from admin panel
 
-### Athlete Screens
-- [ ] Home: today's program or log free session CTA
-- [ ] Session log screen: exercise picker, set rows, RPE slider, complete button
-- [ ] Session history list
-- [ ] Session detail screen (exercise + sets)
-- [ ] Analytics screen: weekly sessions, RPE trend chart, consistency streak
-- [ ] Program list screen
-- [ ] Program detail screen (day list, planned exercises)
-- [ ] Relationship screen: pending requests, accept/reject
+### Analytics UI
+- [ ] Add chart-ready athlete analytics panels
+- [ ] Add trainer overview dashboard
+- [ ] Add RPE trend card
+- [ ] Add volume trend card
+- [ ] Add consistency/streak card
 
-### Trainer Screens
-- [ ] Athlete roster screen with relationship status badges
-- [ ] Athlete detail screen: analytics overview, recent sessions
-- [ ] Program builder screen: day/exercise structure
-- [ ] Session history for each athlete
-- [ ] Relationship request screen (send invite to athlete)
-
-### Shared
-- [ ] Notification inbox screen (in-app + push)
-- [ ] Profile screen (edit name, goal, change password)
-- [ ] Exercise library browse screen
-- [ ] Settings screen (logout, theme, notification toggles)
-
-### Technical
-- [ ] React Navigation (bottom tabs + stack)
-- [ ] Zustand or React Query for state/cache
-- [ ] Offline session draft support (log without network, sync later)
-- [ ] iOS TestFlight build
-- [ ] Android internal testing build
-
----
-
-## Web Tasks (Admin Panel)
-
-- [ ] Add Admin-only route guard in web app
-- [ ] Admin dashboard: total users, sessions last 30d, system health
-- [ ] User list with role filter, active toggle, search
-- [ ] Exercise management with inactive exercises visible
-- [ ] Relationship audit view (all pairs, status filter)
-- [ ] Notification send panel (manual push to user or role group)
+### Templates UI
+- [ ] Program template list
+- [ ] Template builder using existing program day/exercise UI patterns
+- [ ] Clone template into athlete program
+- [ ] Publish/unpublish template controls
 
 ---
 
 ## Database Tasks
 
-- [ ] Add `email_verified_at` column to users
-- [ ] Add `device_tokens` table
-- [ ] Add `program_templates`, `program_template_days`, `program_template_exercises` tables
-- [ ] Add indexes for analytics queries (athlete_id + completed_at on workout_sessions)
+- [ ] Add indexes for analytics queries: athlete_id + completed_at on workout_sessions
+- [ ] Add template tables
+- [ ] Add email verification/reset token fields or table
 - [ ] Review and optimize slow query candidates
-- [ ] Set up automated DB backup (VPS cron + pg_dump)
+- [ ] Set up automated DB backup
 
 ---
 
 ## Architecture Tasks
 
-- [ ] Migrate from single `Program.cs` to full layered structure
-  ```
-  TrackMe.Api/          — HTTP layer (endpoints, middleware)
-  TrackMe.Application/  — use cases, services, validators
-  TrackMe.Domain/       — entities, enums, business rules
-  TrackMe.Infrastructure/ — EF Core, FCM, email, logging
-  TrackMe.Contracts/    — request/response DTOs
-  ```
-- [ ] Add `INotificationService` abstraction (in-app + FCM implementations)
-- [ ] Add `IEmailService` abstraction (SMTP or SendGrid)
-- [ ] Add domain events for cross-module side effects
-- [ ] Set up unit tests for core use cases
-- [ ] Set up integration tests against test database
+- [ ] Add `INotificationService` abstraction for in-app events
+- [ ] Add `IEmailService` abstraction
+- [ ] Add domain event style helpers for cross-module side effects
+- [ ] Set up API integration tests for admin routes
+- [ ] Set up web smoke test checklist for admin workflows
 
 ---
 
 ## Infrastructure Tasks
 
-- [ ] Attach domain + configure Nginx reverse proxy
-- [ ] Add HTTPS (Let's Encrypt via Certbot or Cloudflare)
-- [ ] Set up staging environment (separate Docker stack, separate DB)
+- [ ] Attach domain when available
+- [ ] Add HTTPS when domain is ready
+- [ ] Set up staging Docker stack
 - [ ] Add automated DB backup to VPS cron
-- [ ] Set up error alerting (Sentry or similar)
-- [ ] Add uptime monitoring (UptimeRobot or similar)
+- [ ] Add uptime monitoring
+
+---
+
+## Deferred Mobile Scope
+
+Mobile is not part of this Phase 3 run.
+
+- [ ] Initialize Expo/React Native project in `TrackMe-Mobile`
+- [ ] Login/register screens
+- [ ] Secure token storage
+- [ ] Native session log flow
+- [ ] Native program detail and analytics screens
+- [ ] iOS/Android build verification
 
 ---
 
 ## Acceptance Criteria
 
-Phase 3 is complete when:
+Phase 3 web-first is complete when:
 
-- Mobile app can log in, view programs, log a session with exercises and sets.
-- Push notifications arrive on mobile for relationship and program events.
-- Admin can view users, toggle active state, and see system stats.
-- Email verification blocks unverified users in production config.
-- Password reset flow works end to end.
-- Analytics endpoints return trend data suitable for chart rendering.
-- Trainers can create program templates and clone them into athlete programs.
-- HTTPS is live on a real domain.
-- Staging environment is separate from production.
+- Admin can view users, filter/search them, toggle active state, and change role.
+- Admin can see system stats and audit inactive exercises.
+- Admin can restore inactive exercises.
+- Advanced analytics endpoints return chart-ready data.
+- Program templates can be created, published, and cloned into programs.
+- Password reset and email verification are available for production readiness.
+- Health, logging, and backup posture are documented and testable.
+- `npm run build` passes for web.
+- `dotnet build` passes for API.
 
 ---
 
-## Out Of Scope For Phase 3
+## Out Of Scope For This Phase 3 Run
 
+- Expo/React Native mobile app.
+- Push notifications (FCM/APNs).
 - AI-generated workout plans.
-- Wearable or health platform integration (Apple Health, Google Fit, Garmin).
-- Social feed or public athlete profiles.
+- Wearable integration.
 - Marketplace or monetization.
 - Live video coaching.
 - Competition or event management.
