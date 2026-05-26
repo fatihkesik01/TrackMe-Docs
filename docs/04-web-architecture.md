@@ -6,6 +6,18 @@ Repository: `TrackMe-Web`
 
 The web app should focus on workflows that benefit from larger screens, tables, filters, reports, and management views.
 
+## Current MVP Web Flows
+
+- Login and register with JWT authentication.
+- Store MVP access token in localStorage.
+- Show authenticated user and role in the sidebar.
+- Create athletes from the dashboard.
+- Create workout programs from the dashboard.
+- Log workout sessions from the dashboard.
+- Send Bearer tokens to API requests.
+
+Trainer users use their `profileId` automatically when creating athletes or programs.
+
 ## Primary Users
 
 - Admin

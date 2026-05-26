@@ -51,6 +51,8 @@ The focus is authentication, user identity, and preparing the web app to work wi
 - [x] Prevent dashboard API calls from silently failing when logged out.
 - [x] Keep current dashboard, athlete, and session screens usable after login.
 - [x] Send Bearer token with authenticated API requests.
+- [x] Add program creation form to the web app.
+- [x] Use trainer `profileId` automatically when a trainer creates athletes or programs.
 
 ## Database Tasks
 
@@ -94,6 +96,7 @@ Day 1 is complete when:
 - Passwords are hashed with PBKDF2-SHA256.
 - Access tokens are JWT bearer tokens with user id, full name, email, and role claims.
 - Trainer and athlete registrations automatically create a matching MVP profile row and return `profileId`.
+- The web app can create workout programs from the dashboard using the current trainer profile.
 - Refresh token table exists, but full refresh token rotation remains out of scope for Day 1.
 - The web MVP stores the access token in localStorage. This is acceptable for the current internal MVP and should be revisited before public production launch.
 - Current MVP data endpoints require a valid JWT. Stricter role and ownership rules will be added after the auth baseline is verified.
