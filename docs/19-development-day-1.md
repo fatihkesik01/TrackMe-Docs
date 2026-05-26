@@ -38,6 +38,7 @@ The focus is authentication, user identity, and preparing the web app to work wi
 - [x] Show auth endpoints in Scalar.
 - [x] Create matching trainer or athlete profile when a user registers with that role.
 - [x] Require JWT for MVP dashboard, trainer, athlete, program, and session endpoints.
+- [x] Allow self-guided programs with no trainer.
 
 ## Web Tasks
 
@@ -53,6 +54,7 @@ The focus is authentication, user identity, and preparing the web app to work wi
 - [x] Send Bearer token with authenticated API requests.
 - [x] Add program creation form to the web app.
 - [x] Use trainer `profileId` automatically when a trainer creates athletes or programs.
+- [x] Use athlete `profileId` automatically for athlete self-guided programs.
 
 ## Database Tasks
 
@@ -60,6 +62,7 @@ The focus is authentication, user identity, and preparing the web app to work wi
 - [ ] Verify new tables in DBeaver.
 - [ ] Insert or register the first admin/trainer user.
 - [x] Confirm existing MVP tables are not dropped or recreated.
+- [ ] Confirm `workout_programs.trainer_id` nullable migration applies on VPS.
 
 ## Docs Tasks
 
@@ -97,6 +100,8 @@ Day 1 is complete when:
 - Access tokens are JWT bearer tokens with user id, full name, email, and role claims.
 - Trainer and athlete registrations automatically create a matching MVP profile row and return `profileId`.
 - The web app can create workout programs from the dashboard using the current trainer profile.
+- Athletes can create self-guided programs with `trainerId: null`.
+- Coaches can also be athletes of other coaches, so a person may appear in both trainer and athlete contexts.
 - Refresh token table exists, but full refresh token rotation remains out of scope for Day 1.
 - The web MVP stores the access token in localStorage. This is acceptable for the current internal MVP and should be revisited before public production launch.
 - Current MVP data endpoints require a valid JWT. Stricter role and ownership rules will be added after the auth baseline is verified.

@@ -50,6 +50,8 @@ Password hashes use PBKDF2-SHA256. Refresh-token storage exists in the database 
 
 Trainer and athlete registrations automatically create a matching MVP profile row in `trainers` or `athletes`. MVP dashboard, trainer, athlete, program, and session endpoints currently require a valid JWT.
 
+Programs can be trainer-led or self-guided. Self-guided programs use `trainerId: null` and still require an `athleteId`.
+
 ## API Design Principles
 
 - REST-style endpoints

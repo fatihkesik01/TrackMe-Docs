@@ -13,10 +13,12 @@ The web app should focus on workflows that benefit from larger screens, tables, 
 - Show authenticated user and role in the sidebar.
 - Create athletes from the dashboard.
 - Create workout programs from the dashboard.
+- Create athlete self-guided programs when no trainer is selected.
 - Log workout sessions from the dashboard.
 - Send Bearer tokens to API requests.
 
 Trainer users use their `profileId` automatically when creating athletes or programs.
+Athlete users use their own `profileId` automatically when creating self-guided programs.
 
 ## Primary Users
 

@@ -29,5 +29,7 @@ Manages athlete profile, goals, availability, and athlete-facing workout data.
 
 - Athlete profile belongs to one user.
 - Athlete can edit only own profile unless admin.
+- Athlete can create self-guided programs without a trainer.
+- A coach can also be an athlete under another coach.
 - Injury notes are private to athlete, related trainers, and admin.
 - Athlete can have multiple active trainers.

@@ -26,3 +26,4 @@ Provides trainer-specific workflows for managing athletes, programs, notes, and 
 - Trainer cannot view athlete data through pending relationships.
 - Trainer notes must belong to an accepted relationship context.
 - Trainer can manage only own programs unless admin.
+- A trainer can also be coached by another trainer and therefore may have an athlete profile.

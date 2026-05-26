@@ -33,6 +33,8 @@ Current identity model:
 - `users.role` stores `Admin`, `Trainer`, or `Athlete`.
 - `users.password_hash` stores PBKDF2-SHA256 hashes.
 - `refresh_tokens` is prepared for future refresh token rotation.
+- `workout_programs.trainer_id` is nullable so athletes can create self-guided programs.
+- A person can appear in both `trainers` and `athletes` when a coach is coached by another coach.
 
 Target product tables:
 
