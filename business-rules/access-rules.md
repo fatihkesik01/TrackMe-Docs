@@ -9,8 +9,11 @@
 - A trainer can also be represented as an athlete profile when another trainer coaches them.
 - Athlete users can create self-guided programs without assigning a trainer.
 - Dashboard, trainer, athlete, program, and session endpoints require authentication.
-- Relationship request creation requires a trainer profile.
-- Relationship accept and reject actions require the matching athlete profile.
+- Trainers cannot create athlete records directly; they send access requests.
+- Relationship request creation requires a trainer profile and can target an existing athlete profile or an active trainer/athlete user by email.
+- Relationship accept and reject actions require the matching athlete profile or matching athlete email. This allows a trainer who is coached by another trainer to respond as the athlete side.
+- `GET /api/athletes` returns accepted athletes for trainers, own profile for athletes, and all athletes for admins.
+- `GET /api/athletes/search` is the trainer/admin lookup path for relationship requests and prevents exposing the full athlete directory to trainers.
 - `GET /api/trainers/me/athletes` returns accepted athletes for the current trainer.
 - Trainer web program and session selectors use accepted athletes where possible.
 - Athlete web program and session flows use the athlete's own profile for self-guided work.

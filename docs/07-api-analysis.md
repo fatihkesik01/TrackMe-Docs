@@ -23,6 +23,7 @@ Currently implemented resource endpoints:
 - `GET /api/trainers/me/athletes`
 - `POST /api/trainers`
 - `GET /api/athletes`
+- `GET /api/athletes/search`
 - `POST /api/athletes`
 - `POST /api/relationships/requests`
 - `GET /api/relationships/requests`
@@ -76,14 +77,17 @@ Current program and session ownership behavior:
 - Athlete-created programs must be self-guided.
 - Athlete-created sessions must use the athlete's own profile.
 
-Relationship requests are JWT protected. Trainers create requests from their trainer `profileId`; athletes accept or reject requests from their athlete `profileId`.
+Relationship requests are JWT protected. Trainers create requests from their trainer `profileId`; athletes accept or reject requests from their athlete ownership. Athlete ownership can be the matching athlete `profileId` or the same email as the athlete profile, so a trainer can also be coached as an athlete by another trainer.
 
 Current relationship behavior:
 
 - `POST /api/relationships/requests` requires a trainer role and creates a pending request.
+- `POST /api/relationships/requests` accepts either `athleteId` or `email`.
+- `GET /api/athletes/search` supports trainer/admin search by name or email for relationship requests and avoids exposing every athlete to every trainer.
+- `GET /api/athletes` is role-scoped: trainers see accepted athletes only, athletes see self only, admins see all.
 - `GET /api/relationships/requests` returns scoped relationship rows for trainer, athlete, or admin users.
-- `POST /api/relationships/{id}/accept` requires the matching athlete profile.
-- `POST /api/relationships/{id}/reject` requires the matching athlete profile.
+- `POST /api/relationships/{id}/accept` requires the matching athlete profile or matching athlete email.
+- `POST /api/relationships/{id}/reject` requires the matching athlete profile or matching athlete email.
 - `GET /api/trainers/me/athletes` returns accepted athletes for the current trainer.
 - Duplicate trainer-athlete relationship rows are blocked.
 

@@ -91,6 +91,13 @@ Status: complete for API + Web.
 - [x] API now exposes chart-ready endpoints for the next visual pass
 - [x] Trainer overview API is ready for dashboard cards
 
+### Post-Test Relationship Fixes
+- [x] Athletes cannot add athlete records from the web UI
+- [x] Trainers no longer see every athlete in relationship request selectors
+- [x] Trainer relationship request flow uses athlete/user search autocomplete
+- [x] Trainers can request another trainer as an athlete by email
+- [x] Trainer-as-athlete relationship requests can be accepted/rejected by matching email ownership
+
 ---
 
 ## Database Tasks
