@@ -7,6 +7,7 @@ and prepares TrackMe for public-facing production scale.
 
 ## Phase 3 Scope
 
+- Take over the React Native mobile skeleton that was intentionally deferred from Phase 2.
 - Full React Native mobile app for athletes and trainers.
 - Firebase Cloud Messaging push notifications.
 - Admin panel for user and system management.
