@@ -24,37 +24,37 @@ The focus is relationship requests, accepted coaching access, and preparing owne
 
 ## API Tasks
 
-- [ ] Add `TrainerAthleteRelationship` entity.
-- [ ] Add `RelationshipStatus` enum: `Pending`, `Accepted`, `Rejected`.
-- [ ] Add EF Core configuration for relationship table.
-- [ ] Add unique index for `trainer_id + athlete_id`.
-- [ ] Create EF Core migration.
-- [ ] Add `POST /api/relationships/requests`.
-- [ ] Add `GET /api/relationships/requests`.
-- [ ] Add `POST /api/relationships/{id}/accept`.
-- [ ] Add `POST /api/relationships/{id}/reject`.
-- [ ] Add `GET /api/trainers/me/athletes`.
-- [ ] Return relationship status in relevant DTOs.
-- [ ] Prevent duplicate active relationship requests.
-- [ ] Require trainer role for creating relationship requests.
-- [ ] Require athlete ownership for accepting or rejecting requests.
+- [x] Add `TrainerAthleteRelationship` entity.
+- [x] Add `RelationshipStatus` enum: `Pending`, `Accepted`, `Rejected`.
+- [x] Add EF Core configuration for relationship table.
+- [x] Add unique index for `trainer_id + athlete_id`.
+- [x] Create EF Core migration.
+- [x] Add `POST /api/relationships/requests`.
+- [x] Add `GET /api/relationships/requests`.
+- [x] Add `POST /api/relationships/{id}/accept`.
+- [x] Add `POST /api/relationships/{id}/reject`.
+- [x] Add `GET /api/trainers/me/athletes`.
+- [x] Return relationship status in relevant DTOs.
+- [x] Prevent duplicate active relationship requests.
+- [x] Require trainer role for creating relationship requests.
+- [x] Require athlete ownership for accepting or rejecting requests.
 - [ ] Keep admin bypass rules documented but not fully implemented unless needed.
 
 ## Web Tasks
 
-- [ ] Add relationship request UI for trainers.
-- [ ] Show pending requests for athlete users.
-- [ ] Add accept and reject actions.
-- [ ] Show accepted trainer-athlete relationship state.
+- [x] Add relationship request UI for trainers.
+- [x] Show pending requests for athlete users.
+- [x] Add accept and reject actions.
+- [x] Show accepted trainer-athlete relationship state.
 - [ ] Update athlete roster to distinguish accepted, pending, and unassigned athletes.
 - [ ] Use accepted athletes in trainer program/session workflows where possible.
 - [ ] Keep self-guided athlete program flow available.
 
 ## Database Tasks
 
-- [ ] Verify migration creates `trainer_athlete_relationships`.
-- [ ] Confirm unique pair index works.
-- [ ] Confirm status values are stored clearly.
+- [ ] Verify migration creates `trainer_athlete_relationships` on VPS.
+- [x] Confirm unique pair index exists in migration.
+- [x] Confirm status values are stored clearly.
 - [ ] Confirm existing users/trainers/athletes/programs/sessions survive migration.
 - [ ] Verify accepted relationship rows in DBeaver.
 

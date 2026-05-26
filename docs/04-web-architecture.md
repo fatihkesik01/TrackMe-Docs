@@ -15,6 +15,8 @@ The web app should focus on workflows that benefit from larger screens, tables, 
 - Create workout programs from the dashboard.
 - Create athlete self-guided programs when no trainer is selected.
 - Log workout sessions from the dashboard and optionally link them to a program.
+- Send trainer-athlete relationship requests.
+- Accept or reject pending relationship requests as an athlete.
 - Send Bearer tokens to API requests.
 
 Trainer users use their `profileId` automatically when creating athletes or programs.

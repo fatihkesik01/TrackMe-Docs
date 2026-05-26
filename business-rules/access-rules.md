@@ -9,6 +9,8 @@
 - A trainer can also be represented as an athlete profile when another trainer coaches them.
 - Athlete users can create self-guided programs without assigning a trainer.
 - Dashboard, trainer, athlete, program, and session endpoints require authentication.
+- Relationship request creation requires a trainer profile.
+- Relationship accept and reject actions require the matching athlete profile.
 - Fine-grained ownership checks are planned after the Day 1 auth baseline is verified.
 
 ## Target Access Model

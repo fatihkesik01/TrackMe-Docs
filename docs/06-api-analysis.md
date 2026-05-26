@@ -20,9 +20,14 @@ Currently implemented resource endpoints:
 - `GET /api/auth/me`
 - `GET /api/dashboard`
 - `GET /api/trainers`
+- `GET /api/trainers/me/athletes`
 - `POST /api/trainers`
 - `GET /api/athletes`
 - `POST /api/athletes`
+- `POST /api/relationships/requests`
+- `GET /api/relationships/requests`
+- `POST /api/relationships/{id}/accept`
+- `POST /api/relationships/{id}/reject`
 - `GET /api/programs`
 - `POST /api/programs`
 - `GET /api/sessions`
@@ -53,6 +58,8 @@ Trainer and athlete registrations automatically create a matching MVP profile ro
 Programs can be trainer-led or self-guided. Self-guided programs use `trainerId: null` and still require an `athleteId`.
 
 Program list responses include `athleteId` and `trainerId` so clients can connect sessions to the correct program.
+
+Relationship requests are JWT protected. Trainers create requests from their trainer `profileId`; athletes accept or reject requests from their athlete `profileId`.
 
 ## API Design Principles
 

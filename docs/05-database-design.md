@@ -26,6 +26,7 @@ Current MVP tables:
 - athletes
 - workout_programs
 - workout_sessions
+- trainer_athlete_relationships
 
 Current identity model:
 
@@ -35,6 +36,8 @@ Current identity model:
 - `refresh_tokens` is prepared for future refresh token rotation.
 - `workout_programs.trainer_id` is nullable so athletes can create self-guided programs.
 - A person can appear in both `trainers` and `athletes` when a coach is coached by another coach.
+- `trainer_athlete_relationships` stores pending, accepted, and rejected coaching relationships.
+- `trainer_athlete_relationships` has a unique trainer-athlete pair index.
 
 Target product tables:
 
