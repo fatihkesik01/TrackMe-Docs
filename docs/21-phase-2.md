@@ -107,6 +107,17 @@ Status: complete for API + Web.
 - [x] Add search/filter to exercise library
 - [x] Improve error surfacing in modals and top-level alerts
 
+### Relationship & Access Flow Improvements (delivered in Phase 2 bug-fix pass)
+- [x] Athletes can invite a trainer (athlete-initiated relationship request)
+- [x] Trainers can also be added as athletes by another trainer (trainer-as-athlete flow)
+- [x] `POST /api/relationships/invite` — athlete invites trainer; trainer accepts/rejects
+- [x] `GET /api/trainers/search` — autocomplete trainer search for athletes and trainers
+- [x] `InitiatedByAthlete` column on relationships table tracks who initiated (migration added)
+- [x] `SetStatusAsync` respects `InitiatedByAthlete`: athlete responds to trainer-initiated; trainer responds to athlete-initiated
+- [x] RelationshipsView shows invite-trainer panel for athletes and trainers
+- [x] AthletesView shows "Add athlete" shortcut button for trainers (navigates to Relationships)
+- [x] ProgramsView: athletes always create self-guided programs (trainerId forced null, trainer selector hidden for athletes)
+
 ---
 
 ## Mobile Tasks
@@ -128,6 +139,7 @@ Mobile development has not started in Phase 2 by decision. These tasks are moved
 - [x] Notifications migration exists and is used by API auto-migrate
 - [x] Refresh token pruning service is registered
 - [x] Pagination queries are implemented with bounded page size
+- [x] `Phase2_RelationshipInitiator` migration: `initiated_by_athlete` column on `trainer_athlete_relationships`
 
 ---
 
