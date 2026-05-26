@@ -81,11 +81,24 @@ Hand-written SQL files are not the source of truth for the application schema.
 - One user can have one athlete profile.
 - One trainer can manage many athletes.
 - One athlete can work with many trainers.
-- One workout program belongs to a trainer.
+- One workout program can belong to a trainer or be self-guided with `trainer_id` set to null.
 - One workout program may be assigned to one or more athletes.
 - One workout session belongs to one athlete.
 - One workout session can reference a program day.
 - One exercise can appear in many program exercises and session logs.
+
+## Current Relationship Table
+
+`trainer_athlete_relationships` is the Day 2 source of truth for coaching access.
+
+- `id`: relationship id.
+- `trainer_id`: trainer profile id.
+- `athlete_id`: athlete profile id.
+- `status`: `Pending`, `Accepted`, or `Rejected`.
+- `created_at`: request creation time.
+- `responded_at`: accept or reject time.
+
+The current migration enforces one row per trainer-athlete pair with a unique index on `trainer_id` and `athlete_id`.
 
 ## Data Ownership
 

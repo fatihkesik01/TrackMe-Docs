@@ -1,6 +1,6 @@
 # Workout Program Analysis
 
-Workout programs are created by trainers and assigned to athletes.
+Workout programs are created by trainers for accepted athletes or by athletes for themselves as self-guided programs.
 
 ## Program Structure
 
@@ -53,7 +53,8 @@ Rest 180 sec
 
 ## Program Rules
 
-- A program belongs to the trainer who created it.
+- A trainer-led program belongs to the trainer who created it.
+- A self-guided program has no trainer owner and belongs to the athlete flow.
 - A program may be assigned only to accepted athletes.
 - Program days should preserve exercise order.
 - Program updates should notify assigned athletes.

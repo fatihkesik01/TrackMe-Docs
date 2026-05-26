@@ -15,6 +15,7 @@ Provides trainer-specific workflows for managing athletes, programs, notes, and 
 ## Main Use Cases
 
 - Get my athletes
+- Request access to an existing athlete
 - Get athlete summary
 - Get athlete workout history
 - Add trainer note
@@ -27,3 +28,4 @@ Provides trainer-specific workflows for managing athletes, programs, notes, and 
 - Trainer notes must belong to an accepted relationship context.
 - Trainer can manage only own programs unless admin.
 - A trainer can also be coached by another trainer and therefore may have an athlete profile.
+- Day 2 web program and session selectors prefer accepted athletes for trainer workflows.

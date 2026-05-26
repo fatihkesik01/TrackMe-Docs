@@ -13,13 +13,18 @@ Manages many-to-many trainer-athlete relationships.
 
 ## Main Entity
 
-- TrainerAthleteRelation
+- TrainerAthleteRelationship
 
 ## States
+
+Current MVP:
 
 - Pending
 - Accepted
 - Rejected
+
+Target lifecycle:
+
 - Cancelled
 - Removed
 
@@ -37,3 +42,4 @@ Manages many-to-many trainer-athlete relationships.
 - Accepted relationships grant trainer access to athlete training data.
 - Duplicate active requests are not allowed.
 - Removed relationships preserve historical programs and workout data.
+- Day 2 uses a unique trainer-athlete pair, so a rejected pair cannot be recreated until the lifecycle is expanded.

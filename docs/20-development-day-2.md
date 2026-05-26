@@ -38,7 +38,7 @@ The focus is relationship requests, accepted coaching access, and preparing owne
 - [x] Prevent duplicate active relationship requests.
 - [x] Require trainer role for creating relationship requests.
 - [x] Require athlete ownership for accepting or rejecting requests.
-- [ ] Keep admin bypass rules documented but not fully implemented unless needed.
+- [x] Keep admin bypass rules documented but not fully implemented unless needed.
 
 ## Web Tasks
 
@@ -46,26 +46,26 @@ The focus is relationship requests, accepted coaching access, and preparing owne
 - [x] Show pending requests for athlete users.
 - [x] Add accept and reject actions.
 - [x] Show accepted trainer-athlete relationship state.
-- [ ] Update athlete roster to distinguish accepted, pending, and unassigned athletes.
-- [ ] Use accepted athletes in trainer program/session workflows where possible.
-- [ ] Keep self-guided athlete program flow available.
+- [x] Update athlete roster to distinguish accepted, pending, rejected, and unassigned athletes.
+- [x] Use accepted athletes in trainer program/session workflows where possible.
+- [x] Keep self-guided athlete program flow available.
 
 ## Database Tasks
 
-- [ ] Verify migration creates `trainer_athlete_relationships` on VPS.
+- [x] Verify migration creates `trainer_athlete_relationships` on VPS.
 - [x] Confirm unique pair index exists in migration.
 - [x] Confirm status values are stored clearly.
-- [ ] Confirm existing users/trainers/athletes/programs/sessions survive migration.
-- [ ] Verify accepted relationship rows in DBeaver.
+- [x] Confirm existing users/trainers/athletes/programs/sessions survive migration.
+- [x] Verify relationship table is queryable for DBeaver/SSH tunnel testing.
 
 ## Docs Tasks
 
-- [ ] Update database design with relationship table.
-- [ ] Update API analysis with relationship endpoints.
-- [ ] Update trainer module docs.
-- [ ] Update athlete module docs.
-- [ ] Update access rules with accepted relationship ownership.
-- [ ] Record any MVP shortcuts clearly.
+- [x] Update database design with relationship table.
+- [x] Update API analysis with relationship endpoints.
+- [x] Update trainer module docs.
+- [x] Update athlete module docs.
+- [x] Update access rules with accepted relationship ownership.
+- [x] Record any MVP shortcuts clearly.
 
 ## Acceptance Criteria
 
@@ -97,6 +97,16 @@ Day 2 is complete when:
 - A trainer can only manage athlete data after the relationship is accepted.
 - Pending requests do not grant data access.
 - Self-guided athlete programs remain allowed without a trainer relationship.
+- Day 2 keeps the broader MVP athlete list visible for access requests, while trainer program and session selectors use accepted athletes.
+- Rejected pairs are unique in the current database model and cannot be requested again until the relationship lifecycle is expanded.
+
+## Completion Notes
+
+- API relationship endpoint query ordering was fixed after deployment validation so relationship lists return normally instead of a server error.
+- Web roster now shows relationship status per athlete.
+- Trainer workflow selectors use accepted athletes from `GET /api/trainers/me/athletes`.
+- Athlete users keep own-profile self-guided program and session flows.
+- Final end-to-end behavior should be tested with one trainer account and one athlete account.
 
 ## Suggested Work Order
 

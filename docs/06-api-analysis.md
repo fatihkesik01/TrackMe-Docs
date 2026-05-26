@@ -61,6 +61,15 @@ Program list responses include `athleteId` and `trainerId` so clients can connec
 
 Relationship requests are JWT protected. Trainers create requests from their trainer `profileId`; athletes accept or reject requests from their athlete `profileId`.
 
+Current relationship behavior:
+
+- `POST /api/relationships/requests` requires a trainer role and creates a pending request.
+- `GET /api/relationships/requests` returns scoped relationship rows for trainer, athlete, or admin users.
+- `POST /api/relationships/{id}/accept` requires the matching athlete profile.
+- `POST /api/relationships/{id}/reject` requires the matching athlete profile.
+- `GET /api/trainers/me/athletes` returns accepted athletes for the current trainer.
+- Duplicate trainer-athlete relationship rows are blocked.
+
 ## API Design Principles
 
 - REST-style endpoints

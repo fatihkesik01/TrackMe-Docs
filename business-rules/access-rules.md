@@ -11,6 +11,9 @@
 - Dashboard, trainer, athlete, program, and session endpoints require authentication.
 - Relationship request creation requires a trainer profile.
 - Relationship accept and reject actions require the matching athlete profile.
+- `GET /api/trainers/me/athletes` returns accepted athletes for the current trainer.
+- Trainer web program and session selectors use accepted athletes where possible.
+- Athlete web program and session flows use the athlete's own profile for self-guided work.
 - Fine-grained ownership checks are planned after the Day 1 auth baseline is verified.
 
 ## Target Access Model

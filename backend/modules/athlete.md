@@ -21,6 +21,8 @@ Manages athlete profile, goals, availability, and athlete-facing workout data.
 
 - Get athlete profile
 - Update athlete profile
+- Review pending trainer requests
+- Accept or reject trainer requests
 - Get assigned programs
 - Get own workout history
 - Get own progress
@@ -33,3 +35,4 @@ Manages athlete profile, goals, availability, and athlete-facing workout data.
 - A coach can also be an athlete under another coach.
 - Injury notes are private to athlete, related trainers, and admin.
 - Athlete can have multiple active trainers.
+- Pending trainer requests do not grant trainer access until the athlete accepts.

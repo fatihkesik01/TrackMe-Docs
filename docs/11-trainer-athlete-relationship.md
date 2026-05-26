@@ -14,9 +14,14 @@ This allows:
 
 ## Relationship States
 
+Current MVP states:
+
 - Pending
 - Accepted
 - Rejected
+
+Target states:
+
 - Cancelled
 - Removed
 
@@ -28,6 +33,10 @@ This allows:
 - Athletes can review active trainers.
 - Either side can remove the relationship.
 - Removed relationships should preserve historical records.
+- Day 2 does not implement cancelled or removed relationship lifecycle yet.
+- A trainer can also have an athlete profile and be coached by another trainer.
+- An athlete can have multiple accepted trainers.
+- Athletes can create self-guided programs without a trainer relationship.
 
 ## Access Implications
 
