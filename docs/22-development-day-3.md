@@ -22,43 +22,45 @@ The focus is QA, ownership hardening, clearer validation, and keeping the web wo
 
 ## API Tasks
 
-- [ ] Verify `GET /api/relationships/requests` for trainer, athlete, and admin roles.
-- [ ] Verify `POST /api/relationships/requests` blocks duplicate pairs.
-- [ ] Verify accepted relationships appear in `GET /api/trainers/me/athletes`.
-- [ ] Add or confirm ownership checks for trainer-created programs.
-- [ ] Add or confirm ownership checks for trainer-created sessions.
-- [ ] Return clearer `400`, `403`, and `404` messages for relationship errors.
-- [ ] Confirm athlete users can create self-guided programs for only their own profile.
-- [ ] Confirm auth middleware returns `401` without a token.
-- [ ] Confirm forbidden role actions return `403`.
+- [x] Verify `GET /api/relationships/requests` for trainer and athlete roles.
+- [x] Verify `POST /api/relationships/requests` blocks duplicate pairs.
+- [x] Verify accepted relationships appear in `GET /api/trainers/me/athletes`.
+- [x] Add or confirm ownership checks for trainer-created programs.
+- [x] Add or confirm ownership checks for trainer-created sessions.
+- [x] Return clearer `400`, `403`, and `404` messages for relationship and ownership errors.
+- [x] Confirm athlete users can create self-guided programs for only their own profile.
+- [x] Confirm auth middleware returns `401` without a token.
+- [x] Confirm forbidden role actions return `403`.
+- [ ] Verify admin relationship list behavior with an admin user.
 
 ## Web Tasks
 
-- [ ] Test login and register as trainer.
-- [ ] Test login and register as athlete.
-- [ ] Test trainer request access flow.
-- [ ] Test athlete accept request flow.
-- [ ] Test athlete reject request flow.
-- [ ] Verify trainer program selector shows accepted athletes only.
-- [ ] Verify trainer session selector shows accepted athletes only.
-- [ ] Verify athlete self-guided program flow still works.
-- [ ] Add clearer empty states for no accepted athletes.
-- [ ] Add clearer empty state for no requestable athletes.
+- [x] Test register as trainer through deployed API.
+- [x] Test register as athlete through deployed API.
+- [x] Test trainer request access flow through deployed API.
+- [x] Test athlete accept request flow through deployed API.
+- [ ] Test athlete reject request flow through deployed API or browser.
+- [ ] Verify login/register manually in the deployed browser UI.
+- [ ] Verify trainer program selector shows accepted athletes only in the deployed browser UI.
+- [ ] Verify trainer session selector shows accepted athletes only in the deployed browser UI.
+- [x] Verify athlete self-guided program flow through deployed API.
+- [x] Add clearer empty states for no accepted athletes.
+- [x] Add clearer empty state for no requestable athletes.
 
 ## Database Tasks
 
-- [ ] Verify relationship rows and statuses in DBeaver.
-- [ ] Verify no orphaned trainer-athlete relationship rows.
-- [ ] Verify migration history includes Day 1 and Day 2 migrations.
-- [ ] Confirm test data can be safely identified or removed later.
+- [x] Verify relationship rows and statuses through PostgreSQL.
+- [x] Verify no orphaned trainer-athlete relationship rows.
+- [x] Verify migration history includes Day 1 and Day 2 migrations.
+- [x] Confirm test data can be safely identified or removed later.
 
 ## Docs Tasks
 
-- [ ] Add Day 3 completion notes.
-- [ ] Update access rules with any hardened checks.
-- [ ] Update API analysis if endpoint errors or DTOs change.
-- [ ] Update relationship module notes with tested behavior.
-- [ ] Record remaining MVP shortcuts.
+- [x] Add Day 3 completion notes.
+- [x] Update access rules with any hardened checks.
+- [x] Update API analysis if endpoint errors or DTOs change.
+- [x] Update relationship module notes with tested behavior.
+- [x] Record remaining MVP shortcuts.
 
 ## Acceptance Criteria
 
@@ -77,3 +79,13 @@ Day 3 is complete when:
 - Full admin panel.
 - Email invitations.
 - Mobile implementation.
+
+## Completion Notes
+
+- API ownership hardening was implemented and deployed in `TrackMe-Api` commit `073cb8a`.
+- Web empty state cleanup was implemented and deployed in `TrackMe-Web` commit `58ce205`.
+- No EF Core migration was required for Day 3 because no schema changed.
+- Deployed API test data uses emails prefixed with `day3.` and can be filtered later.
+- Tested accepted relationship flow, duplicate request blocking, trainer program/session ownership, athlete self-guided ownership, unauthenticated `401`, and forbidden `403` cases against the deployed API.
+- PostgreSQL verification confirmed Day 1 and Day 2 migrations are present, relationship statuses are queryable, and orphan relationship count is `0`.
+- Remaining Day 3 manual work is browser UI confirmation for login/register, selector behavior, and reject flow.

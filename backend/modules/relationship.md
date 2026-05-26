@@ -43,3 +43,4 @@ Target lifecycle:
 - Duplicate active requests are not allowed.
 - Removed relationships preserve historical programs and workout data.
 - Day 2 uses a unique trainer-athlete pair, so a rejected pair cannot be recreated until the lifecycle is expanded.
+- Day 3 verifies accepted relationships as the gate for trainer-created programs and sessions.

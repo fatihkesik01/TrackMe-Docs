@@ -59,6 +59,18 @@ Programs can be trainer-led or self-guided. Self-guided programs use `trainerId:
 
 Program list responses include `athleteId` and `trainerId` so clients can connect sessions to the correct program.
 
+Current program and session ownership behavior:
+
+- Admin users can access all MVP program and session records.
+- Trainer program lists include trainer-owned programs and accepted athletes' self-guided programs.
+- Trainer session lists include sessions for accepted athletes.
+- Trainer-created programs require the trainer's own profile id and an accepted athlete relationship.
+- Trainer-created sessions require an accepted athlete relationship.
+- Trainers cannot log sessions against another trainer's program.
+- Athlete program and session lists are limited to the athlete's own profile.
+- Athlete-created programs must be self-guided.
+- Athlete-created sessions must use the athlete's own profile.
+
 Relationship requests are JWT protected. Trainers create requests from their trainer `profileId`; athletes accept or reject requests from their athlete `profileId`.
 
 Current relationship behavior:

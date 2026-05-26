@@ -14,7 +14,12 @@
 - `GET /api/trainers/me/athletes` returns accepted athletes for the current trainer.
 - Trainer web program and session selectors use accepted athletes where possible.
 - Athlete web program and session flows use the athlete's own profile for self-guided work.
-- Fine-grained ownership checks are planned after the Day 1 auth baseline is verified.
+- Trainer-created programs require the trainer's own `profileId` and an accepted relationship with the athlete.
+- Trainer-created sessions require an accepted relationship with the athlete.
+- Trainers cannot log sessions against another trainer's program.
+- Athlete-created programs must be self-guided and must use the athlete's own `profileId`.
+- Athlete-created sessions must use the athlete's own `profileId`.
+- Program and session lists are scoped by role: admin sees all, trainers see allowed athlete data, athletes see their own data.
 
 ## Target Access Model
 
