@@ -52,6 +52,8 @@ Trainer and athlete registrations automatically create a matching MVP profile ro
 
 Programs can be trainer-led or self-guided. Self-guided programs use `trainerId: null` and still require an `athleteId`.
 
+Program list responses include `athleteId` and `trainerId` so clients can connect sessions to the correct program.
+
 ## API Design Principles
 
 - REST-style endpoints

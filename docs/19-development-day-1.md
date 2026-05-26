@@ -39,6 +39,7 @@ The focus is authentication, user identity, and preparing the web app to work wi
 - [x] Create matching trainer or athlete profile when a user registers with that role.
 - [x] Require JWT for MVP dashboard, trainer, athlete, program, and session endpoints.
 - [x] Allow self-guided programs with no trainer.
+- [x] Return `athleteId` and `trainerId` in program list responses.
 
 ## Web Tasks
 
@@ -55,6 +56,7 @@ The focus is authentication, user identity, and preparing the web app to work wi
 - [x] Add program creation form to the web app.
 - [x] Use trainer `profileId` automatically when a trainer creates athletes or programs.
 - [x] Use athlete `profileId` automatically for athlete self-guided programs.
+- [x] Allow session logs to optionally reference an athlete program.
 
 ## Database Tasks
 
@@ -63,6 +65,7 @@ The focus is authentication, user identity, and preparing the web app to work wi
 - [ ] Insert or register the first admin/trainer user.
 - [x] Confirm existing MVP tables are not dropped or recreated.
 - [ ] Confirm `workout_programs.trainer_id` nullable migration applies on VPS.
+- [x] Restore deploy workflow after GitHub Actions queue issue.
 
 ## Docs Tasks
 
@@ -101,6 +104,7 @@ Day 1 is complete when:
 - Trainer and athlete registrations automatically create a matching MVP profile row and return `profileId`.
 - The web app can create workout programs from the dashboard using the current trainer profile.
 - Athletes can create self-guided programs with `trainerId: null`.
+- Session logs can optionally link to a selected workout program.
 - Coaches can also be athletes of other coaches, so a person may appear in both trainer and athlete contexts.
 - Refresh token table exists, but full refresh token rotation remains out of scope for Day 1.
 - The web MVP stores the access token in localStorage. This is acceptable for the current internal MVP and should be revisited before public production launch.
