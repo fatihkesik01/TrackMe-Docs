@@ -20,42 +20,42 @@ The focus is a reusable exercise catalog that workout programs and workout sessi
 
 ## API Tasks
 
-- [ ] Add `Exercise` entity.
-- [ ] Add fields: name, slug, category, primary muscles, equipment, instructions, active status, created time.
-- [ ] Configure unique exercise slug.
-- [ ] Create EF Core migration.
-- [ ] Add `GET /api/exercises`.
-- [ ] Add `GET /api/exercises/{id}`.
-- [ ] Add `POST /api/exercises`.
-- [ ] Add `PUT /api/exercises/{id}` or defer with docs note.
-- [ ] Add `DELETE /api/exercises/{id}` as soft disable or defer with docs note.
-- [ ] Require authentication for exercise endpoints.
-- [ ] Decide MVP role rule: admin/trainer can write, athlete can read.
+- [x] Add `Exercise` entity.
+- [x] Add fields: name, slug, category, primary muscles, equipment, instructions, active status, created time.
+- [x] Configure unique exercise slug.
+- [x] Create EF Core migration.
+- [x] Add `GET /api/exercises`.
+- [x] Add `GET /api/exercises/{id}`.
+- [x] Add `POST /api/exercises`.
+- [x] Add `PUT /api/exercises/{id}`.
+- [x] Add `DELETE /api/exercises/{id}` as soft disable.
+- [x] Require authentication for exercise endpoints.
+- [x] Decide MVP role rule: admin/trainer can write, athlete can read.
 
 ## Web Tasks
 
-- [ ] Add Exercises navigation entry.
-- [ ] Add exercise list view.
-- [ ] Add create exercise form.
-- [ ] Add category and equipment fields.
-- [ ] Add empty and loading states.
-- [ ] Show validation errors from API.
-- [ ] Keep dashboard workflows stable.
+- [x] Add Exercises navigation entry.
+- [x] Add exercise list view.
+- [x] Add create exercise form.
+- [x] Add category and equipment fields.
+- [x] Add empty and loading states.
+- [x] Show validation errors from API.
+- [x] Keep dashboard workflows stable.
 
 ## Database Tasks
 
-- [ ] Apply exercise migration locally or on VPS.
-- [ ] Verify `exercises` table in DBeaver.
-- [ ] Seed a small manual exercise list through the UI or Scalar.
-- [ ] Confirm slug uniqueness.
+- [x] Apply exercise migration on VPS through deploy workflow.
+- [x] Verify `exercises` table through PostgreSQL.
+- [x] Seed a small manual exercise list through the deployed API.
+- [x] Confirm slug uniqueness.
 
 ## Docs Tasks
 
-- [ ] Update database design with `exercises`.
-- [ ] Update API analysis with exercise endpoints.
-- [ ] Update exercise module docs.
-- [ ] Update business rules for exercise ownership.
-- [ ] Add completion notes to this file.
+- [x] Update database design with `exercises`.
+- [x] Update API analysis with exercise endpoints.
+- [x] Update exercise module docs.
+- [x] Update business rules for exercise ownership.
+- [x] Add completion notes to this file.
 
 ## Acceptance Criteria
 
@@ -74,3 +74,14 @@ Day 4 is complete when:
 - Public exercise marketplace.
 - Program builder exercise assignment.
 - Workout set logging.
+
+## Completion Notes
+
+- API exercise library was implemented and deployed in `TrackMe-Api` commit `3dff49e`.
+- Web exercise library UI was implemented and deployed in `TrackMe-Web` commit `15db8d0`.
+- EF Core migration `20260526173405_AddExerciseLibrary` creates the `exercises` table and unique slug index.
+- Trainer/admin users can create, update, and soft-delete exercises.
+- Athlete users can read active exercises but cannot create exercises.
+- `DELETE /api/exercises/{id}` sets `is_active` to false and active exercise lists hide inactive rows.
+- Duplicate exercise slugs return conflict.
+- Seeded active exercises: Back Squat, Bench Press, and Plank.

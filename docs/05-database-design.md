@@ -24,6 +24,7 @@ Current MVP tables:
 - refresh_tokens
 - trainers
 - athletes
+- exercises
 - workout_programs
 - workout_sessions
 - trainer_athlete_relationships
@@ -38,6 +39,8 @@ Current identity model:
 - A person can appear in both `trainers` and `athletes` when a coach is coached by another coach.
 - `trainer_athlete_relationships` stores pending, accepted, and rejected coaching relationships.
 - `trainer_athlete_relationships` has a unique trainer-athlete pair index.
+- `exercises.slug` is unique and generated from exercise name.
+- `exercises.is_active` supports soft deletion for library entries.
 
 Target product tables:
 
@@ -99,6 +102,20 @@ Hand-written SQL files are not the source of truth for the application schema.
 - `responded_at`: accept or reject time.
 
 The current migration enforces one row per trainer-athlete pair with a unique index on `trainer_id` and `athlete_id`.
+
+## Current Exercise Table
+
+`exercises` is the Day 4 source of truth for the reusable exercise library.
+
+- `id`: exercise id.
+- `name`: display name.
+- `slug`: normalized unique name.
+- `category`: broad exercise category.
+- `primary_muscles`: comma-separated MVP muscle text.
+- `equipment`: MVP equipment text.
+- `instructions`: coaching instructions.
+- `is_active`: soft-delete flag.
+- `created_at`: creation time.
 
 ## Data Ownership
 

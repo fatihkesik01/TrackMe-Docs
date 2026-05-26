@@ -31,7 +31,7 @@ The focus is QA, ownership hardening, clearer validation, and keeping the web wo
 - [x] Confirm athlete users can create self-guided programs for only their own profile.
 - [x] Confirm auth middleware returns `401` without a token.
 - [x] Confirm forbidden role actions return `403`.
-- [ ] Verify admin relationship list behavior with an admin user.
+- [x] Verify admin relationship list behavior with an admin user.
 
 ## Web Tasks
 
@@ -39,7 +39,7 @@ The focus is QA, ownership hardening, clearer validation, and keeping the web wo
 - [x] Test register as athlete through deployed API.
 - [x] Test trainer request access flow through deployed API.
 - [x] Test athlete accept request flow through deployed API.
-- [ ] Test athlete reject request flow through deployed API or browser.
+- [x] Test athlete reject request flow through deployed API.
 - [ ] Verify login/register manually in the deployed browser UI.
 - [ ] Verify trainer program selector shows accepted athletes only in the deployed browser UI.
 - [ ] Verify trainer session selector shows accepted athletes only in the deployed browser UI.
@@ -87,5 +87,6 @@ Day 3 is complete when:
 - No EF Core migration was required for Day 3 because no schema changed.
 - Deployed API test data uses emails prefixed with `day3.` and can be filtered later.
 - Tested accepted relationship flow, duplicate request blocking, trainer program/session ownership, athlete self-guided ownership, unauthenticated `401`, and forbidden `403` cases against the deployed API.
+- Tested rejected relationship flow and admin relationship list behavior against the deployed API.
 - PostgreSQL verification confirmed Day 1 and Day 2 migrations are present, relationship statuses are queryable, and orphan relationship count is `0`.
-- Remaining Day 3 manual work is browser UI confirmation for login/register, selector behavior, and reject flow.
+- Remaining Day 3 manual work is browser UI confirmation for login/register and selector behavior.

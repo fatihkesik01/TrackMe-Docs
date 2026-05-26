@@ -28,6 +28,11 @@ Currently implemented resource endpoints:
 - `GET /api/relationships/requests`
 - `POST /api/relationships/{id}/accept`
 - `POST /api/relationships/{id}/reject`
+- `GET /api/exercises`
+- `GET /api/exercises/{id}`
+- `POST /api/exercises`
+- `PUT /api/exercises/{id}`
+- `DELETE /api/exercises/{id}`
 - `GET /api/programs`
 - `POST /api/programs`
 - `GET /api/sessions`
@@ -81,6 +86,14 @@ Current relationship behavior:
 - `POST /api/relationships/{id}/reject` requires the matching athlete profile.
 - `GET /api/trainers/me/athletes` returns accepted athletes for the current trainer.
 - Duplicate trainer-athlete relationship rows are blocked.
+
+Current exercise library behavior:
+
+- Exercise endpoints require JWT authentication.
+- Admin and trainer users can create, update, and soft-delete exercises.
+- Athlete users can read active exercises.
+- Exercise slugs are generated from names and must be unique.
+- Soft-deleted exercises are hidden from active exercise lists.
 
 ## API Design Principles
 
