@@ -15,6 +15,9 @@ Runtime URLs:
 
 Currently implemented resource endpoints:
 
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
 - `GET /api/dashboard`
 - `GET /api/trainers`
 - `POST /api/trainers`
@@ -26,6 +29,23 @@ Currently implemented resource endpoints:
 - `POST /api/sessions`
 
 The sections below describe the target API shape for the full product.
+
+## Current MVP Authentication
+
+Authentication uses JWT bearer tokens.
+
+Implemented fields:
+
+- User id
+- Full name
+- Email
+- Role: `Admin`, `Trainer`, or `Athlete`
+- Password hash
+- Active status
+
+Password hashes use PBKDF2-SHA256. Refresh-token storage exists in the database model, but refresh token rotation is not active yet.
+
+`GET /api/auth/me` is protected and validates the JWT.
 
 ## API Design Principles
 

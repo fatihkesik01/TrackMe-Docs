@@ -20,10 +20,19 @@ The database should support scalability, relational consistency, workout history
 
 Current MVP tables:
 
+- users
+- refresh_tokens
 - trainers
 - athletes
 - workout_programs
 - workout_sessions
+
+Current identity model:
+
+- `users.email` is unique.
+- `users.role` stores `Admin`, `Trainer`, or `Athlete`.
+- `users.password_hash` stores PBKDF2-SHA256 hashes.
+- `refresh_tokens` is prepared for future refresh token rotation.
 
 Target product tables:
 

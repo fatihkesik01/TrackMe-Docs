@@ -19,6 +19,7 @@ Security must be designed into every TrackMe module.
 - PostgreSQL is not exposed publicly; DBeaver access uses SSH tunnel through the `deploy` user.
 - Secrets live in server-side `.env` files and GitHub Actions secrets, not in repositories.
 - CORS is restricted to the deployed web origin.
+- Web access tokens are stored in localStorage for the internal MVP. Move to a stronger browser token strategy before public production use.
 
 ## Validation Areas
 

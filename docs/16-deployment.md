@@ -40,6 +40,10 @@ Browser -> TrackMe Web container :8080
 - TRACKME_API_PORT
 - TRACKME_POSTGRES_BIND
 - TRACKME_POSTGRES_PORT
+- TRACKME_JWT_ISSUER
+- TRACKME_JWT_AUDIENCE
+- TRACKME_JWT_SECRET
+- TRACKME_JWT_ACCESS_TOKEN_MINUTES
 - JWT__ISSUER
 - JWT__AUDIENCE
 - JWT__SECRET
@@ -111,6 +115,10 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__Postgres: ${TRACKME_CONNECTION}
       Cors__AllowedOrigins__0: ${TRACKME_WEB_ORIGIN}
+      Jwt__Issuer: ${TRACKME_JWT_ISSUER}
+      Jwt__Audience: ${TRACKME_JWT_AUDIENCE}
+      Jwt__Secret: ${TRACKME_JWT_SECRET}
+      Jwt__AccessTokenMinutes: ${TRACKME_JWT_ACCESS_TOKEN_MINUTES}
     ports:
       - "${TRACKME_API_PORT:-5050}:8080"
     depends_on:

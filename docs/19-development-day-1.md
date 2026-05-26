@@ -22,46 +22,46 @@ The focus is authentication, user identity, and preparing the web app to work wi
 
 ## API Tasks
 
-- [ ] Add `User` entity.
-- [ ] Add `Role` or enum-based role model.
-- [ ] Add password hash fields.
-- [ ] Add refresh-token-ready structure, even if refresh endpoint is not fully used on Day 1.
-- [ ] Add EF Core configuration for identity tables.
-- [ ] Create migration for identity tables.
-- [ ] Add register endpoint: `POST /api/auth/register`.
-- [ ] Add login endpoint: `POST /api/auth/login`.
-- [ ] Add current user endpoint: `GET /api/auth/me`.
-- [ ] Add JWT generation service.
-- [ ] Add JWT authentication middleware.
-- [ ] Add role/identity claims to generated tokens.
-- [ ] Protect at least one test endpoint with `[Authorize]` or minimal API authorization.
-- [ ] Show auth endpoints in Scalar.
+- [x] Add `User` entity.
+- [x] Add `Role` or enum-based role model.
+- [x] Add password hash fields.
+- [x] Add refresh-token-ready structure, even if refresh endpoint is not fully used on Day 1.
+- [x] Add EF Core configuration for identity tables.
+- [x] Create migration for identity tables.
+- [x] Add register endpoint: `POST /api/auth/register`.
+- [x] Add login endpoint: `POST /api/auth/login`.
+- [x] Add current user endpoint: `GET /api/auth/me`.
+- [x] Add JWT generation service.
+- [x] Add JWT authentication middleware.
+- [x] Add role/identity claims to generated tokens.
+- [x] Protect at least one test endpoint with `[Authorize]` or minimal API authorization.
+- [x] Show auth endpoints in Scalar.
 
 ## Web Tasks
 
-- [ ] Add login page.
-- [ ] Add register page or a simple register panel.
-- [ ] Add auth API client functions.
-- [ ] Store access token safely enough for MVP.
-- [ ] Add authenticated layout state.
-- [ ] Show current user in the UI after login.
-- [ ] Add logout action.
-- [ ] Prevent dashboard API calls from silently failing when logged out.
-- [ ] Keep current dashboard, athlete, and session screens usable after login.
+- [x] Add login page.
+- [x] Add register page or a simple register panel.
+- [x] Add auth API client functions.
+- [x] Store access token safely enough for MVP.
+- [x] Add authenticated layout state.
+- [x] Show current user in the UI after login.
+- [x] Add logout action.
+- [x] Prevent dashboard API calls from silently failing when logged out.
+- [x] Keep current dashboard, athlete, and session screens usable after login.
 
 ## Database Tasks
 
 - [ ] Confirm identity migration applies on VPS through GitHub Actions.
 - [ ] Verify new tables in DBeaver.
 - [ ] Insert or register the first admin/trainer user.
-- [ ] Confirm existing MVP tables are not dropped or recreated.
+- [x] Confirm existing MVP tables are not dropped or recreated.
 
 ## Docs Tasks
 
-- [ ] Update API analysis with implemented auth endpoints.
-- [ ] Update database design with actual identity tables after migration is finalized.
-- [ ] Update deployment notes if new environment variables are added.
-- [ ] Record any temporary MVP decisions clearly.
+- [x] Update API analysis with implemented auth endpoints.
+- [x] Update database design with actual identity tables after migration is finalized.
+- [x] Update deployment notes if new environment variables are added.
+- [x] Record any temporary MVP decisions clearly.
 
 ## Acceptance Criteria
 
@@ -85,6 +85,14 @@ Day 1 is complete when:
 - Full admin panel.
 - Full trainer-athlete invitation flow.
 - Payment or subscription logic.
+
+## Day 1 Implementation Notes
+
+- Passwords are hashed with PBKDF2-SHA256.
+- Access tokens are JWT bearer tokens with user id, full name, email, and role claims.
+- Refresh token table exists, but full refresh token rotation remains out of scope for Day 1.
+- The web MVP stores the access token in localStorage. This is acceptable for the current internal MVP and should be revisited before public production launch.
+- Current MVP data endpoints remain available after login; stricter role-based protection will be added after the auth baseline is deployed and verified.
 
 ## Suggested Work Order
 
