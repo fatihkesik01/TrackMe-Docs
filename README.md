@@ -26,6 +26,7 @@ This repository contains the product, architecture, database, API, module, mobil
 - [Deployment](docs/16-deployment.md)
 - [Security and Validation](docs/17-security-validation.md)
 - [Future Roadmap](docs/18-future-roadmap.md)
+- [Development Day 1](docs/19-development-day-1.md)
 
 ## Detailed References
 
