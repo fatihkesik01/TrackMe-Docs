@@ -37,6 +37,7 @@ Authentication uses JWT bearer tokens.
 Implemented fields:
 
 - User id
+- Profile id for trainer and athlete users
 - Full name
 - Email
 - Role: `Admin`, `Trainer`, or `Athlete`
@@ -46,6 +47,8 @@ Implemented fields:
 Password hashes use PBKDF2-SHA256. Refresh-token storage exists in the database model, but refresh token rotation is not active yet.
 
 `GET /api/auth/me` is protected and validates the JWT.
+
+Trainer and athlete registrations automatically create a matching MVP profile row in `trainers` or `athletes`. MVP dashboard, trainer, athlete, program, and session endpoints currently require a valid JWT.
 
 ## API Design Principles
 
