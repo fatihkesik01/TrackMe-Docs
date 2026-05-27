@@ -37,6 +37,8 @@ ProgramsView → [Başla] → WorkoutMode (full-screen overlay)
 | Draft persistence | `localStorage` key per session id — survives page refresh |
 | Confirmation on exit | `window.confirm` prevents accidental loss |
 | Auto-complete | `POST /api/sessions/{id}/complete` with elapsed minutes + overall RPE |
+| **Başla visibility** | All roles (Athlete, Trainer, Admin) see the Start button; Athlete uses own `athleteProfileId`, Trainer/Admin uses `detail.athleteId` |
+| **Edit protection** | Athletes can only edit self-guided programs (`trainerId == null`); trainer-assigned programs are read-only for athletes |
 
 ### Backend: new endpoints
 
