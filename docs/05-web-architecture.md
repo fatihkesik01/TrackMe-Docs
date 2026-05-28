@@ -158,17 +158,21 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `DashboardView`      | Stats cards for trainer or athlete based on `uiRole`                           |
 | `AthletesView`       | Athlete list, create athlete, navigate to AthleteDetailView                    |
 | `AthleteDetailView`  | Tabs: Overview, Programs, Sessions, Progress for one athlete                   |
-| `ProgramsView`       | Program cards list, create program (w/ duration selector), open builder/viewer |
+| `ProgramsView`       | Full-width program row list, create program (w/ duration selector), open builder/viewer |
 | `ProgramBuilderView` | Day + exercise editor (read/write) for a program                               |
-| `WorkoutMode`        | Full-screen set-by-set workout logging overlay                                 |
+| `WorkoutMode`        | Full-screen workout overlay; prev/next nav and dots inside the exercise card   |
 | `SessionsView`       | Session history (list or calendar view toggle), manual session log form        |
 | `BodyMetricsView`    | 9-field measurement form, weight/fat/muscle trend charts                       |
 | `RelationshipsView`  | Send requests, accept/reject pending, search users                             |
 | `ExercisesView`      | Exercise library, category/equipment/difficulty filters, create/delete         |
 | `AdminView`          | User management, exercise audit (Admin role only)                              |
 | `ProfileView`        | Update name, bio, goal, change password                                        |
-| `WorkoutCalendar`    | Monthly calendar grid; green dot = completed, yellow = in-progress; month nav |
+| `WorkoutCalendar`    | Monthly calendar via `react-calendar` library; dark theme CSS override; session dot indicators via `tileContent`; green = completed, yellow = in-progress |
 | `ConsistencyGrid`    | Wrapper: shows aggregate stats (streak, 7d, 30d) + WorkoutCalendar            |
+
+## Program List Layout
+
+Programs are displayed as full-width row cards (`program-row-card`) in both `ProgramsView` and `AthleteDetailView`. Each row shows: title, athlete/trainer badges, date range, and action buttons aligned to the right.
 
 ## Program Creation — Duration Selector
 
