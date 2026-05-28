@@ -39,7 +39,7 @@ erDiagram
 | trainers                      | Trainer profile entities (linked to users by email)          |
 | athletes                      | Athlete profile entities (linked to users by email)          |
 | trainer_athlete_relationships | Coaching access grants (Pending / Accepted / Rejected)       |
-| exercises                     | Exercise library (global seeded + user-private)              |
+| exercises                     | Exercise library — 130+ global exercises, 13 categories, difficulty field |
 | workout_programs              | Training programs per athlete (trainer-led or self-guided)   |
 | workout_program_days          | Days within a program                                        |
 | workout_program_exercises     | Planned exercise entries per day                             |

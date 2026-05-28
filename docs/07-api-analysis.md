@@ -123,9 +123,50 @@ Either `trainerId` or `email` is required.
 |--------|------------------------|----------|------------------------------------------------------|
 | GET    | /api/exercises         | Required | List active exercises (global + caller's private)    |
 | GET    | /api/exercises/{id}    | Required | Get one exercise                                     |
-| POST   | /api/exercises         | Required | Create private exercise (any role); Admin/Trainer can create global |
+| POST   | /api/exercises         | Required | Create private exercise (any role); Admin creates global |
 | PUT    | /api/exercises/{id}    | Required | Update exercise (owner or Admin)                     |
 | DELETE | /api/exercises/{id}    | Required | Soft-delete exercise (owner or Admin)                |
+
+**Query parameters for `GET /api/exercises`:**
+
+| Param       | Example           | Notes                               |
+|-------------|-------------------|-------------------------------------|
+| `search`    | `?search=squat`   | Searches name, category, primaryMuscles |
+| `category`  | `?category=Chest` | Exact match on category field       |
+| `difficulty`| `?difficulty=Hard`| Exact match: Easy / Medium / Hard   |
+| `page`      | `?page=1`         | default 1                           |
+| `pageSize`  | `?pageSize=200`   | default 20, max 200                 |
+
+### ExerciseDto
+```json
+{
+  "id": "...",
+  "name": "Bench Press",
+  "slug": "bench-press",
+  "category": "Chest",
+  "primaryMuscles": "Chest, Triceps, Front Delts",
+  "equipment": "Barbell",
+  "difficulty": "Medium",
+  "instructions": null,
+  "isActive": true,
+  "isGlobal": true,
+  "ownerId": null,
+  "ownerName": null,
+  "createdAt": "..."
+}
+```
+
+### Create/Update exercise request
+```json
+{
+  "name": "My Exercise",
+  "category": "Arms",
+  "primaryMuscles": "Biceps",
+  "equipment": "Dumbbell",
+  "difficulty": "Easy",
+  "instructions": "Curl to shoulder height"
+}
+```
 
 ---
 
@@ -161,6 +202,11 @@ Either `trainerId` or `email` is required.
 - Trainer JWT: can create programs for their accepted athletes
 - Athlete JWT: can create self-guided programs for themselves; if acting as trainer (via uiRole), can create for their athletes via email lookup
 - Admin: no restrictions
+
+**Write access rules for days and exercises (Phase 16):**
+- Trainers can edit any program they own (`trainerId == callerProfileId`)
+- Athletes can only edit programs where `trainerId IS NULL` (self-guided); trainer-created programs return 403
+- Dual-role Athlete-JWT acting as trainer: resolved by email match against trainer entity
 
 ---
 

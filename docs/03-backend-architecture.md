@@ -148,27 +148,38 @@ All write and read endpoints follow this pattern:
 4. For dual-role Athlete-JWT acting as trainer: resolve trainer entity by email, then check relationship
 5. For Admin: bypass all ownership checks
 
+## Key Patterns
+
+### ExerciseSeeder
+- Runs on startup if no global exercises exist
+- Seeds 130+ exercises across 13 categories: Chest, Back, Shoulders, Arms, Legs, Glutes, Core, Cardio, Functional, Full Body, Mobility, Stretching
+- Every seeded exercise has a `Difficulty` value (Easy / Medium / Hard)
+
+### CheckProgramWriteAccess (ProgramEndpoints.cs)
+Athletes can only write to programs where `TrainerId == null` (self-guided). If a trainer created the program (`TrainerId != null`), athletes receive 403. Trainer entities resolved by email for dual-role users.
+
 ## Migrations
 
-10 EF Core migrations in order:
+19 EF Core migrations in order:
 
-| # | Name                                    |
-|---|-----------------------------------------|
-| 1 | InitialCreate                           |
-| 2 | AddIdentityFoundation                   |
-| 3 | AllowSelfGuidedPrograms                 |
-| 4 | AddTrainerAthleteRelationships          |
-| 5 | AddExerciseLibrary                      |
-| 6 | AddSessionExerciseTracking              |
-| 7 | AddProgramStructure                     |
-| 8 | Phase2_ProfileBioAndNotifications       |
-| 9 | Phase2_RelationshipInitiator            |
-|10 | Phase3TemplatesAnalyticsAuth            |
-|11 | Phase3AnalyticsIndexes                  |
-|12 | Phase6_BodyMetricsClassesMarketplace    |
-|13 | Phase7_ExerciseOwnership                |
-|14 | Phase8_WorkoutMode                      |
-|15 | Phase8b_RepsAsString                    |
-|16 | Phase9_TargetWeightAndPlannedFields     |
-|17 | Phase12_TrainerNoteOnSessionExercise    |
-|18 | Phase15_BodyMetricsExtendedFields       |
+| #  | Name                                    |
+|----|-----------------------------------------|
+|  1 | InitialCreate                           |
+|  2 | AddIdentityFoundation                   |
+|  3 | AllowSelfGuidedPrograms                 |
+|  4 | AddTrainerAthleteRelationships          |
+|  5 | AddExerciseLibrary                      |
+|  6 | AddSessionExerciseTracking              |
+|  7 | AddProgramStructure                     |
+|  8 | Phase2_ProfileBioAndNotifications       |
+|  9 | Phase2_RelationshipInitiator            |
+| 10 | Phase3TemplatesAnalyticsAuth            |
+| 11 | Phase3AnalyticsIndexes                  |
+| 12 | Phase6_BodyMetricsClassesMarketplace    |
+| 13 | Phase7_ExerciseOwnership                |
+| 14 | Phase8_WorkoutMode                      |
+| 15 | Phase8b_RepsAsString                    |
+| 16 | Phase9_TargetWeightAndPlannedFields     |
+| 17 | Phase12_TrainerNoteOnSessionExercise    |
+| 18 | Phase15_BodyMetricsExtendedFields       |
+| 19 | Phase16_ExerciseDifficulty              |

@@ -70,21 +70,24 @@ PostgreSQL 16 managed by EF Core 10 code-first migrations. The schema is the sou
 Unique index on `(trainer_id, athlete_id)`.
 
 ### exercises
-| Column          | Type          | Notes                                           |
-|-----------------|--------------|--------------------------------------------------|
-| id              | uuid PK      |                                                  |
-| name            | varchar(160)  | required                                         |
-| slug            | varchar(180)  | required                                         |
-| category        | varchar(80)   | required                                         |
-| primary_muscles | varchar(240)  | nullable                                         |
-| equipment       | varchar(120)  | nullable                                         |
-| instructions    | varchar(2000) | nullable                                         |
-| is_active       | bool          | soft delete flag                                 |
-| is_global       | bool          | true = seeded global library; false = user-owned |
-| owner_id        | uuid FK→users | nullable — null for global exercises             |
-| created_at      | timestamptz   |                                                  |
+| Column          | Type          | Notes                                                        |
+|-----------------|--------------|--------------------------------------------------------------|
+| id              | uuid PK      |                                                              |
+| name            | varchar(160)  | required                                                     |
+| slug            | varchar(180)  | required                                                     |
+| category        | varchar(80)   | required — Chest / Back / Shoulders / Arms / Legs / Glutes / Core / Cardio / Functional / Full Body / Mobility / Stretching |
+| primary_muscles | varchar(240)  | nullable                                                     |
+| equipment       | varchar(120)  | nullable                                                     |
+| difficulty      | varchar(20)   | nullable — "Easy" / "Medium" / "Hard" (Phase 16)            |
+| instructions    | varchar(2000) | nullable                                                     |
+| is_active       | bool          | soft delete flag                                             |
+| is_global       | bool          | true = seeded global library; false = user-owned             |
+| owner_id        | uuid FK→users | nullable — null for global exercises                         |
+| created_at      | timestamptz   |                                                              |
 
 Unique index on `(slug, owner_id)`.
+
+**Library size:** 130+ global exercises across 13 categories seeded on first startup.
 
 ### workout_programs
 | Column      | Type         | Notes                                          |

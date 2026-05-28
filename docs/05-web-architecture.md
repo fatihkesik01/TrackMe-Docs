@@ -16,7 +16,8 @@ TrackMe-Web/
       Toast.jsx
       RpeTrendChart.jsx
       VolumeTrendChart.jsx
-      ConsistencyGrid.jsx
+      ConsistencyGrid.jsx  — thin wrapper, delegates to WorkoutCalendar
+      WorkoutCalendar.jsx  — monthly grid calendar with session dot indicators
     views/
       DashboardView.jsx
       AthletesView.jsx
@@ -152,17 +153,39 @@ All state lives in `AppInner`. No Redux or Zustand.
 
 ## Component Responsibilities
 
-| Component          | Responsibility                                              |
-|--------------------|-------------------------------------------------------------|
-| `DashboardView`    | Stats cards for trainer or athlete based on `uiRole`        |
-| `AthletesView`     | Athlete list, create athlete, navigate to AthleteDetailView |
-| `AthleteDetailView`| Tabs: Overview, Programs, Sessions, Progress for one athlete |
-| `ProgramsView`     | Program cards list, create program, open builder/viewer     |
-| `ProgramBuilderView` | Day + exercise editor (read/write) for a program          |
-| `WorkoutMode`      | Full-screen set-by-set workout logging overlay              |
-| `SessionsView`     | Session history list, manual session log form               |
-| `BodyMetricsView`  | 9-field measurement form, weight/fat/muscle trend charts    |
-| `RelationshipsView`| Send requests, accept/reject pending, search users          |
-| `ExercisesView`    | Exercise library list, create/delete                        |
-| `AdminView`        | User management, exercise audit (Admin role only)           |
-| `ProfileView`      | Update name, bio, goal, change password                     |
+| Component            | Responsibility                                                                 |
+|----------------------|--------------------------------------------------------------------------------|
+| `DashboardView`      | Stats cards for trainer or athlete based on `uiRole`                           |
+| `AthletesView`       | Athlete list, create athlete, navigate to AthleteDetailView                    |
+| `AthleteDetailView`  | Tabs: Overview, Programs, Sessions, Progress for one athlete                   |
+| `ProgramsView`       | Program cards list, create program (w/ duration selector), open builder/viewer |
+| `ProgramBuilderView` | Day + exercise editor (read/write) for a program                               |
+| `WorkoutMode`        | Full-screen set-by-set workout logging overlay                                 |
+| `SessionsView`       | Session history (list or calendar view toggle), manual session log form        |
+| `BodyMetricsView`    | 9-field measurement form, weight/fat/muscle trend charts                       |
+| `RelationshipsView`  | Send requests, accept/reject pending, search users                             |
+| `ExercisesView`      | Exercise library, category/equipment/difficulty filters, create/delete         |
+| `AdminView`          | User management, exercise audit (Admin role only)                              |
+| `ProfileView`        | Update name, bio, goal, change password                                        |
+| `WorkoutCalendar`    | Monthly calendar grid; green dot = completed, yellow = in-progress; month nav |
+| `ConsistencyGrid`    | Wrapper: shows aggregate stats (streak, 7d, 30d) + WorkoutCalendar            |
+
+## Program Creation — Duration Selector
+
+Both `ProgramsView` and `AthleteDetailView` include a duration selector:
+
+| Selection        | Behaviour                                                   |
+|------------------|-------------------------------------------------------------|
+| Haftalık (7 gün) | `endsOn` = `startsOn` + 7 days, auto-updated on date change |
+| Aylık (30 gün)   | `endsOn` = `startsOn` + 30 days, auto-updated on date change |
+| Özel Tarih       | User picks both start and end dates manually                |
+
+Default: `startsOn` = today, `duration` = Haftalık.
+
+## Program Edit Permissions (Frontend)
+
+`canEditCard` in `ProgramsView`:
+```js
+const canEditCard = canEditAsTrainer || (isActingAsAthlete && !p.trainerId);
+```
+Athletes only see the edit (pencil) button for programs without a trainer (`trainerId == null`). Trainer-created programs show a view-only (eye) button for athletes.
