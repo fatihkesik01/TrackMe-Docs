@@ -1,129 +1,174 @@
 # Backend Architecture
 
-The backend is an ASP.NET Core 10 Web API responsible for authentication, authorization, workout management, trainer-athlete relationships, notifications, analytics, validation, and logging.
-
 Repository: `TrackMe-Api`
 
-Current implementation starts as a single deployable API project and should evolve toward the layered structure below as modules grow.
+ASP.NET Core 10 Minimal API. Single deployable project: all endpoints, services, models, and data access live in `TrackMe.Api`.
 
-## Recommended Project Structure
+## Actual Project Structure
 
 ```text
-src/
-  TrackMe.Api/
-    Controllers/
-    Middleware/
-    Filters/
-    Program.cs
-  TrackMe.Application/
-    Auth/
-    Users/
-    Trainers/
-    Athletes/
-    Relationships/
-    Exercises/
-    WorkoutPrograms/
-    WorkoutTracking/
-    Rpe/
-    Notifications/
-    Analytics/
-    Admin/
-  TrackMe.Domain/
-    Entities/
-    Enums/
-    ValueObjects/
-    Rules/
-    Events/
-  TrackMe.Infrastructure/
-    Persistence/
-    Notifications/
-    Security/
-    Logging/
-  TrackMe.Contracts/
-    Requests/
-    Responses/
+TrackMe-Api/
+  src/
+    TrackMe.Api/
+      Data/
+        TrackMeDbContext.cs      — DbContext + OnModelCreating (all table/column config)
+        ExerciseSeeder.cs        — seeds global exercise library on startup
+      Endpoints/
+        AuthEndpoints.cs
+        UserEndpoints.cs
+        TrainerEndpoints.cs
+        AthleteEndpoints.cs
+        RelationshipEndpoints.cs
+        ExerciseEndpoints.cs
+        ProgramEndpoints.cs
+        SessionEndpoints.cs
+        AnalyticsEndpoints.cs
+        BodyMetricEndpoints.cs
+        NotificationEndpoints.cs
+        AdminEndpoints.cs
+        EndpointHelpers.cs       — shared access-check helpers
+      Migrations/                — EF Core migration files (10 migrations)
+      Models/
+        AppUser.cs
+        Athlete.cs
+        Trainer.cs
+        TrainerAthleteRelationship.cs
+        WorkoutProgram.cs
+        WorkoutProgramDay.cs
+        WorkoutProgramExercise.cs
+        WorkoutSession.cs
+        WorkoutSessionExercise.cs
+        WorkoutSetLog.cs
+        Exercise.cs
+        BodyMetric.cs
+        AppNotification.cs
+        RefreshToken.cs
+        PasswordResetToken.cs
+        ProgramTemplate.cs       — schema exists, no active endpoints
+        TrainingClass.cs         — schema exists, no active endpoints
+        TemplatePurchase.cs      — schema exists, no active endpoints
+        UserIntegration.cs       — schema exists, no active endpoints
+        Enums.cs                 — UserRole, RelationshipStatus, SessionStatus, NotificationType
+        Dtos.cs                  — all request/response record types
+      Services/
+        JwtTokenService.cs       — token generation + CreateAuthResponse
+        PasswordHasher.cs        — PBKDF2 hash + verify
+        UserProfileSync.cs       — EnsureProfileAsync, EnsureTrainerEntityAsync, EnsureAthleteEntityAsync
+        ClaimsReader.cs          — IsRole, GetProfileId, GetEmail helpers
+        RelationshipQueries.cs   — ToDto projection for relationships
+        SlugGenerator.cs         — exercise slug generation
+        InputValidator.cs        — email format validation
+        RefreshTokenCleanupService.cs — background IHostedService
+      Program.cs                 — DI, middleware, startup
 ```
 
-## API Layer
+## Key Services
 
-Responsibilities:
+### JwtTokenService
+- `CreateAuthResponse(user, profileId, rawRefreshToken)` — returns `AuthResponse` with access token, refresh token, and user DTO
+- Access token claims: `user_id`, `profile_id`, `name`, `email`, `role`
 
-- Accept HTTP requests
-- Validate authentication
-- Apply role policies
-- Bind request models
-- Return consistent response envelopes
-- Avoid business logic
+### UserProfileSync
+- `EnsureProfileAsync` — creates matching Athlete or Trainer profile row on register/login if missing
+- `EnsureTrainerEntityAsync` — lazily creates Trainer profile for any non-admin user (used in relationships and program creation)
+- `EnsureAthleteEntityAsync` — lazily creates Athlete profile for any non-admin user
 
-## Application Layer
+### ClaimsReader
+- `IsRole(principal, role)` — checks JWT `role` claim
+- `GetProfileId(principal)` — reads `profile_id` claim as `Guid?`
+- `GetEmail(principal)` — reads `email` claim
 
-Responsibilities:
+### EndpointHelpers
+- `HasAcceptedRelationshipAsync(db, trainerId, athleteId)` — checks for an accepted relationship row
+- `ValidateProgramWriteAccessAsync` — access check for program creation
+- `ValidateSessionWriteAccessAsync` — access check for session creation
+- `QueueNotificationAsync(db, recipientEmail, type, title, body)` — creates `AppNotification` record
 
-- Implement use cases
-- Coordinate domain logic
-- Validate business workflows
-- Check ownership and relationship rules
-- Publish domain events
-- Build response DTOs
+## Response Shapes
 
-## Domain Layer
-
-Responsibilities:
-
-- Core entities
-- Enums
-- Business invariants
-- Domain events
-- Value objects
-
-## Infrastructure Layer
-
-Responsibilities:
-
-- PostgreSQL persistence
-- Entity Framework Core 10 configuration
-- Code-first migrations as the source of database schema changes
-- Firebase Cloud Messaging integration
-- JWT and password hashing services
-- Logging providers
-- Background jobs
-
-## Backend Design Rules
-
-- Controllers should stay thin.
-- All write operations should validate ownership.
-- All list endpoints should be paginated.
-- All IDs should use UUID.
-- All timestamps should be stored in UTC.
-- Soft delete should be used for important business records.
-- Audit fields should exist on core tables.
-- Exercise names and slugs must be unique.
-- Database tables should be changed through EF Core migrations, not hand-written deployment SQL.
-
-## Suggested Middleware
-
-- Global exception middleware
-- Request logging middleware
-- Correlation ID middleware
-- Authentication and authorization middleware
-- Rate limiting middleware
-
-## Response Envelope
-
+### Paginated list
 ```json
 {
-  "success": true,
-  "data": {},
-  "errors": [],
-  "traceId": "request-correlation-id"
+  "data": [...],
+  "page": 1,
+  "pageSize": 20,
+  "total": 54
 }
 ```
 
-## Error Strategy
+### Auth response
+```json
+{
+  "accessToken": "...",
+  "accessExpiresAt": "...",
+  "refreshToken": "...",
+  "refreshExpiresAt": "...",
+  "user": {
+    "id": "...",
+    "profileId": "...",
+    "fullName": "...",
+    "email": "...",
+    "role": "Athlete"
+  }
+}
+```
 
-- 400: validation error
-- 401: unauthenticated
-- 403: unauthorized role or ownership failure
-- 404: resource not found
-- 409: duplicate or conflicting state
-- 500: unexpected server error
+### Error response
+```json
+{ "message": "description of the error." }
+```
+
+### Unhandled exception
+```json
+{ "message": "An unexpected error occurred. Please try again later.", "traceId": "..." }
+```
+
+## HTTP Status Codes
+
+| Code | Meaning                                |
+|------|----------------------------------------|
+| 200  | OK                                     |
+| 201  | Created (with Location header)         |
+| 204  | No Content (delete success)            |
+| 400  | Bad Request (validation failure)       |
+| 401  | Unauthorized (missing/invalid JWT)     |
+| 403  | Forbidden (role or ownership failure)  |
+| 404  | Not Found                              |
+| 409  | Conflict (duplicate or wrong state)    |
+| 429  | Too Many Requests (rate limited)       |
+| 500  | Internal Server Error                  |
+
+## Access Control Pattern
+
+All write and read endpoints follow this pattern:
+
+1. Extract `profileId` and `email` from JWT claims
+2. For Trainer role: check `HasAcceptedRelationshipAsync` against the target athlete
+3. For Athlete role: check `profileId == target.AthleteId`
+4. For dual-role Athlete-JWT acting as trainer: resolve trainer entity by email, then check relationship
+5. For Admin: bypass all ownership checks
+
+## Migrations
+
+10 EF Core migrations in order:
+
+| # | Name                                    |
+|---|-----------------------------------------|
+| 1 | InitialCreate                           |
+| 2 | AddIdentityFoundation                   |
+| 3 | AllowSelfGuidedPrograms                 |
+| 4 | AddTrainerAthleteRelationships          |
+| 5 | AddExerciseLibrary                      |
+| 6 | AddSessionExerciseTracking              |
+| 7 | AddProgramStructure                     |
+| 8 | Phase2_ProfileBioAndNotifications       |
+| 9 | Phase2_RelationshipInitiator            |
+|10 | Phase3TemplatesAnalyticsAuth            |
+|11 | Phase3AnalyticsIndexes                  |
+|12 | Phase6_BodyMetricsClassesMarketplace    |
+|13 | Phase7_ExerciseOwnership                |
+|14 | Phase8_WorkoutMode                      |
+|15 | Phase8b_RepsAsString                    |
+|16 | Phase9_TargetWeightAndPlannedFields     |
+|17 | Phase12_TrainerNoteOnSessionExercise    |
+|18 | Phase15_BodyMetricsExtendedFields       |

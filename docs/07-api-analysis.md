@@ -1,216 +1,288 @@
-# API Analysis
+# API Route Reference
 
-The API should be designed around role-based access, ownership validation, and predictable resource boundaries.
+Base URL: `http://187.77.92.30:5050`
 
-## Current MVP API
+All endpoints under `/api/` require JWT Bearer authentication unless marked as public.
 
-The deployed MVP API is an ASP.NET Core 10 minimal API with EF Core 10 and PostgreSQL.
+---
 
-Runtime URLs:
+## Health
 
-- API base URL: `http://187.77.92.30:5050`
-- Health: `GET /health`
-- Scalar API reference: `GET /scalar/v1`
-- OpenAPI JSON: `GET /openapi/v1.json`
+| Method | Path          | Auth | Description                            |
+|--------|--------------|------|----------------------------------------|
+| GET    | /health       | Public | Basic health ping                   |
+| GET    | /api/health   | Public | Detailed health with DB latency, uptime |
 
-Currently implemented resource endpoints:
+---
 
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
-- `GET /api/dashboard`
-- `GET /api/trainers`
-- `GET /api/trainers/me/athletes`
-- `POST /api/trainers`
-- `GET /api/athletes`
-- `GET /api/athletes/search`
-- `POST /api/athletes`
-- `POST /api/relationships/requests`
-- `GET /api/relationships/requests`
-- `POST /api/relationships/{id}/accept`
-- `POST /api/relationships/{id}/reject`
-- `GET /api/exercises`
-- `GET /api/exercises/{id}`
-- `POST /api/exercises`
-- `PUT /api/exercises/{id}`
-- `DELETE /api/exercises/{id}`
-- `GET /api/programs`
-- `POST /api/programs`
-- `GET /api/sessions`
-- `POST /api/sessions`
+## Auth (`/api/auth`)
 
-The sections below describe the target API shape for the full product.
+| Method | Path                       | Auth     | Rate limit | Description                              |
+|--------|---------------------------|----------|------------|------------------------------------------|
+| POST   | /api/auth/register         | Public   |            | Register new user, returns auth response |
+| POST   | /api/auth/login            | Public   | 10/min/IP  | Login, returns auth response             |
+| GET    | /api/auth/me               | Required |            | Returns current user from JWT claims     |
+| POST   | /api/auth/refresh          | Public   |            | Rotate refresh token, returns new auth   |
+| POST   | /api/auth/logout           | Public   |            | Revoke refresh token                     |
+| POST   | /api/auth/forgot-password  | Public   |            | Generate reset token (dev: returned)     |
+| POST   | /api/auth/reset-password   | Public   |            | Reset password with token                |
+| PATCH  | /api/auth/profile          | Required |            | Update full_name, bio, goal              |
+| POST   | /api/auth/change-password  | Required |            | Change password, revokes all sessions    |
 
-## Current MVP Authentication
+### Register request
+```json
+{ "fullName": "Ali Yılmaz", "email": "ali@example.com", "password": "secret123", "role": "Athlete" }
+```
 
-Authentication uses JWT bearer tokens.
+### Auth response (login / register / refresh)
+```json
+{
+  "accessToken": "eyJ...",
+  "accessExpiresAt": "2026-05-28T16:00:00Z",
+  "refreshToken": "raw-token-string",
+  "refreshExpiresAt": "2026-06-27T14:00:00Z",
+  "user": { "id": "...", "profileId": "...", "fullName": "Ali Yılmaz", "email": "ali@example.com", "role": "Athlete" }
+}
+```
 
-Implemented fields:
+---
 
-- User id
-- Profile id for trainer and athlete users
-- Full name
-- Email
-- Role: `Admin`, `Trainer`, or `Athlete`
-- Password hash
-- Active status
+## Users (`/api/users`)
 
-Password hashes use PBKDF2-SHA256. Refresh-token storage exists in the database model, but refresh token rotation is not active yet.
+| Method | Path                   | Auth     | Description                    |
+|--------|------------------------|----------|--------------------------------|
+| GET    | /api/users/search      | Required | Search users by name or email  |
 
-`GET /api/auth/me` is protected and validates the JWT.
+---
 
-Trainer and athlete registrations automatically create a matching MVP profile row in `trainers` or `athletes`. MVP dashboard, trainer, athlete, program, and session endpoints currently require a valid JWT.
+## Trainers (`/api/trainers`)
 
-Programs can be trainer-led or self-guided. Self-guided programs use `trainerId: null` and still require an `athleteId`.
+| Method | Path                      | Auth            | Description                             |
+|--------|--------------------------|-----------------|---------------------------------------------|
+| GET    | /api/trainers             | Required        | List trainers (Admin sees all, others see relevant) |
+| GET    | /api/trainers/search      | Required        | Search trainers by name or email        |
+| GET    | /api/trainers/me/athletes | Required        | List accepted athletes for current trainer |
+| GET    | /api/trainers/candidates  | Required        | Trainer candidate search with relationship status |
 
-Program list responses include `athleteId` and `trainerId` so clients can connect sessions to the correct program.
+---
 
-Current program and session ownership behavior:
+## Athletes (`/api/athletes`)
 
-- Admin users can access all MVP program and session records.
-- Trainer program lists include trainer-owned programs and accepted athletes' self-guided programs.
-- Trainer session lists include sessions for accepted athletes.
-- Trainer-created programs require the trainer's own profile id and an accepted athlete relationship.
-- Trainer-created sessions require an accepted athlete relationship.
-- Trainers cannot log sessions against another trainer's program.
-- Athlete program and session lists are limited to the athlete's own profile.
-- Athlete-created programs must be self-guided.
-- Athlete-created sessions must use the athlete's own profile.
+| Method | Path                  | Auth     | Description                                       |
+|--------|-----------------------|----------|---------------------------------------------------|
+| GET    | /api/athletes         | Required | List athletes (Trainer = accepted; Admin = all)   |
+| POST   | /api/athletes         | Required | Create athlete profile                             |
+| GET    | /api/athletes/search  | Required | Search athletes by name or email                   |
+| GET    | /api/athletes/{id}    | Required | Get one athlete by ID                             |
 
-Relationship requests are JWT protected. Trainers create requests from their trainer `profileId`; athletes accept or reject requests from their athlete ownership. Athlete ownership can be the matching athlete `profileId` or the same email as the athlete profile, so a trainer can also be coached as an athlete by another trainer.
+---
 
-Current relationship behavior:
+## Relationships (`/api/relationships`)
 
-- `POST /api/relationships/requests` requires a trainer role and creates a pending request.
-- `POST /api/relationships/requests` accepts either `athleteId` or `email`.
-- `GET /api/athletes/search` supports trainer/admin search by name or email for relationship requests and avoids exposing every athlete to every trainer.
-- `GET /api/athletes` is role-scoped: trainers see accepted athletes only, athletes see self only, admins see all.
-- `GET /api/relationships/requests` returns scoped relationship rows for trainer, athlete, or admin users.
-- `POST /api/relationships/{id}/accept` requires the matching athlete profile or matching athlete email.
-- `POST /api/relationships/{id}/reject` requires the matching athlete profile or matching athlete email.
-- `GET /api/trainers/me/athletes` returns accepted athletes for the current trainer.
-- Duplicate trainer-athlete relationship rows are blocked.
+| Method | Path                              | Auth     | Description                                         |
+|--------|-----------------------------------|----------|-----------------------------------------------------|
+| POST   | /api/relationships/requests       | Required | Trainer sends access request to athlete (by id or email) |
+| POST   | /api/relationships/invite         | Required | Athlete invites trainer to coach them (by id or email) |
+| GET    | /api/relationships/requests       | Required | List relationships for current user (paginated)     |
+| POST   | /api/relationships/{id}/accept    | Required | Accept a pending request (recipient only)           |
+| POST   | /api/relationships/{id}/reject    | Required | Reject a pending request (recipient only)           |
 
-Current exercise library behavior:
+### Trainer sends request to athlete
+```json
+{ "athleteId": "guid", "email": "athlete@example.com" }
+```
+Either `athleteId` or `email` is required. If `email` is provided, auto-creates an athlete entity for that user.
 
-- Exercise endpoints require JWT authentication.
-- Admin and trainer users can create, update, and soft-delete exercises.
-- Athlete users can read active exercises.
-- Exercise slugs are generated from names and must be unique.
-- Soft-deleted exercises are hidden from active exercise lists.
+### Athlete invites trainer
+```json
+{ "trainerId": "guid", "email": "trainer@example.com" }
+```
+Either `trainerId` or `email` is required.
 
-## API Design Principles
+### RelationshipDto
+```json
+{
+  "id": "...",
+  "trainerId": "...", "trainerName": "...", "trainerEmail": "...",
+  "athleteId": "...", "athleteName": "...", "athleteEmail": "...",
+  "status": "Pending",
+  "initiatedByAthlete": false,
+  "createdAt": "...", "respondedAt": null
+}
+```
 
-- REST-style endpoints
-- JSON request and response bodies
-- JWT authentication
-- Role-based authorization
-- Ownership validation in application services
-- Pagination for list endpoints
-- Filtering for analytics endpoints
-- Consistent error envelope
+**canRespond rule:**
+- `initiatedByAthlete = true` → only the trainer can accept/reject
+- `initiatedByAthlete = false` → only the athlete can accept/reject
 
-## Main API Groups
+---
 
-- Auth
-- Users
-- Trainers
-- Athletes
-- Relationships
-- Exercises
-- Workout Programs
-- Workout Tracking
-- RPE
-- Analytics
-- Notifications
-- Admin
+## Exercises (`/api/exercises`)
 
-## Endpoint Summary
+| Method | Path                   | Auth     | Description                                          |
+|--------|------------------------|----------|------------------------------------------------------|
+| GET    | /api/exercises         | Required | List active exercises (global + caller's private)    |
+| GET    | /api/exercises/{id}    | Required | Get one exercise                                     |
+| POST   | /api/exercises         | Required | Create private exercise (any role); Admin/Trainer can create global |
+| PUT    | /api/exercises/{id}    | Required | Update exercise (owner or Admin)                     |
+| DELETE | /api/exercises/{id}    | Required | Soft-delete exercise (owner or Admin)                |
 
-### Auth
+---
 
-- POST /api/auth/register
-- POST /api/auth/login
-- POST /api/auth/refresh
-- POST /api/auth/logout
-- GET /api/auth/me
+## Programs (`/api/programs`)
 
-### Users
+| Method | Path                                                       | Auth     | Description                            |
+|--------|------------------------------------------------------------|----------|----------------------------------------|
+| GET    | /api/programs                                              | Required | List programs (paginated, role-scoped) |
+| POST   | /api/programs                                              | Required | Create program for an athlete          |
+| GET    | /api/programs/{id}                                         | Required | Get full program with days + exercises |
+| DELETE | /api/programs/{id}                                         | Required | Delete program                         |
+| POST   | /api/programs/{id}/days                                    | Required | Add a day to the program               |
+| PUT    | /api/programs/{id}/days/{dayId}                            | Required | Update day title/notes                 |
+| DELETE | /api/programs/{id}/days/{dayId}                            | Required | Remove a day                           |
+| POST   | /api/programs/{id}/days/{dayId}/exercises                  | Required | Add exercise to day                    |
+| PUT    | /api/programs/{id}/days/{dayId}/exercises/{exerciseId}     | Required | Update exercise parameters             |
+| DELETE | /api/programs/{id}/days/{dayId}/exercises/{exerciseId}     | Required | Remove exercise from day               |
 
-- GET /api/users/me
-- PATCH /api/users/me
-- PATCH /api/users/me/password
+### Create program request
+```json
+{
+  "trainerId": null,
+  "athleteId": "guid",
+  "title": "Güç Programı",
+  "description": "12 haftalık güç programı",
+  "startsOn": "2026-06-01T00:00:00Z",
+  "endsOn": "2026-08-24T00:00:00Z",
+  "templateId": null
+}
+```
 
-### Trainers
+**Access rules:**
+- Trainer JWT: can create programs for their accepted athletes
+- Athlete JWT: can create self-guided programs for themselves; if acting as trainer (via uiRole), can create for their athletes via email lookup
+- Admin: no restrictions
 
-- GET /api/trainers/me/athletes
-- GET /api/trainers/me/programs
-- GET /api/trainers/me/notifications
+---
 
-### Athletes
+## Sessions (`/api/sessions`)
 
-- GET /api/athletes/me/profile
-- PUT /api/athletes/me/profile
-- GET /api/athletes/me/programs
-- GET /api/athletes/me/workouts
+| Method | Path                                                          | Auth     | Description                                    |
+|--------|---------------------------------------------------------------|----------|------------------------------------------------|
+| GET    | /api/sessions                                                 | Required | List sessions (paginated, role-scoped, filterable by date) |
+| POST   | /api/sessions                                                 | Required | Create completed session manually              |
+| POST   | /api/sessions/start                                           | Required | Start an in-progress session (WorkoutMode)     |
+| GET    | /api/sessions/{id}                                            | Required | Get session detail with exercises + sets       |
+| POST   | /api/sessions/{id}/complete                                   | Required | Complete an in-progress session                |
+| GET    | /api/sessions/{sessionId}/exercises                           | Required | List exercises for a session                   |
+| POST   | /api/sessions/{sessionId}/exercises                           | Required | Add exercise to session                        |
+| PATCH  | /api/sessions/{sessionId}/exercises/{exerciseId}/feeling      | Required | Mark exercise complete + feeling rating        |
+| POST   | /api/sessions/{sessionId}/exercises/{exerciseId}/sets         | Required | Log a set                                      |
+| PUT    | /api/sessions/{sessionId}/exercises/{exerciseId}/sets/{setId} | Required | Update a set                                   |
+| DELETE | /api/sessions/{sessionId}/exercises/{exerciseId}              | Required | Remove exercise from session                   |
+| PATCH  | /api/sessions/{sessionId}/exercises/{exerciseId}/review       | Required | Trainer writes a note on exercise              |
 
-### Relationships
+### Start session (WorkoutMode)
+```json
+{ "athleteId": "guid", "programId": "guid", "programDayId": "guid", "title": "Gün 1 - Bacak" }
+```
+Pre-populates exercises from the program day. Returns full session detail DTO.
 
-- POST /api/relationships/requests
-- GET /api/relationships/requests
-- POST /api/relationships/{id}/accept
-- POST /api/relationships/{id}/reject
-- DELETE /api/relationships/{id}
+### Complete session
+```json
+{ "durationMinutes": 65, "rpe": 7, "notes": "İyi bir antrenman" }
+```
 
-### Exercises
+---
 
-- GET /api/exercises
-- GET /api/exercises/{id}
-- POST /api/exercises
-- PUT /api/exercises/{id}
-- DELETE /api/exercises/{id}
+## Analytics (`/api/analytics`)
 
-### Workout Programs
+| Method | Path                                                              | Auth     | Description                                  |
+|--------|-------------------------------------------------------------------|----------|----------------------------------------------|
+| GET    | /api/dashboard                                                    | Required | System-wide stats (admin/public summary)     |
+| GET    | /api/analytics/athletes/{athleteId}/overview                      | Required | Athlete session stats (total, weekly, monthly, avg RPE) |
+| GET    | /api/analytics/athletes/{athleteId}/rpe-trend                     | Required | Daily average RPE over `?days=30`            |
+| GET    | /api/analytics/athletes/{athleteId}/volume                        | Required | Daily total volume (kg) over `?days=30`      |
+| GET    | /api/analytics/athletes/{athleteId}/exercise/{exerciseId}/progress| Required | Per-set weight/reps/RPE history              |
+| GET    | /api/analytics/athletes/{athleteId}/consistency                   | Required | Session counts and current streak            |
+| GET    | /api/analytics/athletes/{athleteId}/sessions-by-month             | Required | Monthly session counts over `?months=12`     |
+| GET    | /api/analytics/athletes/{athleteId}/body-trend                    | Required | Body metric trend over `?days=90`            |
+| GET    | /api/analytics/athletes/{athleteId}/exercises/{exerciseId}/last-performance | Required | Last logged sets for an exercise |
+| GET    | /api/analytics/trainers/me/overview                               | Required | Trainer overview: athlete count, active programs, weekly sessions, avg RPE |
+| GET    | /api/programs/{programId}/compliance                              | Required | Program completion rate per day              |
 
-- POST /api/workout-programs
-- GET /api/workout-programs/{id}
-- PUT /api/workout-programs/{id}
-- POST /api/workout-programs/{id}/assignments
-- DELETE /api/workout-programs/{id}/assignments/{athleteId}
+All analytics endpoints validate access: Athlete sees own data; Trainer sees data for accepted athletes; Admin sees all.
 
-### Workout Tracking
+---
 
-- POST /api/workout-sessions
-- GET /api/workout-sessions/{id}
-- PATCH /api/workout-sessions/{id}
-- POST /api/workout-sessions/{id}/complete
-- POST /api/workout-sessions/{id}/exercises
-- POST /api/workout-session-exercises/{id}/sets
-- PATCH /api/workout-set-logs/{id}
-- DELETE /api/workout-set-logs/{id}
+## Body Metrics (`/api/body-metrics`)
 
-### Analytics
+| Method | Path                         | Auth     | Description                                       |
+|--------|------------------------------|----------|---------------------------------------------------|
+| POST   | /api/body-metrics            | Required | Log measurement (athlete's own profile resolved by JWT) |
+| GET    | /api/body-metrics/me         | Required | Resolve caller's athleteId (for frontend role-independence) |
+| GET    | /api/body-metrics/{athleteId}| Required | List measurements for an athlete (paginated)      |
+| DELETE | /api/body-metrics/{id}       | Required | Delete a measurement                              |
 
-- GET /api/analytics/athletes/{athleteId}/overview
-- GET /api/analytics/athletes/{athleteId}/strength
-- GET /api/analytics/athletes/{athleteId}/volume
-- GET /api/analytics/athletes/{athleteId}/rpe
-- GET /api/analytics/athletes/{athleteId}/consistency
+### Create body metric
+```json
+{
+  "date": "2026-05-28",
+  "weightKg": 82.5,
+  "bodyFatPct": 18.2,
+  "musclePct": 42.1,
+  "heightCm": 178,
+  "waistCm": 84,
+  "chestCm": 102,
+  "armsCm": 36,
+  "legsCm": 58,
+  "hipsCm": 98,
+  "notes": "Sabah aç karnına"
+}
+```
+At least one measurement field required.
 
-### Notifications
+---
 
-- GET /api/notifications
-- POST /api/notifications/{id}/read
-- POST /api/notifications/read-all
+## Notifications (`/api/notifications`)
+
+| Method | Path                          | Auth     | Description                         |
+|--------|-------------------------------|----------|-------------------------------------|
+| GET    | /api/notifications            | Required | List notifications for current user |
+| PATCH  | /api/notifications/{id}/read  | Required | Mark one notification as read       |
+| POST   | /api/notifications/read-all   | Required | Mark all notifications as read      |
+
+### Notification types
+- `RelationshipRequest` — new trainer/athlete connection request
+- `RelationshipAccepted` — a pending request was accepted
+- `ProgramAssigned` — a new program was created for the athlete
+
+---
+
+## Admin (`/api/admin`)
+
+| Method | Path                       | Auth           | Description                     |
+|--------|----------------------------|----------------|---------------------------------|
+| GET    | /api/admin/stats           | Admin only     | System-wide stats               |
+| GET    | /api/admin/users           | Admin only     | List all users (paginated)      |
+| PUT    | /api/admin/users/{id}      | Admin only     | Update user fullName, role, isActive |
+| GET    | /api/admin/exercises       | Admin only     | List all exercises including inactive |
+| DELETE | /api/admin/exercises/{id}  | Admin only     | Hard-delete an exercise         |
+
+---
 
 ## Authorization Matrix
 
-| Resource | Admin | Trainer | Athlete |
-| --- | --- | --- | --- |
-| Users | Full | Own user only | Own user only |
-| Exercise library | Full | Read, suggest optional | Read |
-| Athlete profile | Full | Related athletes | Own profile |
-| Workout program | Full | Own programs | Assigned programs |
-| Workout session | Full | Related athletes | Own sessions |
-| Analytics | Full | Related athletes | Own analytics |
-| Notifications | Full audit | Own notifications | Own notifications |
+| Endpoint group    | Admin | Trainer            | Athlete                                   |
+|-------------------|-------|--------------------|-------------------------------------------|
+| Auth              | ✓     | ✓                  | ✓                                         |
+| Users             | ✓     | Own user           | Own user                                  |
+| Trainers          | ✓     | Self               | Can invite any trainer                    |
+| Athletes          | ✓ (all) | Accepted athletes | Own profile only                        |
+| Relationships     | ✓ (all) | Own relationships | Own relationships                        |
+| Exercises         | ✓     | Read + own private | Read + own private                       |
+| Programs          | ✓     | Own + accepted athletes' | Own athlete profile only          |
+| Sessions          | ✓     | Accepted athletes' | Own athlete sessions                     |
+| Analytics         | ✓     | Accepted athletes' | Own analytics                            |
+| Body metrics      | ✗     | Own + accepted athletes' | Own profile                        |
+| Notifications     | ✓     | Own               | Own                                        |
+| Admin             | ✓     | ✗                  | ✗                                         |

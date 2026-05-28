@@ -1,57 +1,89 @@
-# Trainer-Athlete Relationship
+# Trainer-Athlete Relationship System
 
-The trainer-athlete relationship system is one of the core systems of TrackMe.
+## Overview
 
-## Relationship Type
+The `trainer_athlete_relationships` table is the access gate between trainer and athlete data. A trainer can only view, manage programs for, or view analytics of an athlete when an `Accepted` relationship exists between them.
 
-Trainer to athlete is many-to-many.
+## Relationship Directions
 
-This allows:
+Either side can initiate:
 
-- One trainer to manage many athletes.
-- One athlete to work with multiple trainers.
-- Specialized coaching setups such as fitness coach, conditioning coach, and rehab specialist.
+| Initiator | Endpoint                        | `InitiatedByAthlete` | Who accepts |
+|-----------|---------------------------------|---------------------|-------------|
+| Trainer   | `POST /api/relationships/requests` | `false`          | Athlete     |
+| Athlete   | `POST /api/relationships/invite`   | `true`           | Trainer     |
 
-## Relationship States
+Both endpoints accept either an ID or an email address for the target user. If no matching profile entity exists, one is created lazily.
 
-Current MVP states:
+## Status Lifecycle
 
-- Pending
-- Accepted
-- Rejected
+```
+             Trainer sends request
+                    │
+                    ▼
+              [Pending]
+                 / \
+         accept   reject
+           /         \
+      [Accepted]   [Rejected]
+```
 
-Target states:
+Only `Pending` relationships can be accepted or rejected. Attempting to respond to an already-resolved relationship returns `409 Conflict`.
 
-- Cancelled
-- Removed
+## Access Implications of Accepted Status
 
-## Relationship Rules
+When a relationship is `Accepted`, the trainer can:
 
-- Pending requests do not grant access to athlete data.
-- Accepted relationships grant trainer access to relevant athlete data.
-- Trainers can create programs for accepted athletes.
-- Athletes can review active trainers.
-- Either side can remove the relationship.
-- Removed relationships should preserve historical records.
-- Day 2 does not implement cancelled or removed relationship lifecycle yet.
-- A trainer can also have an athlete profile and be coached by another trainer.
-- An athlete can have multiple accepted trainers.
-- Athletes can create self-guided programs without a trainer relationship.
+- List the athlete in `GET /api/trainers/me/athletes`
+- View the athlete's programs via `GET /api/programs`
+- Create programs for the athlete via `POST /api/programs`
+- View the athlete's sessions via `GET /api/sessions`
+- View all analytics endpoints for the athlete
+- View body metrics for the athlete
+- Write trainer review notes on session exercises
 
-## Access Implications
+The athlete continues to own all their data; the trainer gets read-and-program-write access only.
 
-When accepted, the trainer can:
+## Duplicate Prevention
 
-- View athlete profile
-- View workout history
-- View progress analytics
-- Assign workout programs
-- Add trainer notes
-- Receive workout completion notifications
+A unique index on `(trainer_id, athlete_id)` prevents creating two relationship rows for the same pair. Attempting to create a duplicate returns `409 Conflict` with the existing status.
 
-The athlete can:
+## Dual-Role Resolution
 
-- View trainer profile
-- Receive assigned programs
-- Receive trainer notes
-- Receive program update notifications
+Users can appear in both the `trainers` and `athletes` tables with the same email. The relationship logic always resolves entities by email when the JWT role and the target entity type differ:
+
+```
+Athlete JWT + email "coach@example.com"
+→ db.Trainers.Where(t => t.Email == "coach@example.com")
+→ if found: trainerEntity.Id is used in HasAcceptedRelationshipAsync()
+```
+
+This allows an `Athlete` JWT holder to use trainer features when they also have a trainer entity.
+
+## `canRespond` Logic
+
+```
+if relationship.InitiatedByAthlete:
+    canRespond = caller is trainer (by profileId or email match)
+else:
+    canRespond = caller is athlete (by profileId or email match)
+```
+
+Email match is a fallback for dual-role users whose JWT role does not directly match the expected entity type.
+
+## Notifications
+
+| Event             | Recipient          | Type                    |
+|-------------------|--------------------|-------------------------|
+| Request sent      | Target user        | `RelationshipRequest`   |
+| Invite sent       | Target trainer     | `RelationshipRequest`   |
+| Request accepted  | Initiating side    | `RelationshipAccepted`  |
+
+## Frontend Behavior
+
+`RelationshipsView` uses `uiRole` to determine which panel to show:
+
+- `uiRole === 'Trainer'` → shows "Send request" panel (search athletes, send request) + incoming athlete invites
+- `uiRole === 'Athlete'` → shows "Invite trainer" panel (search trainers, send invite) + incoming trainer requests
+
+The same view component handles both modes. Both TRAINER_NAV and ATHLETE_NAV include the `relationships` nav item.

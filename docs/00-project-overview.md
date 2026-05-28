@@ -1,51 +1,114 @@
 # Project Overview
 
-TrackMe is a mobile workout tracking and coach-athlete management application.
+TrackMe is a coach-athlete training management platform. It enables trainers to create and assign workout programs, monitor athlete progress, and manage coaching relationships. Athletes log sessions, track body measurements, and follow their programs.
 
-The purpose of TrackMe is not to generate AI workout programs. The primary goal is to provide a structured system where trainers and athletes can manage programs, track workouts, monitor performance, analyze RPE, and communicate efficiently.
+## Core User Roles
 
-## Main Roles
+| Role | Primary Activities |
+|------|-------------------|
+| **Admin** | Manage all users, manage exercise library, view system stats |
+| **Trainer** | Manage athlete roster via relationships, create programs per athlete, view athlete analytics |
+| **Athlete** | Follow assigned programs, log workout sessions, track body metrics |
 
-- Admin
-- Trainer
-- Athlete
+### Dual-Role User
 
-## Main Capabilities
+A single registered account can function as both Trainer and Athlete. The account's JWT role is `Athlete`, but a Trainer entity linked by email also exists. The frontend switches context via the `uiRole` toggle (Sporcu / Antrenör). The backend resolves the trainer entity via email lookup on any trainer-scoped operation.
 
-- Workout tracking
-- Trainer-athlete management
-- Workout program management
-- RPE tracking
-- Progress analytics
-- Notifications
-- Structured workout history
+## Architecture Summary
 
-## Application Split
+```
+Browser / Web App (React + Vite)
+        │  HTTP + JWT
+        ▼
+ASP.NET Core 10 Minimal API
+        │  EF Core + Npgsql
+        ▼
+PostgreSQL 16
+```
 
-TrackMe is split into separate repositories:
+## Navigation — Current Structure
 
-- `TrackMe-Mobile`: React Native mobile application for athletes and trainers.
-- `TrackMe-Web`: React.js web application, primarily for admin and trainer workflows.
-- `TrackMe-Api`: ASP.NET Core 10 Web API backend.
-- `TrackMe-Docs`: Product and technical documentation.
+### Trainer UI
 
-## Product Direction
+| Menu Item | View |
+|-----------|------|
+| Kontrol Paneli | Dashboard — trainer stats (athletes, active programs, weekly sessions) |
+| Sporcular | Athlete list → Athlete Detail (tabs: Overview, Programs, Sessions, Progress) |
+| Programlarım | Trainer's program library + Program Builder |
+| Egzersizler | Exercise library |
+| İlişkiler | Relationship requests (send / accept / reject) |
+| Profil | Account settings |
 
-TrackMe should feel like a professional training management system instead of a generic gym logging application.
+### Athlete UI
 
-It should support:
+| Menu Item | View |
+|-----------|------|
+| Kontrol Paneli | Dashboard — personal stats (streak, weekly sessions, duration) |
+| Programım | Athlete's programs + Program Builder |
+| Antrenmanlar | Session log + log new session |
+| Vücut Ölçüleri | Body measurement history + log new measurement |
+| İlişkiler | Invite trainer / manage relationships |
+| Profil | Account settings |
 
-- General fitness users
-- Professional athletes
-- Semi-professional athletes
-- Trainers managing multiple athletes
-- Athletes working with multiple coaches
+### Admin UI
 
-## Success Criteria
+| Menu Item | View |
+|-----------|------|
+| Kontrol Paneli | System stats |
+| Sporcular | Full athlete list |
+| Antrenmanlar | Full session list |
+| Egzersizler | Exercise management |
+| Profil | Account settings |
+| Admin | User management, exercise audit |
 
-- Athletes can log a workout quickly during training.
-- Trainers can create, update, and monitor programs.
-- Workout history is structured enough for analytics.
-- RPE data can identify fatigue and program difficulty.
-- Notifications keep trainer-athlete communication organized.
-- The platform can scale without rewriting core modules.
+## Key Flows
+
+### Program Flow
+
+```
+Trainer opens Athlete Detail → Programs tab
+→ Create Program (title, dates, description)
+→ Program Builder: Add Days → Add Exercises per Day
+  (sets / reps / target weight / RPE / rest seconds)
+→ Athlete sees program in "Programım"
+→ Athlete starts a workout day → WorkoutMode overlay
+```
+
+### Session / Workout Flow
+
+```
+Athlete selects Program Day → Start Workout
+→ WorkoutMode overlay opens
+→ Log each set: reps + weight + RPE
+→ Complete Workout → session created with duration + overall RPE
+→ Session appears in history and in analytics
+```
+
+### Relationship Flow
+
+```
+Trainer searches for athlete → Send access request
+  OR
+Athlete searches for trainer → Send invite
+→ Status: Pending
+→ Recipient accepts or rejects
+→ Accepted: athlete appears in trainer's Sporcularım list
+```
+
+## Feature Status
+
+| Feature | Status |
+|---------|--------|
+| Auth (JWT + refresh tokens) | ✅ Live |
+| Trainer-Athlete relationships | ✅ Live |
+| Program builder (days + exercises) | ✅ Live |
+| Workout mode (set-by-set logging) | ✅ Live |
+| Session history + filtering | ✅ Live |
+| Analytics (RPE trend, volume, consistency) | ✅ Live |
+| Body metrics (9 measurement fields) | ✅ Live |
+| Exercise library (global + private) | ✅ Live |
+| In-app notifications | ✅ Live |
+| Admin panel | ✅ Live |
+| Dark mode + i18n (TR/EN) | ✅ Live |
+| Mobile app (React Native) | 🔲 Planned |
+| AI suggestions | 🔲 Planned |

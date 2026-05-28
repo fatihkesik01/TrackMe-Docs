@@ -1,84 +1,168 @@
 # Web App Architecture
 
-The web app should be built with React.js.
-
 Repository: `TrackMe-Web`
 
-The web app should focus on workflows that benefit from larger screens, tables, filters, reports, and management views.
+React 18 + Vite SPA. Single-page application with hash-based routing, no router library.
 
-## Current MVP Web Flows
-
-- Login and register with JWT authentication.
-- Store MVP access token in localStorage.
-- Show authenticated user and role in the sidebar.
-- Create athletes from the dashboard.
-- Create workout programs from the dashboard.
-- Create athlete self-guided programs when no trainer is selected.
-- Log workout sessions from the dashboard and optionally link them to a program.
-- Send trainer-athlete relationship requests.
-- Accept or reject pending relationship requests as an athlete.
-- Send Bearer tokens to API requests.
-
-Trainer users use their `profileId` automatically when creating athletes or programs.
-Athlete users use their own `profileId` automatically when creating self-guided programs.
-
-## Primary Users
-
-- Admin
-- Trainer
-
-Athletes may use the web app later, but the first product priority for athletes is the mobile app.
-
-## Web Responsibilities
-
-- Admin user management
-- Trainer and athlete management
-- Exercise library management
-- Reports and logs
-- Program builder workflows
-- Athlete progress review
-- Notification management
-
-## Suggested Project Structure
+## Actual Project Structure
 
 ```text
 TrackMe-Web/
   src/
-    app/
-    features/
-      auth/
-      dashboard/
-      admin/
-      trainers/
-      athletes/
-      exercises/
-      programs/
-      analytics/
-      notifications/
-    components/
     services/
-      api/
-      auth/
-    routes/
-    store/
-    types/
+      api.js              — all API calls + auth token management
+    components/
+      Modal.jsx
+      Toast.jsx
+      RpeTrendChart.jsx
+      VolumeTrendChart.jsx
+      ConsistencyGrid.jsx
+    views/
+      DashboardView.jsx
+      AthletesView.jsx
+      AthleteDetailView.jsx   — tabs: Overview | Programs | Sessions | Progress
+      ProgramsView.jsx
+      ProgramBuilderView.jsx
+      SessionsView.jsx
+      WorkoutMode.jsx         — full-screen workout overlay
+      ExercisesView.jsx
+      RelationshipsView.jsx
+      BodyMetricsView.jsx
+      ProfileView.jsx
+      AdminView.jsx
+    App.jsx                   — AppInner: all state, nav, handlers, view routing
+    LanguageContext.jsx       — React context: lang, toggleLang, t()
+    i18n.js                   — TR/EN translation strings
+    main.jsx
   public/
+  index.html
 ```
 
-## Web UI Principles
+## Navigation Structure
 
-- Prioritize dense but readable management screens.
-- Use tables, filters, search, tabs, and detail panels.
-- Keep admin actions auditable and explicit.
-- Avoid marketing-style landing pages inside the app.
-- Keep business logic in the API, not in the web client.
+Navigation is driven by three arrays in `App.jsx`:
 
-## API Integration
+### TRAINER_NAV
+| id            | View               |
+|---------------|--------------------|
+| dashboard     | DashboardView      |
+| athletes      | AthletesView / AthleteDetailView |
+| myPrograms    | ProgramsView + ProgramBuilderView |
+| exercises     | ExercisesView      |
+| relationships | RelationshipsView  |
+| profile       | ProfileView        |
 
-The web app consumes the same `TrackMe-Api` endpoints as the mobile app.
+### ATHLETE_NAV
+| id            | View               |
+|---------------|--------------------|
+| dashboard     | DashboardView      |
+| myProgram     | ProgramsView + ProgramBuilderView |
+| sessions      | SessionsView       |
+| bodyMetrics   | BodyMetricsView    |
+| relationships | RelationshipsView  |
+| profile       | ProfileView        |
 
-Authorization rules remain server-side:
+### ADMIN_NAV
+| id        | View           |
+|-----------|----------------|
+| dashboard | DashboardView  |
+| athletes  | AthletesView   |
+| sessions  | SessionsView   |
+| exercises | ExercisesView  |
+| profile   | ProfileView    |
+| admin     | AdminView      |
 
-- Admin can access platform management.
-- Trainer can access accepted athletes and own programs.
-- Athlete web access, if added later, must stay limited to own data.
+## Routing
+
+- No router library — `window.location.hash` maps to `view` state variable
+- `VALID_VIEWS` set validates hash values on page load and hash change events
+- `navigate(id)` — sets `view`, updates hash, resets builder/athlete state
+
+## State Management
+
+All state lives in `AppInner`. No Redux or Zustand.
+
+### Key state variables
+
+| Variable                  | Type      | Purpose                                        |
+|---------------------------|-----------|------------------------------------------------|
+| `currentUser`             | object    | Authenticated user from `/api/auth/me`         |
+| `uiRole`                  | string    | Display mode: 'Athlete' or 'Trainer'           |
+| `view`                    | string    | Current active view                            |
+| `selectedAthlete`         | object?   | When set, shows AthleteDetailView              |
+| `programBuilderProgramId` | guid?     | When set, shows ProgramBuilderView             |
+| `programBuilderReadOnly`  | bool      | View-only mode for program builder             |
+| `activeWorkoutSession`    | object?   | When set, WorkoutMode overlay is shown         |
+| `athletes`                | array     | All athletes (role-scoped by API)              |
+| `trainerAthletes`         | array     | Trainer's accepted athletes                    |
+| `programs`                | array     | All programs for current user                  |
+| `sessions`                | array     | All sessions for current user                  |
+| `relationships`           | array     | All relationships for current user             |
+| `notifications`           | array     | In-app notifications                           |
+
+### Derived values
+
+| Variable                   | Derived from                                   |
+|----------------------------|------------------------------------------------|
+| `isTrainerUiMode`          | `uiRole === 'Trainer'`                         |
+| `trainerProfileId`         | `currentUser.role === 'Trainer' ? currentUser.profileId : null` |
+| `athleteProfileId`         | `currentUser.role === 'Athlete' ? currentUser.profileId : null` |
+| `athleteOptions`           | `trainerAthletes` if trainer mode, else `athletes` |
+| `navItems`                 | TRAINER_NAV / ATHLETE_NAV / ADMIN_NAV          |
+
+## Auth Flow
+
+1. `api.getAuth()` reads `trackme_auth` from localStorage
+2. On app boot, `api.me()` validates the stored token
+3. On login/register, `api.setAuth(auth)` stores the full auth response
+4. All `api.*` calls include `Authorization: Bearer <token>` header
+5. On 401, token is cleared and user is redirected to login
+6. `uiRole` is read from `trackme_ui_role` localStorage on boot
+
+## LocalStorage Keys
+
+| Key                | Value                                                  |
+|--------------------|--------------------------------------------------------|
+| `trackme_auth`     | JSON: `{ accessToken, refreshToken, user, ... }`       |
+| `trackme_ui_role`  | `'Athlete'` or `'Trainer'`                             |
+| `trackme_dark`     | `'true'` or `'false'`                                  |
+
+## Screen States
+
+| State                               | What renders                          |
+|-------------------------------------|---------------------------------------|
+| `booting === true`                  | Loading splash screen                 |
+| `currentUser === null`              | Auth form (login/register)            |
+| `showOnboarding === true`           | Role selection card                   |
+| Normal                              | Full app shell with sidebar           |
+| `activeWorkoutSession !== null`     | WorkoutMode overlay (full screen)     |
+
+## Internationalization
+
+- `LanguageContext.jsx` provides `lang` ('tr' / 'en'), `toggleLang`, and `t(key)` to all components
+- `i18n.js` exports `{ tr: {...}, en: {...} }` translation maps
+- Language is persisted in localStorage via `LanguageContext`
+
+## API Service (`api.js`)
+
+- `request(path, options)` — base fetch wrapper, injects Bearer token, throws on non-2xx
+- `list(promise)` — unwraps `PagedResult<T>` envelope `{ data, page, pageSize, total }` → array
+- All entity methods use `list()` for paginated list endpoints
+- `api.setAuth(auth)` / `api.getAuth()` / `api.clearAuth()` — localStorage token management
+
+## Component Responsibilities
+
+| Component          | Responsibility                                              |
+|--------------------|-------------------------------------------------------------|
+| `DashboardView`    | Stats cards for trainer or athlete based on `uiRole`        |
+| `AthletesView`     | Athlete list, create athlete, navigate to AthleteDetailView |
+| `AthleteDetailView`| Tabs: Overview, Programs, Sessions, Progress for one athlete |
+| `ProgramsView`     | Program cards list, create program, open builder/viewer     |
+| `ProgramBuilderView` | Day + exercise editor (read/write) for a program          |
+| `WorkoutMode`      | Full-screen set-by-set workout logging overlay              |
+| `SessionsView`     | Session history list, manual session log form               |
+| `BodyMetricsView`  | 9-field measurement form, weight/fat/muscle trend charts    |
+| `RelationshipsView`| Send requests, accept/reject pending, search users          |
+| `ExercisesView`    | Exercise library list, create/delete                        |
+| `AdminView`        | User management, exercise audit (Admin role only)           |
+| `ProfileView`      | Update name, bio, goal, change password                     |
