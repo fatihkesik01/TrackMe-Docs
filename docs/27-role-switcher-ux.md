@@ -67,15 +67,47 @@ After login, a compact pill toggle appears in the topbar (next to the language b
 | Nav: Şablonlar | hidden | visible |
 | Nav: Egzersizler | hidden | visible |
 | Nav: Vücut ölçüleri | visible | hidden |
-| API authorization | unchanged (JWT role) | unchanged (JWT role) |
+| Athlete dropdown in Programs | locked to own profile | shows accepted athletes |
+| Athlete dropdown in Sessions | locked to own profile | shows accepted athletes |
+| Program delete / builder buttons | hidden | visible |
+| Athlete row shortcuts | — | Programs + Sessions quick-nav icons |
 
-> **Note:** The role switch is a **client-side UI preference only**. It does not change the
-> user's JWT role or backend access rights. A true role change is not supported — users
-> register once with a fixed backend role.
+---
 
-### On mobile (≤ 480px)
+## Dual-Role Backend Behavior
 
-Labels are hidden, only icons are shown in the toggle to save space.
+When an Athlete-JWT user switches to Trainer uiMode, certain API endpoints perform
+**email-based trainer entity resolution** — the backend looks for a `Trainer` row whose
+`Email` matches the caller's JWT email claim.
+
+This enables Athlete-JWT users to act as trainers without re-issuing a new JWT:
+
+| Endpoint | Dual-role behavior |
+|---|---|
+| `GET /api/trainers/me/athletes` | Resolves trainer by email for any JWT role |
+| `GET /api/programs` | Also returns programs where caller's trainer entity is assigned |
+| `POST /api/programs` | Auto-resolves / lazily creates trainer entity; validates accepted relationship |
+| `DELETE /api/programs/{id}` | Email fallback: allows deletion if trainer entity email matches |
+
+The trainer entity is lazily created on the first program creation if it does not yet exist.
+
+> **Note:** JWT role and `profileId` claim are unchanged by the mode switch. The backend
+> does not know about `uiRole` — it derives dual-role intent purely from context (e.g.,
+> creating a program for an athlete other than yourself).
+
+### Frontend computed values (App.jsx)
+
+| Variable | Formula | Purpose |
+|---|---|---|
+| `trainerProfileId` | `role === 'Trainer' ? profileId : null` | Non-null only for Trainer-JWT |
+| `athleteProfileId` | `role === 'Athlete' ? profileId : null` | Non-null only for Athlete-JWT |
+| `isTrainerUiMode` | `uiRole === 'Trainer'` | Drives trainer-specific UI |
+| `isActingAsAthlete` | `uiRole !== 'Trainer' && Boolean(athleteProfileId)` | Locks athlete fields |
+| `athleteOptions` | `(trainerProfileId \|\| isTrainerUiMode) ? trainerAthletes : athletes` | Dropdown source |
+
+In Trainer uiMode when the JWT role is Athlete (`trainerProfileId == null`), the frontend
+looks up the caller's trainer entity from the `trainers` list by email to obtain the correct
+`trainerId` for program creation.
 
 ---
 
