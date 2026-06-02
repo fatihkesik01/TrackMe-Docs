@@ -12,6 +12,7 @@ PostgreSQL 16 managed by EF Core 10 code-first migrations. The schema is the sou
 | email               | varchar(220) | unique index, required               |
 | password_hash       | varchar(500) | PBKDF2 hash                          |
 | role                | varchar(40)  | Admin / Trainer / Athlete            |
+| preferred_ui_role   | varchar(20)  | nullable — Athlete / Trainer; set at onboarding, changeable from topbar |
 | is_active           | bool         |                                      |
 | email_verified_at   | timestamptz  | nullable                             |
 | created_at          | timestamptz  | UTC                                  |
@@ -87,7 +88,7 @@ Unique index on `(trainer_id, athlete_id)`.
 
 Unique index on `(slug, owner_id)`.
 
-**Library size:** 130+ global exercises across 13 categories seeded on first startup.
+**Library size:** 141 global exercises across 13 categories seeded on first startup.
 
 ### workout_programs
 | Column      | Type         | Notes                                          |
@@ -111,7 +112,7 @@ Unique index on `(slug, owner_id)`.
 | notes      | varchar(1000)| nullable                                  |
 | created_at | timestamptz  |                                           |
 
-Unique index on `(program_id, day_number)`.
+Non-unique index on `(program_id, day_number)` — multiple workout days can share the same day number (multiple workouts on the same calendar date is allowed, Phase 18).
 
 ### workout_program_exercises
 | Column           | Type              | Notes                         |

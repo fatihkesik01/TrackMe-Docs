@@ -27,7 +27,7 @@ TrackMe-Api/
         NotificationEndpoints.cs
         AdminEndpoints.cs
         EndpointHelpers.cs       — shared access-check helpers
-      Migrations/                — EF Core migration files (10 migrations)
+      Migrations/                — EF Core migration files (22 migrations)
       Models/
         AppUser.cs
         Athlete.cs
@@ -108,7 +108,8 @@ TrackMe-Api/
     "profileId": "...",
     "fullName": "...",
     "email": "...",
-    "role": "Athlete"
+    "role": "Athlete",
+    "preferredUiRole": "Athlete"
   }
 }
 ```
@@ -151,35 +152,39 @@ All write and read endpoints follow this pattern:
 ## Key Patterns
 
 ### ExerciseSeeder
-- Runs on startup if no global exercises exist
-- Seeds 130+ exercises across 13 categories: Chest, Back, Shoulders, Arms, Legs, Glutes, Core, Cardio, Functional, Full Body, Mobility, Stretching
+- Runs on startup if no global exercises exist (`AnyAsync(e => e.IsGlobal)` guard)
+- Seeds 141 exercises across 13 categories: Chest, Back, Shoulders, Arms, Legs, Glutes, Core, Cardio, Functional, Full Body, Mobility, Stretching
 - Every seeded exercise has a `Difficulty` value (Easy / Medium / Hard)
+- Wrapped in try-catch in `Program.cs`; failure is logged but does not crash the app
+- `Program.cs` logs exercise count before/after seeding for diagnostics
 
 ### CheckProgramWriteAccess (ProgramEndpoints.cs)
 Athletes can only write to programs where `TrainerId == null` (self-guided). If a trainer created the program (`TrainerId != null`), athletes receive 403. Trainer entities resolved by email for dual-role users.
 
 ## Migrations
 
-19 EF Core migrations in order:
+22 EF Core migrations in order:
 
-| #  | Name                                    |
-|----|-----------------------------------------|
-|  1 | InitialCreate                           |
-|  2 | AddIdentityFoundation                   |
-|  3 | AllowSelfGuidedPrograms                 |
-|  4 | AddTrainerAthleteRelationships          |
-|  5 | AddExerciseLibrary                      |
-|  6 | AddSessionExerciseTracking              |
-|  7 | AddProgramStructure                     |
-|  8 | Phase2_ProfileBioAndNotifications       |
-|  9 | Phase2_RelationshipInitiator            |
-| 10 | Phase3TemplatesAnalyticsAuth            |
-| 11 | Phase3AnalyticsIndexes                  |
-| 12 | Phase6_BodyMetricsClassesMarketplace    |
-| 13 | Phase7_ExerciseOwnership                |
-| 14 | Phase8_WorkoutMode                      |
-| 15 | Phase8b_RepsAsString                    |
-| 16 | Phase9_TargetWeightAndPlannedFields     |
-| 17 | Phase12_TrainerNoteOnSessionExercise    |
-| 18 | Phase15_BodyMetricsExtendedFields       |
-| 19 | Phase16_ExerciseDifficulty              |
+| #  | Name                                        | Key change                                        |
+|----|---------------------------------------------|---------------------------------------------------|
+|  1 | InitialCreate                               |                                                   |
+|  2 | AddIdentityFoundation                       |                                                   |
+|  3 | AllowSelfGuidedPrograms                     |                                                   |
+|  4 | AddTrainerAthleteRelationships              |                                                   |
+|  5 | AddExerciseLibrary                          |                                                   |
+|  6 | AddSessionExerciseTracking                  |                                                   |
+|  7 | AddProgramStructure                         |                                                   |
+|  8 | Phase2_ProfileBioAndNotifications           |                                                   |
+|  9 | Phase2_RelationshipInitiator                |                                                   |
+| 10 | Phase3TemplatesAnalyticsAuth                |                                                   |
+| 11 | Phase3AnalyticsIndexes                      |                                                   |
+| 12 | Phase6_BodyMetricsClassesMarketplace        |                                                   |
+| 13 | Phase7_ExerciseOwnership                    |                                                   |
+| 14 | Phase8_WorkoutMode                          |                                                   |
+| 15 | Phase8b_RepsAsString                        |                                                   |
+| 16 | Phase9_TargetWeightAndPlannedFields         |                                                   |
+| 17 | Phase12_TrainerNoteOnSessionExercise        |                                                   |
+| 18 | Phase15_BodyMetricsExtendedFields           |                                                   |
+| 19 | Phase16_ExerciseDifficulty                  | adds `difficulty` to exercises                    |
+| 20 | Phase17_UserPreferredUiRole                 | adds `preferred_ui_role` to users                 |
+| 21 | Phase18_AllowMultipleDaysPerDate            | drops unique index on (program_id, day_number)    |

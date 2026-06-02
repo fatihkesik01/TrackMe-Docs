@@ -21,12 +21,13 @@ All endpoints under `/api/` require JWT Bearer authentication unless marked as p
 |--------|---------------------------|----------|------------|------------------------------------------|
 | POST   | /api/auth/register         | Public   |            | Register new user, returns auth response |
 | POST   | /api/auth/login            | Public   | 10/min/IP  | Login, returns auth response             |
-| GET    | /api/auth/me               | Required |            | Returns current user from JWT claims     |
+| GET    | /api/auth/me               | Required |            | Returns current user from DB (includes `preferredUiRole`) |
 | POST   | /api/auth/refresh          | Public   |            | Rotate refresh token, returns new auth   |
 | POST   | /api/auth/logout           | Public   |            | Revoke refresh token                     |
 | POST   | /api/auth/forgot-password  | Public   |            | Generate reset token (dev: returned)     |
 | POST   | /api/auth/reset-password   | Public   |            | Reset password with token                |
 | PATCH  | /api/auth/profile          | Required |            | Update full_name, bio, goal              |
+| PATCH  | /api/auth/preferred-role   | Required |            | Set preferred UI role (Athlete/Trainer)  |
 | POST   | /api/auth/change-password  | Required |            | Change password, revokes all sessions    |
 
 ### Register request
@@ -252,7 +253,7 @@ Pre-populates exercises from the program day. Returns full session detail DTO.
 | GET    | /api/analytics/athletes/{athleteId}/consistency                   | Required | Session counts and current streak            |
 | GET    | /api/analytics/athletes/{athleteId}/sessions-by-month             | Required | Monthly session counts over `?months=12`     |
 | GET    | /api/analytics/athletes/{athleteId}/body-trend                    | Required | Body metric trend over `?days=90`            |
-| GET    | /api/analytics/athletes/{athleteId}/exercises/{exerciseId}/last-performance | Required | Last logged sets for an exercise |
+| GET    | /api/analytics/athletes/{athleteId}/exercises/{exerciseId}/last-performance | Required | Last logged sets + plannedSets/plannedReps/plannedWeightKg for planned vs actual comparison |
 | GET    | /api/analytics/trainers/me/overview                               | Required | Trainer overview: athlete count, active programs, weekly sessions, avg RPE |
 | GET    | /api/programs/{programId}/compliance                              | Required | Program completion rate per day              |
 

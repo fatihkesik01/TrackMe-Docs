@@ -18,6 +18,7 @@ TrackMe-Web/
       VolumeTrendChart.jsx
       ConsistencyGrid.jsx  — thin wrapper, delegates to WorkoutCalendar
       WorkoutCalendar.jsx  — monthly grid calendar with session dot indicators
+      DatePicker.jsx       — custom date picker: react-day-picker@8 + portal rendering (createPortal + position:fixed)
     views/
       DashboardView.jsx
       AthletesView.jsx
@@ -118,7 +119,10 @@ All state lives in `AppInner`. No Redux or Zustand.
 3. On login/register, `api.setAuth(auth)` stores the full auth response
 4. All `api.*` calls include `Authorization: Bearer <token>` header
 5. On 401, token is cleared and user is redirected to login
-6. `uiRole` is read from `trackme_ui_role` localStorage on boot
+6. `uiRole` is sourced from `currentUser.preferredUiRole` returned by `/api/auth/me`
+7. If `preferredUiRole` is null after login/register, onboarding role-selection screen is shown
+8. Role selection saves to backend via `PATCH /api/auth/preferred-role` and caches in localStorage
+9. Changing role from topbar shows `window.confirm` dialog, then calls backend + `loadData()`
 
 ## LocalStorage Keys
 
@@ -159,7 +163,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `AthletesView`       | Athlete list, create athlete, navigate to AthleteDetailView                    |
 | `AthleteDetailView`  | Tabs: Overview, Programs, Sessions, Progress for one athlete                   |
 | `ProgramsView`       | Full-width program row list, create program (w/ duration selector), open builder/viewer |
-| `ProgramBuilderView` | Day + exercise editor (read/write) for a program                               |
+| `ProgramBuilderView` | Day + exercise editor (read/write); includes `ProgramCalendar` full-width below the layout showing program days (teal dots) and completed sessions (green dots); clicking a date opens the add-day form pre-filled; `LastPerfBanner` per exercise row shows per-set actual vs planned |
 | `WorkoutMode`        | Full-screen workout overlay; prev/next nav and dots inside the exercise card   |
 | `SessionsView`       | Session history (list or calendar view toggle), manual session log form        |
 | `BodyMetricsView`    | 9-field measurement form, weight/fat/muscle trend charts                       |
@@ -178,13 +182,13 @@ Programs are displayed as full-width row cards (`program-row-card`) in both `Pro
 
 Both `ProgramsView` and `AthleteDetailView` include a duration selector:
 
-| Selection        | Behaviour                                                   |
-|------------------|-------------------------------------------------------------|
-| Haftalık (7 gün) | `endsOn` = `startsOn` + 7 days, auto-updated on date change |
-| Aylık (30 gün)   | `endsOn` = `startsOn` + 30 days, auto-updated on date change |
-| Özel Tarih       | User picks both start and end dates manually                |
+| Selection  | Count input | Behaviour                                                        |
+|------------|-------------|------------------------------------------------------------------|
+| Haftalık   | "Kaç hafta?" (default 1) | `endsOn` = `startsOn` + count×7 days         |
+| Aylık      | "Kaç ay?" (default 1)    | `endsOn` = `startsOn` + count×30 days        |
+| Özel Tarih | —           | User picks both start and end dates manually                     |
 
-Default: `startsOn` = today, `duration` = Haftalık.
+Default: `startsOn` = today, `duration` = Haftalık, `count` = 1.
 
 ## Program Edit Permissions (Frontend)
 

@@ -84,7 +84,15 @@ Roles are fixed at registration and can only be changed by an Admin via `PUT /ap
 
 An account registered as `Athlete` can also function as a `Trainer` if:
 - A `trainers` row with the same email exists (created lazily by `UserProfileSync.EnsureTrainerEntityAsync`)
-- The frontend `uiRole` is set to `'Trainer'`
+- The user's `preferredUiRole` is `'Trainer'` (stored in `users.preferred_ui_role`, synced to frontend as `currentUser.preferredUiRole`)
+
+### Preferred UI Role
+
+- Set during onboarding (first login after registration) or changed from the topbar toggle
+- Persisted server-side via `PATCH /api/auth/preferred-role { "role": "Athlete" | "Trainer" }`
+- `/api/auth/me` reads from DB (not JWT) to always return the latest value
+- Changing role from the topbar shows a `window.confirm` dialog before calling the backend
+- Also cached in `localStorage['trackme_ui_role']` for fast initial render
 
 The JWT still says `role: "Athlete"`. The backend resolves the trainer entity by email in any endpoint that needs to act in trainer context:
 
