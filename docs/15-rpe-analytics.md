@@ -79,4 +79,4 @@ completed_workouts / planned_workouts
 - Use completed workouts by default.
 - Exclude cancelled workouts.
 - Clearly mark estimated metrics.
-- Do not compare incompatible measurement types as if they were identical.
+- Do not compare incomplete set data as if it were complete logged performance.

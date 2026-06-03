@@ -33,6 +33,6 @@ Converts workout history into useful progress and coaching insight.
 
 - Use completed workouts by default.
 - Exclude cancelled sessions.
-- Respect measurement type when calculating metrics.
+- Calculate volume from logged reps and weight fields; skip incomplete or missing set data.
 - Trainers can analyze only accepted athletes.
 - Athletes can analyze only own data.

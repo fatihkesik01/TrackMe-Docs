@@ -11,7 +11,7 @@ Maintains the centralized exercise library.
 - Prevent duplicate exercise names
 - Soft-delete exercises
 - Search and filter exercises
-- Provide measurement type metadata
+- Provide category, muscle, equipment, difficulty, and instruction metadata
 
 ## Main Entity
 
@@ -50,4 +50,4 @@ Maintains the centralized exercise library.
 - Exercises used by historical workouts should not be hard deleted.
 - Admin and trainer users can manage exercises.
 - Athlete users can read active exercises.
-- Day 4 stores muscles and equipment as text fields until structured taxonomy is needed.
+- Muscles, equipment, and instructions are stored as editable text fields until a structured taxonomy is needed.

@@ -35,5 +35,5 @@ Stores actual performed workouts and set-level training history.
 - Athlete can create sessions only for self.
 - Completed sessions are analytics source data.
 - Workout end time cannot be before start time.
-- Set fields must match exercise measurement type.
+- Set logs use reps, weight, RPE, completion state, and optional notes.
 - Historical exercise name snapshot should be stored.

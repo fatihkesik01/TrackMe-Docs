@@ -2,7 +2,7 @@
 
 Repository: `TrackMe-Api`
 
-ASP.NET Core 10 Minimal API. Single deployable project: all endpoints, services, models, and data access live in `TrackMe.Api`.
+ASP.NET Core Minimal API. The API is a single deployable project: endpoints, services, models, migrations, and data access all live under `src/TrackMe.Api`.
 
 ## Actual Project Structure
 
@@ -11,8 +11,8 @@ TrackMe-Api/
   src/
     TrackMe.Api/
       Data/
-        TrackMeDbContext.cs      — DbContext + OnModelCreating (all table/column config)
-        ExerciseSeeder.cs        — seeds global exercise library on startup
+        TrackMeDbContext.cs      - DbContext and all table/column configuration
+        ExerciseSeeder.cs        - global exercise library seed data
       Endpoints/
         AuthEndpoints.cs
         UserEndpoints.cs
@@ -26,77 +26,104 @@ TrackMe-Api/
         BodyMetricEndpoints.cs
         NotificationEndpoints.cs
         AdminEndpoints.cs
-        EndpointHelpers.cs       — shared access-check helpers
-      Migrations/                — EF Core migration files (22 migrations)
+        EndpointHelpers.cs
+        TemplateEndpoints.cs     - retained helper/API file; routes not registered
+        ClassEndpoints.cs        - routes not registered
+        MarketplaceEndpoints.cs  - routes not registered
+      Migrations/
       Models/
         AppUser.cs
         Athlete.cs
         Trainer.cs
         TrainerAthleteRelationship.cs
+        Exercise.cs
         WorkoutProgram.cs
         WorkoutProgramDay.cs
         WorkoutProgramExercise.cs
         WorkoutSession.cs
         WorkoutSessionExercise.cs
         WorkoutSetLog.cs
-        Exercise.cs
         BodyMetric.cs
         AppNotification.cs
         RefreshToken.cs
         PasswordResetToken.cs
-        ProgramTemplate.cs       — schema exists, no active endpoints
-        TrainingClass.cs         — schema exists, no active endpoints
-        TemplatePurchase.cs      — schema exists, no active endpoints
-        UserIntegration.cs       — schema exists, no active endpoints
-        Enums.cs                 — UserRole, RelationshipStatus, SessionStatus, NotificationType
-        Dtos.cs                  — all request/response record types
+        ProgramTemplate.cs       - inactive schema
+        TrainingClass.cs         - inactive schema
+        TemplatePurchase.cs      - inactive schema
+        UserIntegration.cs       - inactive schema
+        Enums.cs
+        Dtos.cs
       Services/
-        JwtTokenService.cs       — token generation + CreateAuthResponse
-        PasswordHasher.cs        — PBKDF2 hash + verify
-        UserProfileSync.cs       — EnsureProfileAsync, EnsureTrainerEntityAsync, EnsureAthleteEntityAsync
-        ClaimsReader.cs          — IsRole, GetProfileId, GetEmail helpers
-        RelationshipQueries.cs   — ToDto projection for relationships
-        SlugGenerator.cs         — exercise slug generation
-        InputValidator.cs        — email format validation
-        RefreshTokenCleanupService.cs — background IHostedService
-      Program.cs                 — DI, middleware, startup
+        JwtTokenService.cs
+        PasswordHasher.cs
+        UserProfileSync.cs
+        ClaimsReader.cs
+        RelationshipQueries.cs
+        SlugGenerator.cs
+        InputValidator.cs
+        RefreshTokenCleanupService.cs
+      Program.cs
 ```
+
+## Registered Endpoint Groups
+
+`Program.cs` currently registers these endpoint groups:
+
+```text
+Auth
+Users
+Trainers
+Athletes
+Relationships
+Exercises
+Programs
+Sessions
+Analytics
+Notifications
+Admin
+BodyMetrics
+```
+
+`TemplateEndpoints`, `ClassEndpoints`, and `MarketplaceEndpoints` remain in the repository but are not mapped in `Program.cs`. Template helper logic is still referenced by program creation when a `templateId` is supplied.
 
 ## Key Services
 
 ### JwtTokenService
-- `CreateAuthResponse(user, profileId, rawRefreshToken)` — returns `AuthResponse` with access token, refresh token, and user DTO
-- Access token claims: `user_id`, `profile_id`, `name`, `email`, `role`
+
+- Creates access tokens and refresh-token auth responses.
+- Access token claims include `user_id`, `profile_id`, `name`, `email`, and `role`.
 
 ### UserProfileSync
-- `EnsureProfileAsync` — creates matching Athlete or Trainer profile row on register/login if missing
-- `EnsureTrainerEntityAsync` — lazily creates Trainer profile for any non-admin user (used in relationships and program creation)
-- `EnsureAthleteEntityAsync` — lazily creates Athlete profile for any non-admin user
+
+- Ensures matching Athlete or Trainer profile rows for registered users.
+- Lazily creates trainer/athlete entities for dual-role flows when needed.
 
 ### ClaimsReader
-- `IsRole(principal, role)` — checks JWT `role` claim
-- `GetProfileId(principal)` — reads `profile_id` claim as `Guid?`
-- `GetEmail(principal)` — reads `email` claim
+
+- Reads role, email, and profile id from the current principal.
+- Centralizes claim parsing for endpoint access checks.
 
 ### EndpointHelpers
-- `HasAcceptedRelationshipAsync(db, trainerId, athleteId)` — checks for an accepted relationship row
-- `ValidateProgramWriteAccessAsync` — access check for program creation
-- `ValidateSessionWriteAccessAsync` — access check for session creation
-- `QueueNotificationAsync(db, recipientEmail, type, title, body)` — creates `AppNotification` record
+
+- Checks accepted trainer-athlete relationships.
+- Validates program/session write access.
+- Queues notification records.
 
 ## Response Shapes
 
-### Paginated list
+### Paginated List
+
 ```json
 {
-  "data": [...],
+  "data": [],
   "page": 1,
   "pageSize": 20,
-  "total": 54
+  "total": 0
 }
 ```
 
-### Auth response
+### Auth Response
+
 ```json
 {
   "accessToken": "...",
@@ -114,77 +141,78 @@ TrackMe-Api/
 }
 ```
 
-### Error response
+### Error Response
+
 ```json
-{ "message": "description of the error." }
+{ "message": "description of the error" }
 ```
 
-### Unhandled exception
-```json
-{ "message": "An unexpected error occurred. Please try again later.", "traceId": "..." }
-```
-
-## HTTP Status Codes
-
-| Code | Meaning                                |
-|------|----------------------------------------|
-| 200  | OK                                     |
-| 201  | Created (with Location header)         |
-| 204  | No Content (delete success)            |
-| 400  | Bad Request (validation failure)       |
-| 401  | Unauthorized (missing/invalid JWT)     |
-| 403  | Forbidden (role or ownership failure)  |
-| 404  | Not Found                              |
-| 409  | Conflict (duplicate or wrong state)    |
-| 429  | Too Many Requests (rate limited)       |
-| 500  | Internal Server Error                  |
+Unhandled exceptions return a generic message plus `traceId`.
 
 ## Access Control Pattern
 
-All write and read endpoints follow this pattern:
+Endpoint access checks follow the same general order:
 
-1. Extract `profileId` and `email` from JWT claims
-2. For Trainer role: check `HasAcceptedRelationshipAsync` against the target athlete
-3. For Athlete role: check `profileId == target.AthleteId`
-4. For dual-role Athlete-JWT acting as trainer: resolve trainer entity by email, then check relationship
-5. For Admin: bypass all ownership checks
+1. Read caller profile id, email, and role from JWT claims.
+2. Allow Admin for platform-wide operations.
+3. For Trainer operations, validate accepted relationship against the target athlete.
+4. For Athlete operations, validate ownership of the target athlete profile.
+5. For dual-role Athlete-JWT users, resolve the trainer entity by email when a trainer-scoped flow needs it.
 
-## Key Patterns
+## Key Runtime Patterns
 
-### ExerciseSeeder
-- Runs on startup if no global exercises exist (`AnyAsync(e => e.IsGlobal)` guard)
-- Seeds 141 exercises across 13 categories: Chest, Back, Shoulders, Arms, Legs, Glutes, Core, Cardio, Functional, Full Body, Mobility, Stretching
-- Every seeded exercise has a `Difficulty` value (Easy / Medium / Hard)
-- Wrapped in try-catch in `Program.cs`; failure is logged but does not crash the app
-- `Program.cs` logs exercise count before/after seeding for diagnostics
+### Exercise Seeding
 
-### CheckProgramWriteAccess (ProgramEndpoints.cs)
-Athletes can only write to programs where `TrainerId == null` (self-guided). If a trainer created the program (`TrainerId != null`), athletes receive 403. Trainer entities resolved by email for dual-role users.
+- Runs on startup if no global exercises exist.
+- Seeds 141 global exercises across the active category set.
+- Seed failures are logged and do not crash API startup.
+
+### Program Write Access
+
+- Trainers can write programs they own.
+- Athletes can write only self-guided programs where `trainerId` is null.
+- Dual-role Athlete-JWT callers can act through their trainer entity by email resolution.
+
+### Session History Preservation
+
+- Program deletion cascades program days/exercises.
+- Historical sessions keep their records; `program_id` and `program_day_id` are nullable where needed.
+- Session exercises store planned snapshots so later program edits do not rewrite history.
 
 ## Migrations
 
-22 EF Core migrations in order:
+25 EF Core migrations are present:
 
-| #  | Name                                        | Key change                                        |
-|----|---------------------------------------------|---------------------------------------------------|
-|  1 | InitialCreate                               |                                                   |
-|  2 | AddIdentityFoundation                       |                                                   |
-|  3 | AllowSelfGuidedPrograms                     |                                                   |
-|  4 | AddTrainerAthleteRelationships              |                                                   |
-|  5 | AddExerciseLibrary                          |                                                   |
-|  6 | AddSessionExerciseTracking                  |                                                   |
-|  7 | AddProgramStructure                         |                                                   |
-|  8 | Phase2_ProfileBioAndNotifications           |                                                   |
-|  9 | Phase2_RelationshipInitiator                |                                                   |
-| 10 | Phase3TemplatesAnalyticsAuth                |                                                   |
-| 11 | Phase3AnalyticsIndexes                      |                                                   |
-| 12 | Phase6_BodyMetricsClassesMarketplace        |                                                   |
-| 13 | Phase7_ExerciseOwnership                    |                                                   |
-| 14 | Phase8_WorkoutMode                          |                                                   |
-| 15 | Phase8b_RepsAsString                        |                                                   |
-| 16 | Phase9_TargetWeightAndPlannedFields         |                                                   |
-| 17 | Phase12_TrainerNoteOnSessionExercise        |                                                   |
-| 18 | Phase15_BodyMetricsExtendedFields           |                                                   |
-| 19 | Phase16_ExerciseDifficulty                  | adds `difficulty` to exercises                    |
-| 20 | Phase17_UserPreferredUiRole                 | adds `preferred_ui_role` to users                 |
-| 21 | Phase18_AllowMultipleDaysPerDate            | drops unique index on (program_id, day_number)    |
+| # | Name | Key change |
+|---|------|------------|
+| 1 | InitialCreate | Initial schema |
+| 2 | AddIdentityFoundation | Users, auth foundation |
+| 3 | AllowSelfGuidedPrograms | Nullable trainer programs |
+| 4 | AddTrainerAthleteRelationships | Relationship table |
+| 5 | AddExerciseLibrary | Exercise library |
+| 6 | AddSessionExerciseTracking | Session exercise/set tracking |
+| 7 | AddProgramStructure | Program days and exercises |
+| 8 | Phase2_ProfileBioAndNotifications | Profile fields and notifications |
+| 9 | Phase3TemplatesAnalyticsAuth | Template schema and auth additions |
+| 10 | Phase3AnalyticsIndexes | Analytics indexes |
+| 11 | Phase2_RelationshipInitiator | Relationship direction |
+| 12 | Phase6_BodyMetricsClassesMarketplace | Body metrics and inactive platform schema |
+| 13 | Phase7_ExerciseOwnership | Global/private exercises |
+| 14 | Phase8_WorkoutMode | Active workout mode fields |
+| 15 | Phase8b_RepsAsString | Program reps as string |
+| 16 | Phase9_TargetWeightAndPlannedFields | Target/planned values |
+| 17 | Phase12_TrainerNoteOnSessionExercise | Trainer review note |
+| 18 | Phase15_BodyMetricsExtendedFields | Extended body metrics |
+| 19 | Phase16_ExerciseDifficulty | Exercise difficulty |
+| 20 | Phase17_UserPreferredUiRole | Preferred UI role |
+| 21 | Phase18_AllowMultipleDaysPerDate | Non-unique program day number |
+| 22 | Phase19_AthleteFeaturedExercise | Athlete featured exercise |
+| 23 | Phase20_AthleteFeaturedSession | Athlete featured session |
+| 24 | Phase21_SessionDayLinkAndReschedule | Session day link and rescheduled dates |
+| 25 | Phase3_SessionProgramCascadeDelete | Preserve sessions when programs are deleted |
+
+## Migration Rules
+
+- Generate migrations with the EF CLI; do not hand-write migration files.
+- Column names are configured as snake_case in `TrackMeDbContext`.
+- Production applies migrations at API startup with `db.Database.MigrateAsync()`.
