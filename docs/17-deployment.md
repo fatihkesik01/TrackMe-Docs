@@ -70,8 +70,16 @@ API deploy rebuilds and restarts the API container. The workflow does not run `d
 
 Both deploy workflows remove unused Docker images and build cache after restarting containers:
 
-- `docker image prune -af`
-- `docker builder prune -f`
+- `docker image prune -af --filter "until=24h"`
+- `docker builder prune -f --filter "until=24h"`
+
+The API and Web repositories have separate GitHub Actions workflows, so both can be triggered close together. To avoid concurrent Docker builds/prunes on the VPS, each workflow takes the same VPS-level lock before deployment:
+
+```text
+/tmp/trackme-deploy.lock
+```
+
+SSH deploy uses multiple connection attempts and a longer connect timeout because GitHub-hosted runner networking can occasionally fail before authentication.
 
 Required GitHub Actions secrets:
 
