@@ -45,8 +45,9 @@ All columns use **snake_case** (e.g. `featured_exercise_id`), configured via `Ha
 1. Add property to the model class
 2. Add `HasColumnName("snake_case_name")` + FK/index config to `TrackMeDbContext.OnModelCreating()`
 3. Run `dotnet ef migrations add Phase<N>_<Description> --project .\src\TrackMe.Api\TrackMe.Api.csproj`
-4. Commit all three generated files
-5. Push — migration applies automatically on next startup
+4. Run `dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj` against the local development database
+5. Commit all three generated files plus the model/DbContext changes
+6. Push — production migrations apply automatically on next API startup
 
 ## Local Workflow
 
@@ -54,7 +55,7 @@ All columns use **snake_case** (e.g. `featured_exercise_id`), configured via `Ha
 # Add migration
 dotnet ef migrations add <Name> --project .\src\TrackMe.Api\TrackMe.Api.csproj
 
-# Apply locally (optional — startup also applies it)
+# Apply locally
 dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
 ```
 
@@ -63,6 +64,8 @@ dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
 - **Never write migration files manually** — always use `dotnet ef migrations add`
 - Do not edit production database structure manually (except as emergency hotfix, documented)
 - Review generated migrations before commit
+- Apply migrations locally before pushing schema changes
+- Do not run `dotnet ef database update` in GitHub Actions or directly on the VPS for normal deploys
 - Keep destructive migrations explicit and planned
 - Back up production data before schema changes
 

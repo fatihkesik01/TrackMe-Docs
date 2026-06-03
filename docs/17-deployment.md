@@ -57,7 +57,7 @@ Browser -> TrackMe Web container :8080
 - Secrets must not be committed.
 - Database backups must be scheduled.
 - Logs must be retained.
-- EF Core migrations should run in a controlled deployment step.
+- EF Core migrations must be generated and applied locally before push; production applies committed migrations at API startup.
 - Production CORS settings must be restrictive.
 
 ## Auto Deploy
@@ -66,7 +66,12 @@ Browser -> TrackMe Web container :8080
 
 The workflows SSH into the VPS as the `deploy` user, update the repository under `/opt/trackme`, rebuild Docker images, and restart containers.
 
-API deploy also runs EF Core migrations before rebuilding the API container.
+API deploy rebuilds and restarts the API container. The workflow does not run `dotnet ef` on the VPS; committed EF Core migrations are applied by API startup via `db.Database.MigrateAsync()`.
+
+Both deploy workflows remove unused Docker images and build cache after restarting containers:
+
+- `docker image prune -af`
+- `docker builder prune -f`
 
 Required GitHub Actions secrets:
 
