@@ -28,6 +28,11 @@ Browser -> TrackMe Web container :8080
        -> TrackMe API container :5050 -> PostgreSQL container
 ```
 
+The Web container proxies both REST and realtime traffic to the API container on the shared Docker network:
+
+- `/api/` -> `trackme-api:8080/api/`
+- `/hubs/` -> `trackme-api:8080/hubs/` for SignalR notifications
+
 ## Environment Variables
 
 - ASPNETCORE_ENVIRONMENT

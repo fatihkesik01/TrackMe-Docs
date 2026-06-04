@@ -11,6 +11,7 @@ TrackMe-Web/
   src/
     services/
       api.js              — all API calls + auth token management
+      realtime.js         — SignalR notification hub connection
     components/
       Modal.jsx
       Toast.jsx
@@ -154,6 +155,14 @@ All state lives in `AppInner`. No Redux or Zustand.
 - `list(promise)` — unwraps `PagedResult<T>` envelope `{ data, page, pageSize, total }` → array
 - All entity methods use `list()` for paginated list endpoints
 - `api.setAuth(auth)` / `api.getAuth()` / `api.clearAuth()` — localStorage token management
+
+## Realtime Notifications
+
+- `realtime.js` creates the SignalR connection to `/hubs/notifications`
+- The connection uses the stored JWT access token via `accessTokenFactory`
+- The Web app listens for `notification.created`
+- Incoming notifications are added to `notifications` state and surfaced with a toast
+- `/api/notifications` remains the recovery path on boot/reconnect or manual refresh
 
 ## Component Responsibilities
 

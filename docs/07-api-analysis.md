@@ -183,6 +183,14 @@ At least one measurement field is required when creating a body metric.
 
 Notification types currently used by the app: `RelationshipRequest`, `RelationshipAccepted`, `ProgramAssigned`.
 
+Realtime Web delivery uses SignalR:
+
+| Hub | Auth | Client event | Description |
+|-----|------|--------------|-------------|
+| `/hubs/notifications` | Required | `notification.created` | Delivers newly-created notifications to the recipient user |
+
+The Web client authenticates the hub connection with the same JWT access token used by REST requests. REST notification endpoints remain the source of truth for initial load and reconnect recovery.
+
 ## Admin (`/api/admin`)
 
 All admin routes require authentication and admin authorization.

@@ -2,15 +2,15 @@
 
 ## Purpose
 
-Manages in-app and push notifications.
+Manages in-app notifications and realtime Web delivery.
 
 ## Responsibilities
 
 - Create notifications
 - Mark notifications as read
-- Send push notifications
+- Deliver active Web notifications through SignalR
 - Store notification history
-- Handle push delivery failure
+- Keep REST endpoints as the source of truth for reconnect recovery
 
 ## Main Entity
 
@@ -18,17 +18,22 @@ Manages in-app and push notifications.
 
 ## Notification Types
 
-- ProgramUpdated
-- WorkoutReminder
-- WorkoutCompleted
-- TrainerNoteAdded
-- AthleteMissedWorkout
-- ConnectionRequestReceived
-- ConnectionRequestAccepted
+- `RelationshipRequest`
+- `RelationshipAccepted`
+- `ProgramAssigned`
 
 ## Business Rules
 
 - Notification belongs to one user.
 - Users can read only own notifications.
-- Push failure must not roll back main transactions.
+- SignalR delivery failure must not roll back main transactions.
 - Important notifications must be stored in-app.
+
+## Realtime Delivery
+
+- Hub: `/hubs/notifications`
+- Auth: JWT bearer token
+- Client event: `notification.created`
+- Server target: `Clients.User(userId)`
+
+Firebase/mobile push is a future enhancement and is not active in the current deployment.
