@@ -14,6 +14,7 @@ TrackMe-Web/
       realtime.js         — SignalR notification hub connection
     components/
       Modal.jsx
+      ConfirmDialog.jsx    — global promise-based confirmation dialog provider built on Modal
       Toast.jsx
       RpeTrendChart.jsx
       VolumeTrendChart.jsx
@@ -123,7 +124,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 6. `uiRole` is sourced from `currentUser.preferredUiRole` returned by `/api/auth/me`
 7. If `preferredUiRole` is null after login/register, onboarding role-selection screen is shown
 8. Role selection saves to backend via `PATCH /api/auth/preferred-role` and caches in localStorage
-9. Changing role from topbar shows `window.confirm` dialog, then calls backend + `loadData()`
+9. Changing role from topbar uses the shared `ConfirmDialog`, then calls backend + `loadData()`
 
 ## LocalStorage Keys
 
@@ -182,6 +183,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `ProfileView`        | Update name, bio, goal, change password                                        |
 | `WorkoutCalendar`    | Monthly calendar via `react-calendar` library; dark theme CSS override; session dot indicators via `tileContent`; green = completed, yellow = in-progress |
 | `ConsistencyGrid`    | Wrapper: shows aggregate stats (streak, 7d, 30d) + WorkoutCalendar            |
+| `ConfirmDialog`      | Shared confirmation modal used for destructive or state-changing actions instead of browser-native confirms |
 
 ## Program List Layout
 
