@@ -22,11 +22,12 @@ erDiagram
 
     exercises ||--o{ workout_program_exercises : planned_in
     exercises ||--o{ workout_session_exercises : logged_in
-    exercises ||--o{ athletes : featured_by
+    exercises ||--o{ athlete_featured_exercises : featured_in
 
     athletes ||--o{ workout_sessions : performs
+    athletes ||--o{ athlete_featured_exercises : owns_featured
     workout_programs ||--o{ workout_sessions : linked_to
-    workout_sessions ||--o{ athletes : featured_session_for
+    workout_sessions ||--o{ athlete_featured_exercises : source_session_for
 
     workout_sessions ||--o{ workout_session_exercises : contains
     workout_session_exercises ||--o{ workout_set_logs : has
@@ -44,6 +45,7 @@ erDiagram
 | notifications | In-app notifications |
 | trainers | Trainer profile entities linked to users by email |
 | athletes | Athlete profile entities linked to users by email |
+| athlete_featured_exercises | Athlete profile showcase exercises, optionally tied to a source session |
 | trainer_athlete_relationships | Coaching access grants |
 | exercises | Global and private exercise library |
 | workout_programs | Trainer-led or self-guided programs |
@@ -80,14 +82,16 @@ exercises.id <- workout_program_exercises.exercise_id
 exercises.id <- workout_session_exercises.exercise_id
 workout_session_exercises.id <- workout_set_logs.session_exercise_id
 
-exercises.id <- athletes.featured_exercise_id
-workout_sessions.id <- athletes.featured_session_id
+athletes.id <- athlete_featured_exercises.athlete_id
+exercises.id <- athlete_featured_exercises.exercise_id
+workout_sessions.id <- athlete_featured_exercises.session_id
 athletes.id <- body_metrics.athlete_id
 ```
 
 ## Notes
 
 - `users` and `trainers`/`athletes` are linked by matching email, not a direct foreign key.
+- `users` stores shared profile fields (`age`, `profession`, `training_years`, `primary_sport`) plus `read_notification_retention_days`, which only controls the Web topbar dropdown.
 - `workout_programs.trainer_id` is nullable; null means self-guided.
 - `workout_programs.is_active = false` marks trainer-created programs as passive after a trainer-athlete relationship is ended. Passive programs remain visible/read-only and are reactivated if the same relationship is accepted again.
 - `workout_sessions.program_id` and `workout_sessions.program_day_id` are nullable so session history survives program/day deletion.

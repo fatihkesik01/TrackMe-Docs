@@ -136,7 +136,12 @@ BodyMetrics
     "fullName": "...",
     "email": "...",
     "role": "Athlete",
-    "preferredUiRole": "Athlete"
+    "preferredUiRole": "Athlete",
+    "age": 28,
+    "profession": "Software developer",
+    "trainingYears": 4,
+    "primarySport": "Fitness",
+    "readNotificationRetentionDays": 3
   }
 }
 ```
@@ -181,7 +186,7 @@ Endpoint access checks follow the same general order:
 
 ## Migrations
 
-25 EF Core migrations are present:
+28 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -210,6 +215,9 @@ Endpoint access checks follow the same general order:
 | 23 | Phase20_AthleteFeaturedSession | Athlete featured session |
 | 24 | Phase21_SessionDayLinkAndReschedule | Session day link and rescheduled dates |
 | 25 | Phase3_SessionProgramCascadeDelete | Preserve sessions when programs are deleted |
+| 26 | EndRelationshipDeactivatePrograms | Ended relationships deactivate linked trainer programs |
+| 27 | Phase3_FeaturedExercisesList | Featured exercise list with session-backed entries |
+| 28 | ProfileNotificationSettings | Shared profile fields and notification dropdown retention |
 
 ## Migration Rules
 

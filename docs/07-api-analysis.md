@@ -17,12 +17,12 @@ All `/api/*` endpoints require JWT Bearer authentication unless marked as public
 |--------|------|------|-------------|
 | POST | `/api/auth/register` | Public | Register a user and return auth tokens |
 | POST | `/api/auth/login` | Public, rate-limited | Login and return auth tokens |
-| GET | `/api/auth/me` | Required | Return current user, profile id, and preferred UI role |
+| GET | `/api/auth/me` | Required | Return current user, profile id, preferred UI role, shared profile fields, and notification retention |
 | POST | `/api/auth/refresh` | Public | Rotate refresh token and return new auth tokens |
 | POST | `/api/auth/logout` | Public | Revoke refresh token |
 | POST | `/api/auth/forgot-password` | Public | Create password reset token |
 | POST | `/api/auth/reset-password` | Public | Reset password with token |
-| PATCH | `/api/auth/profile` | Required | Update profile fields |
+| PATCH | `/api/auth/profile` | Required | Update profile fields and notification dropdown retention |
 | PATCH | `/api/auth/preferred-role` | Required | Set preferred UI role (`Athlete` or `Trainer`) |
 | POST | `/api/auth/change-password` | Required | Change password and revoke sessions |
 
@@ -153,6 +153,8 @@ Access rules:
 
 `programId` and `programDayId` are optional for manual flows, but WorkoutMode uses both when launched from a program day.
 
+When an Athlete completes an in-progress session linked to a trainer-owned program, the trainer receives a `WorkoutCompleted` notification.
+
 ## Analytics
 
 | Method | Path | Auth | Description |
@@ -188,7 +190,9 @@ At least one measurement field is required when creating a body metric.
 | POST | `/api/notifications/{id}/read` | Required | Mark one notification as read |
 | POST | `/api/notifications/read-all` | Required | Mark all notifications as read |
 
-Notification types currently used by the app: `RelationshipRequest`, `RelationshipAccepted`, `ProgramAssigned`.
+Notification types currently used by the app: `RelationshipRequest`, `RelationshipAccepted`, `ProgramAssigned`, `WorkoutCompleted`.
+
+`GET /api/notifications` is the source of truth. The Web topbar applies the user's `readNotificationRetentionDays` setting locally, hiding only read notifications older than that value. Unread notifications are never hidden by age, and the dedicated Notifications page shows the full loaded notification list.
 
 Realtime Web delivery uses SignalR:
 

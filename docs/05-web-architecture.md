@@ -32,6 +32,7 @@ TrackMe-Web/
       ExercisesView.jsx
       RelationshipsView.jsx
       BodyMetricsView.jsx
+      NotificationsView.jsx
       ProfileView.jsx
       AdminView.jsx
     App.jsx                   — AppInner: all state, nav, handlers, view routing
@@ -54,6 +55,7 @@ Navigation is driven by three arrays in `App.jsx`:
 | myPrograms    | ProgramsView + ProgramBuilderView |
 | exercises     | ExercisesView      |
 | relationships | RelationshipsView  |
+| notifications | NotificationsView  |
 | profile       | ProfileView        |
 
 ### ATHLETE_NAV
@@ -64,6 +66,7 @@ Navigation is driven by three arrays in `App.jsx`:
 | sessions      | SessionsView       |
 | bodyMetrics   | BodyMetricsView    |
 | relationships | RelationshipsView  |
+| notifications | NotificationsView  |
 | profile       | ProfileView        |
 
 ### ADMIN_NAV
@@ -164,6 +167,9 @@ All state lives in `AppInner`. No Redux or Zustand.
 - The Web app listens for `notification.created`
 - Incoming notifications are added to `notifications` state and surfaced with a toast
 - `/api/notifications` remains the recovery path on boot/reconnect or manual refresh
+- The topbar dropdown hides read notifications after `currentUser.readNotificationRetentionDays` days; unread notifications are always shown.
+- `NotificationsView` is available to Trainer and Athlete navigation and shows the full loaded notification list without applying the topbar retention filter.
+- The profile screen lets users set `readNotificationRetentionDays` (default 3).
 
 ## Component Responsibilities
 
@@ -177,10 +183,11 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `WorkoutMode`        | Full-screen workout overlay; prev/next nav and dots inside the exercise card   |
 | `SessionsView`       | Session history (list or calendar view toggle), manual session log form        |
 | `BodyMetricsView`    | 9-field measurement form, weight/fat/muscle trend charts                       |
+| `NotificationsView`  | Full notification history; mark-one and mark-all-read actions                  |
 | `RelationshipsView`  | Send requests, accept/reject pending, search users                             |
 | `ExercisesView`      | Exercise library, category/equipment/difficulty filters, create/delete         |
 | `AdminView`          | User management, exercise audit (Admin role only)                              |
-| `ProfileView`        | Update name, bio, goal, change password                                        |
+| `ProfileView`        | Update name, bio, goal, age, profession, primary sport, training years, notification dropdown retention |
 | `WorkoutCalendar`    | Monthly calendar via `react-calendar` library; dark theme CSS override; session dot indicators via `tileContent`; green = completed, yellow = in-progress |
 | `ConsistencyGrid`    | Wrapper: shows aggregate stats (streak, 7d, 30d) + WorkoutCalendar            |
 | `ConfirmDialog`      | Shared confirmation modal used for destructive or state-changing actions instead of browser-native confirms |

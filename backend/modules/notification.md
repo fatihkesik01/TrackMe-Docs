@@ -21,6 +21,7 @@ Manages in-app notifications and realtime Web delivery.
 - `RelationshipRequest`
 - `RelationshipAccepted`
 - `ProgramAssigned`
+- `WorkoutCompleted`
 
 ## Business Rules
 
@@ -28,6 +29,9 @@ Manages in-app notifications and realtime Web delivery.
 - Users can read only own notifications.
 - SignalR delivery failure must not roll back main transactions.
 - Important notifications must be stored in-app.
+- User retention only hides old read notifications from the Web topbar dropdown.
+- Unread notifications are never hidden by age.
+- The Notifications page shows the full loaded notification history.
 
 ## Realtime Delivery
 

@@ -14,6 +14,11 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | password_hash | varchar(500) | PBKDF2 hash |
 | role | varchar(40) | Admin / Trainer / Athlete |
 | preferred_ui_role | varchar(20) | nullable; Athlete / Trainer |
+| age | int | nullable |
+| profession | varchar(120) | nullable |
+| training_years | int | nullable |
+| primary_sport | varchar(120) | nullable |
+| read_notification_retention_days | int | default 3; topbar dropdown display setting |
 | is_active | bool | |
 | email_verified_at | timestamptz | nullable |
 | created_at | timestamptz | UTC |
@@ -46,7 +51,7 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 |--------|------|-------|
 | id | uuid PK | |
 | user_id | uuid FK -> users | cascade delete |
-| type | varchar(40) | RelationshipRequest / RelationshipAccepted / ProgramAssigned |
+| type | varchar(40) | RelationshipRequest / RelationshipAccepted / ProgramAssigned / WorkoutCompleted |
 | title | varchar(200) | required |
 | body | varchar(1000) | required |
 | is_read | bool | |
@@ -276,8 +281,9 @@ workout_session_exercises -> workout_set_logs
 
 exercises -> workout_program_exercises
 exercises -> workout_session_exercises
-exercises -> athletes.featured_exercise_id
-workout_sessions -> athletes.featured_session_id
+exercises -> athlete_featured_exercises.exercise_id
+workout_sessions -> athlete_featured_exercises.session_id
+athletes -> athlete_featured_exercises.athlete_id
 
 athletes -> body_metrics
 ```
