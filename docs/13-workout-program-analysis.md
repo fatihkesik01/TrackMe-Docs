@@ -90,7 +90,14 @@ DELETE /api/relationships/{id}
   → self-guided programs and workout session history remain unchanged
 ```
 
-Inactive programs are hidden from normal user program lists and cannot be used to start new sessions.
+Inactive program behavior:
+
+- Active and inactive programs are both returned in program lists.
+- The Web UI shows active/passive badges for each program.
+- Inactive programs can still be opened for detail review.
+- Inactive program details are read-only; day/exercise updates are rejected by the API.
+- WorkoutMode cannot be started from an inactive program day.
+- If the same trainer-athlete relationship is requested again and accepted, inactive trainer-created programs for that pair are reactivated.
 
 ## Program Builder (Web)
 

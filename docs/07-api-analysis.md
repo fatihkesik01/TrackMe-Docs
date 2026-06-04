@@ -89,7 +89,7 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/api/programs` | Required | List programs, role-scoped and paginated |
+| GET | `/api/programs` | Required | List active and inactive programs, role-scoped and paginated |
 | POST | `/api/programs` | Required | Create program |
 | GET | `/api/programs/{id}` | Required | Get program detail with days and exercises |
 | DELETE | `/api/programs/{id}` | Required | Delete program |
@@ -121,6 +121,8 @@ Access rules:
 - Athletes can create self-guided programs for themselves.
 - Dual-role Athlete-JWT callers can operate through their trainer entity by email resolution.
 - Admin can access all programs.
+- Inactive programs are returned with `isActive: false`, remain readable in detail, and reject day/exercise write operations.
+- Starting a workout session from an inactive program is forbidden.
 
 ## Sessions (`/api/sessions`)
 

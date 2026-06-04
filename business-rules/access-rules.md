@@ -15,7 +15,9 @@
 - Relationship accept and reject actions require the matching athlete profile or matching athlete
   email. This allows a trainer who is coached by another trainer to respond as the athlete side.
 - Accepted relationships can be ended by either side. Ending the relationship removes trainer
-  access and deactivates trainer-created programs linked to that trainer-athlete pair.
+  access and marks trainer-created programs for that trainer-athlete pair as inactive.
+- Re-requesting a rejected or ended relationship moves the existing row back to `Pending`; accepting
+  it again reactivates previously inactive trainer-created programs for that pair.
 - `GET /api/athletes` returns accepted athletes for trainers, own profile for athletes, and all
   athletes for admins.
 - `GET /api/athletes/search` is the trainer/admin lookup path for relationship requests and
@@ -40,9 +42,10 @@
 - Trainers cannot log sessions against another trainer's program.
 - Athlete-created programs must be self-guided and must use the athlete's own `profileId`.
 - Athlete-created sessions must use the athlete's own `profileId`.
-- Program and session lists are scoped by role: admin sees all, trainers see allowed athlete data,
+- Program and session lists are scoped by role: admin sees all, trainers see their own program data,
   athletes see their own data.
-- Inactive programs are hidden from normal user program lists and cannot be used for new sessions.
+- Inactive programs remain visible in program lists with an inactive/passive state, but details are
+  read-only. They cannot be edited and cannot be used to start new sessions.
 
 ## Program Deletion
 

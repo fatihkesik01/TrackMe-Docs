@@ -34,7 +34,7 @@ Both endpoints accept either an ID or an email address for the target user. If n
 
 Only `Pending` relationships can be accepted or rejected. Attempting to respond to an already-resolved relationship returns `409 Conflict`.
 
-`Accepted` relationships can be ended by either side with `DELETE /api/relationships/{id}`. Ending a relationship keeps the audit row, changes the status to `Ended`, removes trainer access, and deactivates active trainer-created programs for that trainer-athlete pair.
+`Accepted` relationships can be ended by either side with `DELETE /api/relationships/{id}`. Ending a relationship keeps the audit row, changes the status to `Ended`, removes trainer access, and marks active trainer-created programs for that trainer-athlete pair as inactive.
 
 ## Access Implications of Accepted Status
 
@@ -54,7 +54,7 @@ When a relationship is `Ended`, the trainer immediately loses access because all
 
 ## Duplicate Prevention
 
-A unique index on `(trainer_id, athlete_id)` prevents creating two relationship rows for the same pair. `Pending` and `Accepted` duplicates return `409 Conflict`. `Rejected` or `Ended` rows can be reused by sending a new request/invite, which moves the existing row back to `Pending`.
+A unique index on `(trainer_id, athlete_id)` prevents creating two relationship rows for the same pair. `Pending` and `Accepted` duplicates return `409 Conflict`. `Rejected` or `Ended` rows can be reused by sending a new request/invite, which moves the existing row back to `Pending`. When that request is accepted, inactive trainer-created programs for the same pair are reactivated.
 
 ## Dual-Role Resolution
 
@@ -96,6 +96,8 @@ Ending an accepted relationship sets `workout_programs.is_active = false` for ac
 
 Self-guided programs are not affected. Existing workout session history is preserved.
 
+Inactive programs remain visible to their owner/assigned athlete with a passive state. They are read-only and cannot be used to start new workout sessions while inactive.
+
 ## Frontend Behavior
 
 `RelationshipsView` uses `uiRole` to determine which panel to show:
@@ -106,3 +108,5 @@ Self-guided programs are not affected. Existing workout session history is prese
 The same view component handles both modes. Both TRAINER_NAV and ATHLETE_NAV include the `relationships` nav item.
 
 Accepted relationships show an "End relationship" action. The Web app displays a confirmation prompt because ending a relationship also deactivates linked trainer programs.
+
+Rejected and ended relationships show a "Reconnect relationship" action. It sends a new request/invite for the same trainer-athlete pair and reuses the existing relationship row.
