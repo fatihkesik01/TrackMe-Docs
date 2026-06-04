@@ -20,6 +20,20 @@ Security must be designed into every TrackMe module.
 - Secrets live in server-side `.env` files and GitHub Actions secrets, not in repositories.
 - CORS is restricted to the deployed web origin.
 - Web access tokens are stored in localStorage for the internal MVP. Move to a stronger browser token strategy before public production use.
+- Root SSH login is disabled.
+- SSH listens on `22222`; port `22` is temporarily left open as a legacy deploy fallback.
+- `fail2ban` protects the SSH service.
+- Password login is enabled for the `deploy` user by operator preference; key-only SSH is safer for production.
+- API port `5050` is publicly reachable for the MVP. Web can proxy `/api/` internally, so closing public API access is a recommended hardening step before broader exposure.
+
+## Recommended Hardening Before Public Production
+
+- Attach a domain and enable HTTPS.
+- Close legacy SSH port `22` after deploy stability is confirmed on `22222`.
+- Disable SSH password authentication and use keys only.
+- Keep the API behind the Web/reverse-proxy entry point instead of exposing `5050` publicly.
+- Schedule PostgreSQL backups and verify restore.
+- Replace browser `localStorage` token storage with a stronger strategy.
 
 ## Validation Areas
 

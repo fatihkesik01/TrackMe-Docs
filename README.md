@@ -56,16 +56,12 @@ TrackMe is a coach-athlete training management platform. Trainers manage athlete
 
 - [API Route Reference](docs/07-api-analysis.md)
 - [Authentication & Authorization](docs/10-auth-authorization.md)
+- [Deployment](docs/17-deployment.md)
+- [Security and Validation](docs/18-security-validation.md)
 
 ### Domain
 
 - [Trainer-Athlete Relationship System](docs/12-trainer-athlete-relationship.md)
-
-### Changelog
-
-- [Module Cleanup Log — Phase 14](docs/cleanup-phase14.md)
-
----
 
 ## Roles
 

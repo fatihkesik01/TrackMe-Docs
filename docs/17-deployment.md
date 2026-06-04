@@ -101,7 +101,14 @@ Current containers:
 - `trackme-api`
 - `trackme-postgres`
 
-The previous Sera containers may still exist on the same VPS and should not be touched unless intentionally decommissioned.
+Current public ports:
+
+- `8080`: Web
+- `5050`: API
+- `22222`: SSH
+- `22`: legacy SSH fallback during deploy stabilization
+
+For a tighter public deployment, close `22` after deploys are stable on `22222`. The API can also be moved behind the Web container by binding or removing the public `5050` mapping, because Web already proxies `/api/` to `trackme-api` on the shared Docker network.
 
 ## Docker Compose Shape
 
