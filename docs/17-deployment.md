@@ -79,13 +79,13 @@ The API and Web repositories have separate GitHub Actions workflows, so both can
 /tmp/trackme-deploy.lock
 ```
 
-SSH deploy uses multiple connection attempts and a longer connect timeout because GitHub-hosted runner networking can occasionally fail before authentication.
+SSH deploy first tries the configured `VPS_PORT` and then falls back to port `22` while the legacy port remains open. Each SSH attempt fails quickly enough to avoid long stuck runs when GitHub-hosted runner networking cannot reach the VPS.
 
 Required GitHub Actions secrets:
 
 - `VPS_HOST`: `187.77.92.30`
 - `VPS_USER`: `deploy`
-- `VPS_PORT`: `22` or omitted
+- `VPS_PORT`: `22222`
 - `VPS_SSH_KEY`: private key that can SSH into the VPS as `deploy`
 
 ## VPS Layout
@@ -156,6 +156,6 @@ Database tab:
 SSH tab:
 
 - Host/IP: `187.77.92.30`
-- Port: `22`
+- Port: `22222`
 - User Name: `deploy`
 - Authentication: password or key
