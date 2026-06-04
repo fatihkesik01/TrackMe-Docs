@@ -84,7 +84,7 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | id | uuid PK | |
 | trainer_id | uuid FK -> trainers | cascade delete |
 | athlete_id | uuid FK -> athletes | cascade delete |
-| status | varchar(40) | Pending / Accepted / Rejected |
+| status | varchar(40) | Pending / Accepted / Rejected / Ended |
 | initiated_by_athlete | bool | true when athlete invited trainer |
 | created_at | timestamptz | |
 | responded_at | timestamptz | nullable |
@@ -121,6 +121,7 @@ Unique index on `(slug, owner_id)`.
 | description | varchar(1000) | nullable |
 | starts_on | date | required |
 | ends_on | date | required |
+| is_active | bool | true for active programs; false after relationship end |
 | created_at | timestamptz | |
 
 ### workout_program_days

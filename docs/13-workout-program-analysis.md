@@ -22,6 +22,7 @@ WorkoutProgram
 | `description` | string? | |
 | `startsOn` | DateOnly | defaults to today |
 | `endsOn` | DateOnly | defaults to startsOn + 28 days |
+| `isActive` | bool | false when the trainer-athlete relationship is ended |
 | `templateId` | Guid? | optional — copies days/exercises from template on creation |
 | `createdAt` | DateTimeOffset | |
 
@@ -77,6 +78,19 @@ DELETE /api/programs/{id}
 ```
 
 Frontend shows `window.confirm` before calling delete.
+
+## Deactivation Flow
+
+When an accepted trainer-athlete relationship is ended:
+
+```
+DELETE /api/relationships/{id}
+  → relationship status becomes Ended
+  → active trainer-created programs for that trainer-athlete pair are marked isActive=false
+  → self-guided programs and workout session history remain unchanged
+```
+
+Inactive programs are hidden from normal user program lists and cannot be used to start new sessions.
 
 ## Program Builder (Web)
 

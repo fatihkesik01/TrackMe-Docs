@@ -69,8 +69,9 @@ Send `null` values to clear the featured exercise/session.
 | GET | `/api/relationships/requests` | Required | List caller's relationships |
 | POST | `/api/relationships/{id}/accept` | Required | Accept pending relationship |
 | POST | `/api/relationships/{id}/reject` | Required | Reject pending relationship |
+| DELETE | `/api/relationships/{id}` | Required | End an accepted relationship and deactivate linked trainer programs |
 
-Request targets can be supplied by id or email. Pending relationships do not grant data access.
+Request targets can be supplied by id or email. Pending relationships do not grant data access. Ended/rejected relationships can be requested again; pending/accepted duplicates return conflict.
 
 ## Exercises (`/api/exercises`)
 

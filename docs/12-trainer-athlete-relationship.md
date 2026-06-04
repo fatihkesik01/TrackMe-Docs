@@ -26,9 +26,15 @@ Both endpoints accept either an ID or an email address for the target user. If n
          accept   reject
            /         \
       [Accepted]   [Rejected]
+          |
+        end
+          |
+       [Ended]
 ```
 
 Only `Pending` relationships can be accepted or rejected. Attempting to respond to an already-resolved relationship returns `409 Conflict`.
+
+`Accepted` relationships can be ended by either side with `DELETE /api/relationships/{id}`. Ending a relationship keeps the audit row, changes the status to `Ended`, removes trainer access, and deactivates active trainer-created programs for that trainer-athlete pair.
 
 ## Access Implications of Accepted Status
 
@@ -44,9 +50,11 @@ When a relationship is `Accepted`, the trainer can:
 
 The athlete continues to own all their data; the trainer gets read-and-program-write access only.
 
+When a relationship is `Ended`, the trainer immediately loses access because all access checks require `Accepted` status.
+
 ## Duplicate Prevention
 
-A unique index on `(trainer_id, athlete_id)` prevents creating two relationship rows for the same pair. Attempting to create a duplicate returns `409 Conflict` with the existing status.
+A unique index on `(trainer_id, athlete_id)` prevents creating two relationship rows for the same pair. `Pending` and `Accepted` duplicates return `409 Conflict`. `Rejected` or `Ended` rows can be reused by sending a new request/invite, which moves the existing row back to `Pending`.
 
 ## Dual-Role Resolution
 
@@ -79,6 +87,15 @@ Email match is a fallback for dual-role users whose JWT role does not directly m
 | Invite sent       | Target trainer     | `RelationshipRequest`   |
 | Request accepted  | Initiating side    | `RelationshipAccepted`  |
 
+## Program Deactivation on End
+
+Ending an accepted relationship sets `workout_programs.is_active = false` for active programs where:
+
+- `trainer_id` matches the relationship trainer
+- `athlete_id` matches the relationship athlete
+
+Self-guided programs are not affected. Existing workout session history is preserved.
+
 ## Frontend Behavior
 
 `RelationshipsView` uses `uiRole` to determine which panel to show:
@@ -87,3 +104,5 @@ Email match is a fallback for dual-role users whose JWT role does not directly m
 - `uiRole === 'Athlete'` → shows "Invite trainer" panel (search trainers, send invite) + incoming trainer requests
 
 The same view component handles both modes. Both TRAINER_NAV and ATHLETE_NAV include the `relationships` nav item.
+
+Accepted relationships show an "End relationship" action. The Web app displays a confirmation prompt because ending a relationship also deactivates linked trainer programs.

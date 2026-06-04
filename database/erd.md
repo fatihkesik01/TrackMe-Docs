@@ -89,6 +89,7 @@ athletes.id <- body_metrics.athlete_id
 
 - `users` and `trainers`/`athletes` are linked by matching email, not a direct foreign key.
 - `workout_programs.trainer_id` is nullable; null means self-guided.
+- `workout_programs.is_active = false` hides/deactivates trainer-created programs after a trainer-athlete relationship is ended.
 - `workout_sessions.program_id` and `workout_sessions.program_day_id` are nullable so session history survives program/day deletion.
 - `exercises.owner_id` is nullable; null means the exercise is seeded/global.
 - `workout_session_exercises` stores planned value snapshots so future program edits do not rewrite training history.
