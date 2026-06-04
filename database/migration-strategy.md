@@ -38,7 +38,7 @@ EF Core 9+ throws `PendingModelChangesWarning` as a fatal exception when the com
 
 ### Column naming convention
 
-All columns use **snake_case** (e.g. `featured_exercise_id`), configured via `HasColumnName()` in `TrackMeDbContext.OnModelCreating()`. The CLI reads this and generates correct names automatically.
+All columns use **snake_case** (e.g. `athlete_id`, `order_index`), configured via `HasColumnName()` in `TrackMeDbContext.OnModelCreating()`. The CLI reads this and generates correct names automatically.
 
 ## Workflow Checklist When Adding a Field
 

@@ -48,17 +48,21 @@ All `/api/*` endpoints require JWT Bearer authentication unless marked as public
 | GET | `/api/athletes` | Required | List athletes, scoped by caller role |
 | GET | `/api/athletes/search` | Required | Search athletes by name or email |
 | GET | `/api/athletes/me` | Required | Return caller's athlete profile |
-| GET | `/api/athletes/me/performed-exercises` | Required | List exercises performed by caller |
-| PATCH | `/api/athletes/me/featured-exercise` | Required | Set featured exercise and optional featured session |
+| GET | `/api/athletes/me/performed-exercises` | Required | Unique exercises the caller has performed (deduplicated) |
+| GET | `/api/athletes/me/performed-exercise-sessions` | Required | All exercise+session combos with date, max weight, set count; ordered by max weight desc |
+| GET | `/api/athletes/me/featured-exercises` | Required | List caller's featured exercise items (ordered by order_index) |
+| POST | `/api/athletes/me/featured-exercises` | Required | Add an exercise to the featured list; returns updated list |
+| DELETE | `/api/athletes/me/featured-exercises/{id}` | Required | Remove one item from the featured list |
+| GET | `/api/athletes/{athleteId}/featured-exercises` | Required | Trainer/admin view of an athlete's featured exercises |
 | POST | `/api/athletes` | Required | Create athlete profile |
 
-### Featured Exercise Request
+### Add Featured Exercise Request
 
 ```json
-{ "exerciseId": "guid", "sessionId": "guid" }
+{ "exerciseId": "guid", "sessionId": "guid-or-null" }
 ```
 
-Send `null` values to clear the featured exercise/session.
+No limit on entries. The same exercise can be added multiple times with different sessions. Each item in the response includes the session date, session title, max weight, total sets, and full set list so no additional calls are needed.
 
 ## Relationships (`/api/relationships`)
 

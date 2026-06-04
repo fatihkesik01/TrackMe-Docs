@@ -2,7 +2,7 @@
 
 PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `TrackMeDbContext.OnModelCreating()` are the schema source of truth.
 
-## Active Tables (15)
+## Active Tables (16)
 
 ### users
 
@@ -73,8 +73,19 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | email | varchar(220) | required, unique |
 | goal | varchar(500) | nullable |
 | bio | varchar(500) | nullable |
-| featured_exercise_id | uuid FK -> exercises | nullable |
-| featured_session_id | uuid FK -> workout_sessions | nullable |
+| created_at | timestamptz | |
+
+### athlete_featured_exercises
+
+Athlete's showcase list shown on their profile and to their trainer. Unlimited entries; same exercise can appear multiple times with different sessions.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| athlete_id | uuid FK -> athletes | cascade delete |
+| exercise_id | uuid FK -> exercises | cascade delete |
+| session_id | uuid FK -> workout_sessions | nullable; SetNull on delete |
+| order_index | int | display order |
 | created_at | timestamptz | |
 
 ### trainer_athlete_relationships

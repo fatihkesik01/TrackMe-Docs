@@ -11,11 +11,12 @@ Manages athlete profile, goals, availability, and athlete-facing workout data.
 - List assigned programs
 - List own workout history
 - Show own analytics
+- Manage featured exercise showcase list
 
 ## Main Entities
 
-- AthleteProfile
-- ProgressRecord
+- Athlete
+- AthleteFeaturedExercise
 
 ## Main Use Cases
 
@@ -26,6 +27,7 @@ Manages athlete profile, goals, availability, and athlete-facing workout data.
 - Get assigned programs
 - Get own workout history
 - Get own progress
+- Add / remove exercises from featured list (unlimited, same exercise allowed multiple times)
 
 ## Business Rules
 
@@ -36,3 +38,5 @@ Manages athlete profile, goals, availability, and athlete-facing workout data.
 - Injury notes are private to athlete, related trainers, and admin.
 - Athlete can have multiple active trainers.
 - Pending trainer requests do not grant trainer access until the athlete accepts.
+- Featured exercise list has no upper limit; the same exercise can appear multiple times with different sessions.
+- Trainers with an accepted relationship can read (not modify) an athlete's featured exercise list.
