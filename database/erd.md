@@ -7,6 +7,8 @@ erDiagram
     users ||--o{ refresh_tokens : owns
     users ||--o{ password_reset_tokens : owns
     users ||--o{ notifications : receives
+    users ||--o{ direct_messages : sends
+    users ||--o{ direct_messages : receives
     users ||--o{ exercises : owns_private
 
     trainers ||--o{ trainer_athlete_relationships : trainer_side
@@ -43,6 +45,7 @@ erDiagram
 | refresh_tokens | Rolling refresh token hashes |
 | password_reset_tokens | Single-use password reset token hashes |
 | notifications | In-app notifications |
+| direct_messages | Trainer-athlete direct messages between accepted relationship users |
 | trainers | Trainer profile entities linked to users by email |
 | athletes | Athlete profile entities linked to users by email |
 | athlete_featured_exercises | Athlete profile showcase exercises, optionally tied to a source session |
@@ -62,6 +65,8 @@ erDiagram
 users.id <- refresh_tokens.user_id
 users.id <- password_reset_tokens.user_id
 users.id <- notifications.user_id
+users.id <- direct_messages.sender_id
+users.id <- direct_messages.recipient_id
 users.id <- exercises.owner_id
 
 trainers.id <- athletes.trainer_id

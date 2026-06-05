@@ -22,6 +22,7 @@ TrackMe-Api/
         ExerciseEndpoints.cs
         ProgramEndpoints.cs
         SessionEndpoints.cs
+        MessageEndpoints.cs
         AnalyticsEndpoints.cs
         BodyMetricEndpoints.cs
         NotificationEndpoints.cs
@@ -45,6 +46,7 @@ TrackMe-Api/
         WorkoutSetLog.cs
         BodyMetric.cs
         AppNotification.cs
+        DirectMessage.cs
         RefreshToken.cs
         PasswordResetToken.cs
         ProgramTemplate.cs       - inactive schema
@@ -81,6 +83,7 @@ Programs
 Sessions
 Analytics
 Notifications
+Messages
 Admin
 BodyMetrics
 ```
@@ -192,7 +195,7 @@ Endpoint access checks follow the same general order:
 
 ## Migrations
 
-32 EF Core migrations are present:
+33 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -228,9 +231,13 @@ Endpoint access checks follow the same general order:
 | 30 | ProfileSportExperience | Store per-sport experience years in profile sports JSON |
 | 31 | ProfileTrainingYearsDecimal | Allow decimal profile training years |
 | 32 | UserUnitPreferences | Store user weight and height display-unit preferences |
+| 33 | DirectMessages | Direct message table for trainer-athlete chat |
 
 ## Migration Rules
 
 - Generate migrations with the EF CLI; do not hand-write migration files.
+- Use `dotnet ef migrations add <Name> --project src/TrackMe.Api/TrackMe.Api.csproj --startup-project src/TrackMe.Api/TrackMe.Api.csproj`.
+- If the latest migration is wrong and has not been applied to a shared/production database, remove it with `dotnet ef migrations remove --project src/TrackMe.Api/TrackMe.Api.csproj --startup-project src/TrackMe.Api/TrackMe.Api.csproj --force`, fix the model, then regenerate it.
+- If a wrong migration may already be applied to a shared/production database, keep it and create a new corrective migration.
 - Column names are configured as snake_case in `TrackMeDbContext`.
 - Production applies migrations at API startup with `db.Database.MigrateAsync()`.

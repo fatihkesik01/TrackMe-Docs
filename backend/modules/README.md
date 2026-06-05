@@ -14,6 +14,7 @@ TrackMe backend modules are designed around clear business boundaries.
 - [Workout Tracking](workout-tracking.md)
 - [RPE](rpe.md)
 - [Notification](notification.md)
+- [Message](message.md)
 - [Analytics](analytics.md)
 - [Admin](admin.md)
 

@@ -17,7 +17,7 @@ The API calls `db.Database.MigrateAsync()` at startup (up to 10 retries, 3s apar
 **Never write migration files by hand.** Always use:
 
 ```powershell
-dotnet ef migrations add Phase<N>_<Description> --project .\src\TrackMe.Api\TrackMe.Api.csproj
+dotnet ef migrations add Phase<N>_<Description> --project .\src\TrackMe.Api\TrackMe.Api.csproj --startup-project .\src\TrackMe.Api\TrackMe.Api.csproj
 ```
 
 This generates three files correctly:
@@ -27,7 +27,15 @@ This generates three files correctly:
 | `Migrations/<timestamp>_<Name>.Designer.cs` | EF Core metadata for this migration point |
 | `Migrations/TrackMeDbContextModelSnapshot.cs` | Updated compiled model snapshot |
 
-**All three files must be committed together.**
+**All three files must be committed together.** Do not edit only one of them.
+
+If the latest migration is wrong and has not been applied to any shared/production database, remove it with the CLI before regenerating:
+
+```powershell
+dotnet ef migrations remove --project .\src\TrackMe.Api\TrackMe.Api.csproj --startup-project .\src\TrackMe.Api\TrackMe.Api.csproj --force
+```
+
+If a wrong migration may already be applied to a shared/production database, do not rewrite it. Create a new corrective migration.
 
 ### Why manual migration files crash the API
 
@@ -44,7 +52,7 @@ All columns use **snake_case** (e.g. `athlete_id`, `order_index`), configured vi
 
 1. Add property to the model class
 2. Add `HasColumnName("snake_case_name")` + FK/index config to `TrackMeDbContext.OnModelCreating()`
-3. Run `dotnet ef migrations add Phase<N>_<Description> --project .\src\TrackMe.Api\TrackMe.Api.csproj`
+3. Run `dotnet ef migrations add Phase<N>_<Description> --project .\src\TrackMe.Api\TrackMe.Api.csproj --startup-project .\src\TrackMe.Api\TrackMe.Api.csproj`
 4. Run `dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj` against the local development database
 5. Commit all three generated files plus the model/DbContext changes
 6. Push — production migrations apply automatically on next API startup
@@ -53,7 +61,7 @@ All columns use **snake_case** (e.g. `athlete_id`, `order_index`), configured vi
 
 ```powershell
 # Add migration
-dotnet ef migrations add <Name> --project .\src\TrackMe.Api\TrackMe.Api.csproj
+dotnet ef migrations add <Name> --project .\src\TrackMe.Api\TrackMe.Api.csproj --startup-project .\src\TrackMe.Api\TrackMe.Api.csproj
 
 # Apply locally
 dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
@@ -62,6 +70,7 @@ dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
 ## Rules
 
 - **Never write migration files manually** — always use `dotnet ef migrations add`
+- Do not hand-edit only the migration `.cs`, `.Designer.cs`, or snapshot; keep generated files in sync through the EF CLI
 - Do not edit production database structure manually (except as emergency hotfix, documented)
 - Review generated migrations before commit
 - Apply migrations locally before pushing schema changes

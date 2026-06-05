@@ -33,6 +33,7 @@ TrackMe-Web/
       RelationshipsView.jsx
       BodyMetricsView.jsx
       NotificationsView.jsx
+      MessagesView.jsx
       ProfileView.jsx
       AdminView.jsx
     App.jsx                   — AppInner: all state, nav, handlers, view routing
@@ -55,6 +56,7 @@ Navigation is driven by three arrays in `App.jsx`:
 | myPrograms    | ProgramsView + ProgramBuilderView |
 | exercises     | ExercisesView      |
 | relationships | RelationshipsView  |
+| messages      | MessagesView       |
 | notifications | NotificationsView  |
 | profile       | ProfileView        |
 
@@ -66,6 +68,7 @@ Navigation is driven by three arrays in `App.jsx`:
 | sessions      | SessionsView       |
 | bodyMetrics   | BodyMetricsView    |
 | relationships | RelationshipsView  |
+| messages      | MessagesView       |
 | notifications | NotificationsView  |
 | profile       | ProfileView        |
 
@@ -106,6 +109,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `sessions`                | array     | All sessions for current user                  |
 | `relationships`           | array     | All relationships for current user             |
 | `notifications`           | array     | In-app notifications                           |
+| `unreadMessageCount`      | number    | Unread direct message badge count              |
 
 ### Derived values
 
@@ -166,6 +170,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 - The connection uses the stored JWT access token via `accessTokenFactory`
 - The Web app listens for `notification.created`
 - Incoming notifications are added to `notifications` state and surfaced with a toast
+- `NewMessage` notifications increment the Messages badge and notification clicks route to `MessagesView`.
 - `/api/notifications` remains the recovery path on boot/reconnect or manual refresh
 - The topbar dropdown hides read notifications after `currentUser.readNotificationRetentionDays` days; unread notifications are always shown.
 - `NotificationsView` is available to Trainer and Athlete navigation and shows the full loaded notification list without applying the topbar retention filter.
@@ -173,6 +178,13 @@ All state lives in `AppInner`. No Redux or Zustand.
 - Notification rows display sender metadata (`senderName`/`senderRole`) when present and infer it for older known message patterns when possible.
 - The profile screen separates account/profile editing from General Settings. General Settings manages `readNotificationRetentionDays` (default 3), `weightUnit` (`kg`/`lbs`), and `heightUnit` (`cm`/`ft-in`) in a dedicated modal.
 - API values remain canonical (`weightKg`, `heightCm`); Web views convert values for display and convert user input back before saving.
+
+## Direct Messages
+
+- Trainer and Athlete navigation includes `messages`.
+- `MessagesView` loads existing conversations from `/api/messages` and accepted relationship contacts from `/api/messages/contacts`, so a conversation can be started even before the first message exists.
+- Message threads load through `/api/messages/{userId}` and mark that thread read through `/api/messages/{userId}/read`.
+- Sending a message posts to `/api/messages`, creates a `NewMessage` notification, and the recipient sees a realtime toast/badge through SignalR.
 
 ## Component Responsibilities
 
@@ -187,6 +199,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `SessionsView`       | Session history (list or calendar view toggle), manual session log form        |
 | `BodyMetricsView`    | 9-field measurement form, weight/fat/muscle trend charts                       |
 | `NotificationsView`  | Full notification history; mark-one and mark-all-read actions                  |
+| `MessagesView`       | Direct message conversations for accepted trainer-athlete relationships        |
 | `RelationshipsView`  | Send requests, accept/reject pending, search users                             |
 | `ExercisesView`      | Exercise library, category/equipment/difficulty filters, create/delete         |
 | `AdminView`          | User management, exercise audit (Admin role only)                              |

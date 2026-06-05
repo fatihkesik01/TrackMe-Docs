@@ -108,6 +108,7 @@ Athlete searches for trainer → Send invite
 | Body metrics (9 measurement fields) | ✅ Live |
 | Exercise library (global + private) | ✅ Live |
 | In-app notifications | ✅ Live |
+| Direct trainer-athlete messages | ✅ Live |
 | Admin panel | ✅ Live |
 | Dark mode + i18n (TR/EN) | ✅ Live |
 | Mobile app (React Native) | 🔲 Planned |

@@ -24,6 +24,7 @@ Manages in-app notifications and realtime Web delivery.
 - `RelationshipEnded`
 - `ProgramAssigned`
 - `WorkoutCompleted`
+- `NewMessage`
 
 ## Business Rules
 
@@ -31,6 +32,7 @@ Manages in-app notifications and realtime Web delivery.
 - Users can read only own notifications.
 - SignalR delivery failure must not roll back main transactions.
 - Important notifications must be stored in-app.
+- Direct messages create `NewMessage` notifications for the recipient.
 - User retention only hides old read notifications from the Web topbar dropdown.
 - Unread notifications are never hidden by age.
 - The Notifications page shows the full loaded notification history.
@@ -42,5 +44,6 @@ Manages in-app notifications and realtime Web delivery.
 - Client event: `notification.created`
 - Server target: `Clients.User(userId)`
 - Web clients refresh app data after relationship/program/workout notifications so currently-open screens reflect changed access, active/passive programs, and session state.
+- Web clients increment the unread message badge after `NewMessage` notifications.
 
 Firebase/mobile push is a future enhancement and is not active in the current deployment.

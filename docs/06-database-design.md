@@ -2,7 +2,7 @@
 
 PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `TrackMeDbContext.OnModelCreating()` are the schema source of truth.
 
-## Active Tables (16)
+## Active Tables (17)
 
 ### users
 
@@ -56,7 +56,7 @@ Workout and body-measurement values remain canonical in metric units in the data
 |--------|------|-------|
 | id | uuid PK | |
 | user_id | uuid FK -> users | cascade delete |
-| type | varchar(40) | RelationshipRequest / RelationshipAccepted / ProgramAssigned / WorkoutCompleted |
+| type | varchar(40) | RelationshipRequest / RelationshipAccepted / RelationshipRejected / RelationshipEnded / ProgramAssigned / WorkoutCompleted / NewMessage |
 | title | varchar(200) | required |
 | body | varchar(1000) | required |
 | sender_name | varchar(160) | nullable; denormalized display sender |
@@ -64,6 +64,20 @@ Workout and body-measurement values remain canonical in metric units in the data
 | is_read | bool | |
 | read_at | timestamptz | nullable |
 | created_at | timestamptz | |
+
+### direct_messages
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| sender_id | uuid FK -> users | restrict delete |
+| recipient_id | uuid FK -> users | restrict delete |
+| body | varchar(2000) | required |
+| sent_at | timestamptz | UTC |
+| read_at | timestamptz | nullable |
+| is_read | bool | default false |
+
+Indexes on `(sender_id, recipient_id)` and `(recipient_id, is_read)`.
 
 ### trainers
 
@@ -269,6 +283,8 @@ These tables remain in the EF model and database schema, but their route registr
 users -> refresh_tokens
 users -> password_reset_tokens
 users -> notifications
+users -> direct_messages.sender_id
+users -> direct_messages.recipient_id
 users -> exercises.owner_id
 
 trainers -> trainer_athlete_relationships

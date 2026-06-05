@@ -79,6 +79,27 @@ No limit on entries. The same exercise can be added multiple times with differen
 
 Request targets can be supplied by id or email. Pending relationships do not grant data access. Ended/rejected relationships can be requested again; pending/accepted duplicates return conflict.
 
+## Messages (`/api/messages`)
+
+Direct messages are available only between users with an accepted trainer-athlete relationship. The API resolves accepted relationships through matching trainer/athlete profile emails and returns user IDs for messaging.
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/messages` | Required | List conversations for the caller |
+| GET | `/api/messages/contacts` | Required | List accepted relationship contacts the caller can message |
+| GET | `/api/messages/unread-count` | Required | Return unread direct message count |
+| GET | `/api/messages/{userId}` | Required | Return a message thread with another user |
+| POST | `/api/messages` | Required | Send a direct message and notify the recipient |
+| PATCH | `/api/messages/{userId}/read` | Required | Mark messages from one user as read |
+
+### Send Message Request
+
+```json
+{ "recipientId": "guid", "body": "Merhaba" }
+```
+
+Sending a message creates a `NewMessage` notification for the recipient and delivers it through SignalR.
+
 ## Exercises (`/api/exercises`)
 
 | Method | Path | Auth | Description |
@@ -192,7 +213,7 @@ At least one measurement field is required when creating a body metric.
 | POST | `/api/notifications/{id}/read` | Required | Mark one notification as read |
 | POST | `/api/notifications/read-all` | Required | Mark all notifications as read |
 
-Notification types currently used by the app: `RelationshipRequest`, `RelationshipAccepted`, `RelationshipRejected`, `RelationshipEnded`, `ProgramAssigned`, `WorkoutCompleted`.
+Notification types currently used by the app: `RelationshipRequest`, `RelationshipAccepted`, `RelationshipRejected`, `RelationshipEnded`, `ProgramAssigned`, `WorkoutCompleted`, `NewMessage`.
 
 `GET /api/notifications` is the source of truth. Notification DTOs include nullable `senderName` and `senderRole` metadata for display/search. The Web topbar applies the user's `readNotificationRetentionDays` setting locally, hiding only read notifications older than that value. Unread notifications are never hidden by age, and the dedicated Notifications page shows the full loaded notification list.
 
@@ -233,4 +254,5 @@ All admin routes require authentication and admin authorization.
 | Analytics | All | Accepted athletes | Own analytics |
 | Body metrics | All | Accepted athletes | Own metrics |
 | Notifications | All | Own notifications | Own notifications |
+| Messages | All | Accepted athletes | Accepted trainers |
 | Admin | All | No access | No access |
