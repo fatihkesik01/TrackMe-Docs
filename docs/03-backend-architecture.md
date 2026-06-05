@@ -192,7 +192,7 @@ Endpoint access checks follow the same general order:
 
 ## Migrations
 
-31 EF Core migrations are present:
+32 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -227,6 +227,7 @@ Endpoint access checks follow the same general order:
 | 29 | ProfileSportsList | Expand profile sport storage for multiple sports |
 | 30 | ProfileSportExperience | Store per-sport experience years in profile sports JSON |
 | 31 | ProfileTrainingYearsDecimal | Allow decimal profile training years |
+| 32 | UserUnitPreferences | Store user weight and height display-unit preferences |
 
 ## Migration Rules
 

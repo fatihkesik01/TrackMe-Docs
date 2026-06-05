@@ -172,6 +172,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 - `NotificationsView` includes a full-width client-side search across localized notification title/body, sender metadata, type label, and original stored title/body. This supports searching by trainer, athlete, program, or notification text when that data exists in the notification.
 - Notification rows display sender metadata (`senderName`/`senderRole`) when present and infer it for older known message patterns when possible.
 - The profile screen lets users set `readNotificationRetentionDays` (default 3).
+- The profile screen also lets users choose `weightUnit` (`kg`/`lbs`) and `heightUnit` (`cm`/`ft-in`). API values remain canonical (`weightKg`, `heightCm`); Web views convert values for display and convert user input back before saving.
 
 ## Component Responsibilities
 

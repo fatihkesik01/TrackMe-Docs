@@ -17,16 +17,16 @@ All `/api/*` endpoints require JWT Bearer authentication unless marked as public
 |--------|------|------|-------------|
 | POST | `/api/auth/register` | Public | Register a user and return auth tokens |
 | POST | `/api/auth/login` | Public, rate-limited | Login and return auth tokens |
-| GET | `/api/auth/me` | Required | Return current user, profile id, preferred UI role, shared profile fields, and notification retention |
+| GET | `/api/auth/me` | Required | Return current user, profile id, preferred UI role, shared profile fields, notification retention, and unit preferences |
 | POST | `/api/auth/refresh` | Public | Rotate refresh token and return new auth tokens |
 | POST | `/api/auth/logout` | Public | Revoke refresh token |
 | POST | `/api/auth/forgot-password` | Public | Create password reset token |
 | POST | `/api/auth/reset-password` | Public | Reset password with token |
-| PATCH | `/api/auth/profile` | Required | Update profile fields, sports list with per-sport experience years, and notification dropdown retention |
+| PATCH | `/api/auth/profile` | Required | Update profile fields, sports list with per-sport experience years, notification dropdown retention, and unit preferences |
 | PATCH | `/api/auth/preferred-role` | Required | Set preferred UI role (`Athlete` or `Trainer`) |
 | POST | `/api/auth/change-password` | Required | Change password and revoke sessions |
 
-`GET /api/auth/me`, login, refresh, and profile update responses include `sports` as a legacy name list and `sportDetails` as `{ name, trainingYears }` items for per-sport experience display. `trainingYears` accepts decimal values such as `0.5`.
+`GET /api/auth/me`, login, refresh, and profile update responses include `sports` as a legacy name list and `sportDetails` as `{ name, trainingYears }` items for per-sport experience display. `trainingYears` accepts decimal values such as `0.5`. Responses also include `weightUnit` (`kg` or `lbs`) and `heightUnit` (`cm` or `ft-in`). API and database weight/height fields remain canonical (`weightKg`, `heightCm`); Web clients convert values at the input/display boundary.
 
 ## Users (`/api/users`)
 

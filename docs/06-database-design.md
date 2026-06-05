@@ -20,9 +20,13 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | primary_sport | varchar(300) | nullable; stores normalized comma-separated sports list for profile display |
 | sports_json | varchar(2000) | nullable; JSON list of profile sports with per-sport `trainingYears` |
 | read_notification_retention_days | int | default 3; topbar dropdown display setting |
+| weight_unit | varchar(8) | default `kg`; user display/input preference, valid values `kg`, `lbs` |
+| height_unit | varchar(8) | default `cm`; user display/input preference, valid values `cm`, `ft-in` |
 | is_active | bool | |
 | email_verified_at | timestamptz | nullable |
 | created_at | timestamptz | UTC |
+
+Workout and body-measurement values remain canonical in metric units in the database: workout weights are stored as kilograms (`*_weight_kg`) and body height is stored as centimeters (`height_cm`). Web clients convert values to the user's `weight_unit` and `height_unit` preferences for input and display.
 
 ### refresh_tokens
 
