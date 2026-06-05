@@ -54,6 +54,8 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | type | varchar(40) | RelationshipRequest / RelationshipAccepted / ProgramAssigned / WorkoutCompleted |
 | title | varchar(200) | required |
 | body | varchar(1000) | required |
+| sender_name | varchar(160) | nullable; denormalized display sender |
+| sender_role | varchar(40) | nullable; Trainer / Athlete / Admin |
 | is_read | bool | |
 | read_at | timestamptz | nullable |
 | created_at | timestamptz | |

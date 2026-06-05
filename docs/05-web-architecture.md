@@ -169,7 +169,8 @@ All state lives in `AppInner`. No Redux or Zustand.
 - `/api/notifications` remains the recovery path on boot/reconnect or manual refresh
 - The topbar dropdown hides read notifications after `currentUser.readNotificationRetentionDays` days; unread notifications are always shown.
 - `NotificationsView` is available to Trainer and Athlete navigation and shows the full loaded notification list without applying the topbar retention filter.
-- `NotificationsView` includes client-side search across localized notification title/body, type label, and original stored title/body. This supports searching by trainer, athlete, program, or notification text when that data exists in the notification.
+- `NotificationsView` includes a full-width client-side search across localized notification title/body, sender metadata, type label, and original stored title/body. This supports searching by trainer, athlete, program, or notification text when that data exists in the notification.
+- Notification rows display sender metadata (`senderName`/`senderRole`) when present and infer it for older known message patterns when possible.
 - The profile screen lets users set `readNotificationRetentionDays` (default 3).
 
 ## Component Responsibilities

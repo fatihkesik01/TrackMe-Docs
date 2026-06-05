@@ -192,7 +192,7 @@ At least one measurement field is required when creating a body metric.
 
 Notification types currently used by the app: `RelationshipRequest`, `RelationshipAccepted`, `ProgramAssigned`, `WorkoutCompleted`.
 
-`GET /api/notifications` is the source of truth. The Web topbar applies the user's `readNotificationRetentionDays` setting locally, hiding only read notifications older than that value. Unread notifications are never hidden by age, and the dedicated Notifications page shows the full loaded notification list.
+`GET /api/notifications` is the source of truth. Notification DTOs include nullable `senderName` and `senderRole` metadata for display/search. The Web topbar applies the user's `readNotificationRetentionDays` setting locally, hiding only read notifications older than that value. Unread notifications are never hidden by age, and the dedicated Notifications page shows the full loaded notification list.
 
 Realtime Web delivery uses SignalR:
 

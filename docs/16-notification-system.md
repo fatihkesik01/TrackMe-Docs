@@ -19,6 +19,8 @@ Push notifications through Firebase Cloud Messaging are not active in the curren
 ## Notification Data
 
 - User ID
+- Sender name
+- Sender role
 - Type
 - Title
 - Body
@@ -37,7 +39,7 @@ Push notifications through Firebase Cloud Messaging are not active in the curren
 - `users.read_notification_retention_days` controls only the top-right Web notification dropdown. Read notifications older than this value are hidden from that dropdown; unread notifications are never hidden by age.
 - The dedicated Notifications page shows the full loaded notification history regardless of dropdown retention.
 - The Web client localizes notification display text by notification type and known message patterns, so older English notification rows render in the active UI language.
-- New relationship/program/workout notifications include the relevant person or program name in the stored text, allowing the Notifications page search to match trainer, athlete, or program names.
+- New relationship/program/workout notifications include `senderName`/`senderRole` metadata plus relevant person or program names in the stored text, allowing the Notifications page search to match trainer, athlete, or program names.
 
 ## Event Sources
 
