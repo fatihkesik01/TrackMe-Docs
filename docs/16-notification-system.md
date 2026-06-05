@@ -13,6 +13,8 @@ Push notifications through Firebase Cloud Messaging are not active in the curren
 
 - `RelationshipRequest`
 - `RelationshipAccepted`
+- `RelationshipRejected`
+- `RelationshipEnded`
 - `ProgramAssigned`
 - `WorkoutCompleted`
 
@@ -45,6 +47,8 @@ Push notifications through Firebase Cloud Messaging are not active in the curren
 
 - Relationship request created
 - Relationship request accepted
+- Relationship request rejected
+- Accepted relationship ended
 - Program assigned
 - Athlete completes an in-progress workout from WorkoutMode; the trainer who owns the linked program receives `WorkoutCompleted`
 
@@ -54,9 +58,10 @@ Push notifications through Firebase Cloud Messaging are not active in the curren
 2. After `SaveChangesAsync()` succeeds, the API sends `notification.created` to `Clients.User(userId)`.
 3. The Web app connects to `/hubs/notifications` with the JWT access token.
 4. Incoming notifications are prepended to Web notification state and show a toast.
-5. If the browser was offline or disconnected, the next `/api/notifications` fetch restores the current state.
-6. The topbar dropdown applies read-notification retention locally; the Notifications page does not.
-7. The Notifications page searches across localized title/body, notification type, and original stored title/body.
+5. Relationship, program, and workout notifications also trigger a Web data refresh so open screens reflect the latest relationship/program/session state without a manual browser refresh.
+6. If the browser was offline or disconnected, the next `/api/notifications` fetch restores the current state.
+7. The topbar dropdown applies read-notification retention locally; the Notifications page does not.
+8. The Notifications page searches across localized title/body, notification type, and original stored title/body.
 
 ## Background Jobs
 

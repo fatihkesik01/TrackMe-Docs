@@ -86,6 +86,8 @@ Email match is a fallback for dual-role users whose JWT role does not directly m
 | Request sent      | Target user        | `RelationshipRequest`   |
 | Invite sent       | Target trainer     | `RelationshipRequest`   |
 | Request accepted  | Initiating side    | `RelationshipAccepted`  |
+| Request rejected  | Initiating side    | `RelationshipRejected`  |
+| Relationship ended | Other side        | `RelationshipEnded`     |
 
 ## Program Deactivation on End
 
@@ -110,3 +112,5 @@ The same view component handles both modes. Both TRAINER_NAV and ATHLETE_NAV inc
 Accepted relationships show an "End relationship" action. The Web app displays a confirmation prompt because ending a relationship also deactivates linked trainer programs.
 
 Rejected and ended relationships show a "Reconnect relationship" action. It sends a new request/invite for the same trainer-athlete pair and reuses the existing relationship row.
+
+Relationship notifications are delivered through SignalR. When the Web client receives a relationship notification, it refreshes app data so both sides see the latest relationship status and related program active/passive state without reloading the browser.

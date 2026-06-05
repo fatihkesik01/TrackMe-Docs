@@ -20,6 +20,8 @@ Manages in-app notifications and realtime Web delivery.
 
 - `RelationshipRequest`
 - `RelationshipAccepted`
+- `RelationshipRejected`
+- `RelationshipEnded`
 - `ProgramAssigned`
 - `WorkoutCompleted`
 
@@ -39,5 +41,6 @@ Manages in-app notifications and realtime Web delivery.
 - Auth: JWT bearer token
 - Client event: `notification.created`
 - Server target: `Clients.User(userId)`
+- Web clients refresh app data after relationship/program/workout notifications so currently-open screens reflect changed access, active/passive programs, and session state.
 
 Firebase/mobile push is a future enhancement and is not active in the current deployment.

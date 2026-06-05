@@ -190,7 +190,7 @@ At least one measurement field is required when creating a body metric.
 | POST | `/api/notifications/{id}/read` | Required | Mark one notification as read |
 | POST | `/api/notifications/read-all` | Required | Mark all notifications as read |
 
-Notification types currently used by the app: `RelationshipRequest`, `RelationshipAccepted`, `ProgramAssigned`, `WorkoutCompleted`.
+Notification types currently used by the app: `RelationshipRequest`, `RelationshipAccepted`, `RelationshipRejected`, `RelationshipEnded`, `ProgramAssigned`, `WorkoutCompleted`.
 
 `GET /api/notifications` is the source of truth. Notification DTOs include nullable `senderName` and `senderRole` metadata for display/search. The Web topbar applies the user's `readNotificationRetentionDays` setting locally, hiding only read notifications older than that value. Unread notifications are never hidden by age, and the dedicated Notifications page shows the full loaded notification list.
 
@@ -200,7 +200,7 @@ Realtime Web delivery uses SignalR:
 |-----|------|--------------|-------------|
 | `/hubs/notifications` | Required | `notification.created` | Delivers newly-created notifications to the recipient user |
 
-The Web client authenticates the hub connection with the same JWT access token used by REST requests. REST notification endpoints remain the source of truth for initial load and reconnect recovery.
+The Web client authenticates the hub connection with the same JWT access token used by REST requests. REST notification endpoints remain the source of truth for initial load and reconnect recovery. Relationship, program, and workout notification events also trigger a Web data refresh so open screens update relationship/program/session state without a manual browser refresh.
 
 ## Admin (`/api/admin`)
 

@@ -9,4 +9,6 @@
 - Read-notification retention is a Web topbar display rule, not database deletion.
 - Unread notifications must stay visible in the topbar regardless of age.
 - The full Notifications page must not apply the topbar retention filter.
+- Relationship request, accept, reject, and end events must notify the other affected user.
+- Realtime relationship/program/workout notifications should refresh Web app data so open screens do not require a browser refresh to show new state.
 - Completing a trainer-owned workout as an athlete should notify that trainer.
