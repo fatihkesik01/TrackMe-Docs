@@ -22,7 +22,7 @@ All `/api/*` endpoints require JWT Bearer authentication unless marked as public
 | POST | `/api/auth/logout` | Public | Revoke refresh token |
 | POST | `/api/auth/forgot-password` | Public | Create password reset token |
 | POST | `/api/auth/reset-password` | Public | Reset password with token |
-| PATCH | `/api/auth/profile` | Required | Update profile fields and notification dropdown retention |
+| PATCH | `/api/auth/profile` | Required | Update profile fields, sports list, and notification dropdown retention |
 | PATCH | `/api/auth/preferred-role` | Required | Set preferred UI role (`Athlete` or `Trainer`) |
 | POST | `/api/auth/change-password` | Required | Change password and revoke sessions |
 

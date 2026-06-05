@@ -189,7 +189,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `RelationshipsView`  | Send requests, accept/reject pending, search users                             |
 | `ExercisesView`      | Exercise library, category/equipment/difficulty filters, create/delete         |
 | `AdminView`          | User management, exercise audit (Admin role only)                              |
-| `ProfileView`        | Update name, bio, goal, age, profession, primary sport, training years, notification dropdown retention |
+| `ProfileView`        | Update name, bio, goal, age, profession, sports list, training years, notification dropdown retention |
 | `WorkoutCalendar`    | Monthly calendar via `react-calendar` library; dark theme CSS override; session dot indicators via `tileContent`; green = completed, yellow = in-progress |
 | `ConsistencyGrid`    | Wrapper: shows aggregate stats (streak, 7d, 30d) + WorkoutCalendar            |
 | `ConfirmDialog`      | Shared confirmation modal used for destructive or state-changing actions instead of browser-native confirms |

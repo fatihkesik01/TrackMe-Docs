@@ -17,7 +17,7 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | age | int | nullable |
 | profession | varchar(120) | nullable |
 | training_years | int | nullable |
-| primary_sport | varchar(120) | nullable |
+| primary_sport | varchar(300) | nullable; stores normalized comma-separated sports list for profile display |
 | read_notification_retention_days | int | default 3; topbar dropdown display setting |
 | is_active | bool | |
 | email_verified_at | timestamptz | nullable |

@@ -140,7 +140,8 @@ BodyMetrics
     "age": 28,
     "profession": "Software developer",
     "trainingYears": 4,
-    "primarySport": "Fitness",
+    "primarySport": "Fitness, Running",
+    "sports": ["Fitness", "Running"],
     "readNotificationRetentionDays": 3
   }
 }
