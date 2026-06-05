@@ -125,8 +125,8 @@ All state lives in `AppInner`. No Redux or Zustand.
 4. All `api.*` calls include `Authorization: Bearer <token>` header
 5. On 401, token is cleared and user is redirected to login
 6. `uiRole` is sourced from `currentUser.preferredUiRole` returned by `/api/auth/me`
-7. If `preferredUiRole` is null after login/register, onboarding role-selection screen is shown
-8. Role selection saves to backend via `PATCH /api/auth/preferred-role` and caches in localStorage
+7. If `preferredUiRole` is null after login/register, onboarding asks for the initial UI role plus weight/height unit preferences
+8. Role selection saves to backend via `PATCH /api/auth/preferred-role`; unit preferences save via `PATCH /api/auth/profile`; role is also cached in localStorage
 9. Changing role from topbar uses the shared `ConfirmDialog`, then calls backend + `loadData()`
 
 ## LocalStorage Keys
@@ -143,7 +143,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 |-------------------------------------|---------------------------------------|
 | `booting === true`                  | Loading splash screen                 |
 | `currentUser === null`              | Auth form (login/register)            |
-| `showOnboarding === true`           | Role selection card                   |
+| `showOnboarding === true`           | Role selection plus measurement-unit setup card |
 | Normal                              | Full app shell with sidebar           |
 | `activeWorkoutSession !== null`     | WorkoutMode overlay (full screen)     |
 
@@ -171,8 +171,8 @@ All state lives in `AppInner`. No Redux or Zustand.
 - `NotificationsView` is available to Trainer and Athlete navigation and shows the full loaded notification list without applying the topbar retention filter.
 - `NotificationsView` includes a full-width client-side search across localized notification title/body, sender metadata, type label, and original stored title/body. This supports searching by trainer, athlete, program, or notification text when that data exists in the notification.
 - Notification rows display sender metadata (`senderName`/`senderRole`) when present and infer it for older known message patterns when possible.
-- The profile screen lets users set `readNotificationRetentionDays` (default 3).
-- The profile screen also lets users choose `weightUnit` (`kg`/`lbs`) and `heightUnit` (`cm`/`ft-in`). API values remain canonical (`weightKg`, `heightCm`); Web views convert values for display and convert user input back before saving.
+- The profile screen separates account/profile editing from General Settings. General Settings manages `readNotificationRetentionDays` (default 3), `weightUnit` (`kg`/`lbs`), and `heightUnit` (`cm`/`ft-in`) in a dedicated modal.
+- API values remain canonical (`weightKg`, `heightCm`); Web views convert values for display and convert user input back before saving.
 
 ## Component Responsibilities
 
@@ -190,7 +190,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `RelationshipsView`  | Send requests, accept/reject pending, search users                             |
 | `ExercisesView`      | Exercise library, category/equipment/difficulty filters, create/delete         |
 | `AdminView`          | User management, exercise audit (Admin role only)                              |
-| `ProfileView`        | Update name, bio, goal, age, profession, sports list with per-sport experience years, notification dropdown retention |
+| `ProfileView`        | Update name, bio, goal, age, profession, sports list with per-sport experience years; separate General Settings modal for notification retention and measurement units |
 | `WorkoutCalendar`    | Monthly calendar via `react-calendar` library; dark theme CSS override; session dot indicators via `tileContent`; green = completed, yellow = in-progress |
 | `ConsistencyGrid`    | Wrapper: shows aggregate stats (streak, 7d, 30d) + WorkoutCalendar            |
 | `ConfirmDialog`      | Shared confirmation modal used for destructive or state-changing actions instead of browser-native confirms |
