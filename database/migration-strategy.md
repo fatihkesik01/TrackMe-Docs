@@ -37,6 +37,12 @@ dotnet ef migrations remove --project .\src\TrackMe.Api\TrackMe.Api.csproj --sta
 
 If a wrong migration may already be applied to a shared/production database, do not rewrite it. Create a new corrective migration.
 
+If a migration partially ran in production and created objects but did not write to `__EFMigrationsHistory`, treat it as an incident:
+
+- Do not drop production data casually.
+- Make the pending migration idempotent for the already-created objects, or create a carefully reviewed repair migration if the pending migration is already recorded.
+- Verify the next API startup writes the migration history row and `/api/health` reports the database as reachable.
+
 ### Why manual migration files crash the API
 
 EF Core 9+ throws `PendingModelChangesWarning` as a fatal exception when the compiled model doesn't match the snapshot. A manually written migration will:
