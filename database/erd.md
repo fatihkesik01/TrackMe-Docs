@@ -91,7 +91,7 @@ athletes.id <- body_metrics.athlete_id
 ## Notes
 
 - `users` and `trainers`/`athletes` are linked by matching email, not a direct foreign key.
-- `users` stores shared profile fields (`age`, `profession`, `training_years`, `primary_sport` as a normalized comma-separated sports list) plus `read_notification_retention_days`, which only controls the Web topbar dropdown.
+- `users` stores shared profile fields (`age`, `profession`, `training_years`, `primary_sport` as a normalized comma-separated sports list, and `sports_json` for per-sport experience years) plus `read_notification_retention_days`, which only controls the Web topbar dropdown.
 - `workout_programs.trainer_id` is nullable; null means self-guided.
 - `workout_programs.is_active = false` marks trainer-created programs as passive after a trainer-athlete relationship is ended. Passive programs remain visible/read-only and are reactivated if the same relationship is accepted again.
 - `workout_sessions.program_id` and `workout_sessions.program_day_id` are nullable so session history survives program/day deletion.

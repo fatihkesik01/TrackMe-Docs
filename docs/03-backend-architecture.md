@@ -61,6 +61,7 @@ TrackMe-Api/
         RelationshipQueries.cs
         SlugGenerator.cs
         InputValidator.cs
+        ProfileSports.cs
         RefreshTokenCleanupService.cs
       Program.cs
 ```
@@ -142,6 +143,10 @@ BodyMetrics
     "trainingYears": 4,
     "primarySport": "Fitness, Running",
     "sports": ["Fitness", "Running"],
+    "sportDetails": [
+      { "name": "Fitness", "trainingYears": 3 },
+      { "name": "Running", "trainingYears": 1 }
+    ],
     "readNotificationRetentionDays": 3
   }
 }
@@ -187,7 +192,7 @@ Endpoint access checks follow the same general order:
 
 ## Migrations
 
-28 EF Core migrations are present:
+30 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -219,6 +224,8 @@ Endpoint access checks follow the same general order:
 | 26 | EndRelationshipDeactivatePrograms | Ended relationships deactivate linked trainer programs |
 | 27 | Phase3_FeaturedExercisesList | Featured exercise list with session-backed entries |
 | 28 | ProfileNotificationSettings | Shared profile fields and notification dropdown retention |
+| 29 | ProfileSportsList | Expand profile sport storage for multiple sports |
+| 30 | ProfileSportExperience | Store per-sport experience years in profile sports JSON |
 
 ## Migration Rules
 
