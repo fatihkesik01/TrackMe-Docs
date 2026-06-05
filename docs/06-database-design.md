@@ -16,7 +16,7 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | preferred_ui_role | varchar(20) | nullable; Athlete / Trainer |
 | age | int | nullable |
 | profession | varchar(120) | nullable |
-| training_years | int | nullable; summary value, currently the max per-sport experience year |
+| training_years | numeric(4,1) | nullable; summary value, currently the max per-sport experience year |
 | primary_sport | varchar(300) | nullable; stores normalized comma-separated sports list for profile display |
 | sports_json | varchar(2000) | nullable; JSON list of profile sports with per-sport `trainingYears` |
 | read_notification_retention_days | int | default 3; topbar dropdown display setting |

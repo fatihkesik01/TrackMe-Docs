@@ -26,7 +26,7 @@ All `/api/*` endpoints require JWT Bearer authentication unless marked as public
 | PATCH | `/api/auth/preferred-role` | Required | Set preferred UI role (`Athlete` or `Trainer`) |
 | POST | `/api/auth/change-password` | Required | Change password and revoke sessions |
 
-`GET /api/auth/me`, login, refresh, and profile update responses include `sports` as a legacy name list and `sportDetails` as `{ name, trainingYears }` items for per-sport experience display.
+`GET /api/auth/me`, login, refresh, and profile update responses include `sports` as a legacy name list and `sportDetails` as `{ name, trainingYears }` items for per-sport experience display. `trainingYears` accepts decimal values such as `0.5`.
 
 ## Users (`/api/users`)
 
