@@ -73,11 +73,19 @@ Workout and body-measurement values remain canonical in metric units in the data
 | sender_id | uuid FK -> users | restrict delete |
 | recipient_id | uuid FK -> users | restrict delete |
 | body | varchar(2000) | required |
+| reference_type | varchar(40) | nullable; Program / ProgramExercise |
+| reference_id | uuid | nullable; id of the referenced program or program exercise |
+| reference_program_id | uuid | nullable; referenced program id for navigation/context |
+| reference_exercise_id | uuid | nullable; referenced exercise id when `reference_type = ProgramExercise` |
+| reference_label | varchar(240) | nullable; denormalized display label |
+| reference_detail | varchar(500) | nullable; denormalized display detail |
 | sent_at | timestamptz | UTC |
 | read_at | timestamptz | nullable |
 | is_read | bool | default false |
 
 Indexes on `(sender_id, recipient_id)` and `(recipient_id, is_read)`.
+
+Reference fields are intentionally denormalized and nullable. They let old messages keep readable labels even if a program/exercise is later changed, deactivated, or deleted.
 
 ### trainers
 

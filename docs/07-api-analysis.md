@@ -88,6 +88,7 @@ Direct messages are available only between users with an accepted trainer-athlet
 | GET | `/api/messages` | Required | List conversations for the caller |
 | GET | `/api/messages/contacts` | Required | List accepted relationship contacts the caller can message |
 | GET | `/api/messages/unread-count` | Required | Return unread direct message count |
+| GET | `/api/messages/{userId}/references` | Required | List active programs and program exercises that can be attached to a message with this user |
 | GET | `/api/messages/{userId}` | Required | Return a message thread with another user |
 | POST | `/api/messages` | Required | Send a direct message and notify the recipient |
 | PATCH | `/api/messages/{userId}/read` | Required | Mark messages from one user as read |
@@ -95,10 +96,30 @@ Direct messages are available only between users with an accepted trainer-athlet
 ### Send Message Request
 
 ```json
-{ "recipientId": "guid", "body": "Merhaba" }
+{
+  "recipientId": "guid",
+  "body": "Merhaba",
+  "referenceType": "Program-or-ProgramExercise-or-null",
+  "referenceId": "guid-or-null"
+}
 ```
 
-Sending a message creates a `NewMessage` notification for the recipient and delivers it through SignalR.
+`body` may be empty only when a valid reference is attached. Reference access is validated against the accepted trainer-athlete relationship and active programs.
+
+Direct message responses include nullable reference fields:
+
+```json
+{
+  "referenceType": "Program",
+  "referenceId": "guid",
+  "referenceProgramId": "guid",
+  "referenceExerciseId": null,
+  "referenceLabel": "Strength Block",
+  "referenceDetail": "Trainer Name"
+}
+```
+
+Sending a message creates a `NewMessage` notification for the recipient and delivers `notification.created` through SignalR. The API also emits `message.created` with the direct message DTO so an open Messages screen can update the thread without a browser refresh.
 
 ## Exercises (`/api/exercises`)
 
@@ -222,8 +243,9 @@ Realtime Web delivery uses SignalR:
 | Hub | Auth | Client event | Description |
 |-----|------|--------------|-------------|
 | `/hubs/notifications` | Required | `notification.created` | Delivers newly-created notifications to the recipient user |
+| `/hubs/notifications` | Required | `message.created` | Delivers the newly-created direct message DTO to the recipient user |
 
-The Web client authenticates the hub connection with the same JWT access token used by REST requests. REST notification endpoints remain the source of truth for initial load and reconnect recovery. Relationship, program, and workout notification events also trigger a Web data refresh so open screens update relationship/program/session state without a manual browser refresh.
+The Web client authenticates the hub connection with the same JWT access token used by REST requests. REST notification endpoints remain the source of truth for initial load and reconnect recovery. Relationship, program, and workout notification events also trigger a Web data refresh so open screens update relationship/program/session state without a manual browser refresh. Direct message screens use `message.created` for live thread/conversation updates and `/api/messages` remains the recovery source.
 
 ## Admin (`/api/admin`)
 

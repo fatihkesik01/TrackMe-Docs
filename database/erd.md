@@ -102,3 +102,4 @@ athletes.id <- body_metrics.athlete_id
 - `workout_sessions.program_id` and `workout_sessions.program_day_id` are nullable so session history survives program/day deletion.
 - `exercises.owner_id` is nullable; null means the exercise is seeded/global.
 - `workout_session_exercises` stores planned value snapshots so future program edits do not rewrite training history.
+- `direct_messages` can store one denormalized program or program-exercise reference (`reference_type`, `reference_id`, `reference_program_id`, `reference_exercise_id`, `reference_label`, `reference_detail`). These are nullable reference metadata fields, not enforced foreign keys.

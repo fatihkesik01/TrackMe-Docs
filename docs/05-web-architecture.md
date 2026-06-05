@@ -110,6 +110,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `relationships`           | array     | All relationships for current user             |
 | `notifications`           | array     | In-app notifications                           |
 | `unreadMessageCount`      | number    | Unread direct message badge count              |
+| `realtimeMessage`         | object?   | Latest SignalR direct message payload          |
 
 ### Derived values
 
@@ -169,8 +170,10 @@ All state lives in `AppInner`. No Redux or Zustand.
 - `realtime.js` creates the SignalR connection to `/hubs/notifications`
 - The connection uses the stored JWT access token via `accessTokenFactory`
 - The Web app listens for `notification.created`
+- The Web app listens for `message.created`
 - Incoming notifications are added to `notifications` state and surfaced with a toast
 - `NewMessage` notifications increment the Messages badge and notification clicks route to `MessagesView`.
+- `message.created` carries the direct message DTO. `MessagesView` appends it to the active thread when open, updates the conversation row, marks the active thread read, and refreshes the unread badge.
 - `/api/notifications` remains the recovery path on boot/reconnect or manual refresh
 - The topbar dropdown hides read notifications after `currentUser.readNotificationRetentionDays` days; unread notifications are always shown.
 - `NotificationsView` is available to Trainer and Athlete navigation and shows the full loaded notification list without applying the topbar retention filter.
@@ -184,6 +187,9 @@ All state lives in `AppInner`. No Redux or Zustand.
 - Trainer and Athlete navigation includes `messages`.
 - `MessagesView` loads existing conversations from `/api/messages` and accepted relationship contacts from `/api/messages/contacts`, so a conversation can be started even before the first message exists.
 - Message threads load through `/api/messages/{userId}` and mark that thread read through `/api/messages/{userId}/read`.
+- Program and exercise references for the selected contact load through `/api/messages/{userId}/references`.
+- The composer can attach one structured reference to a program or program-day exercise, then send it with `/api/messages`.
+- Message bubbles render attached references as compact cards with type, label, and detail text.
 - Sending a message posts to `/api/messages`, creates a `NewMessage` notification, and the recipient sees a realtime toast/badge through SignalR.
 
 ## Component Responsibilities

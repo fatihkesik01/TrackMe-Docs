@@ -195,7 +195,7 @@ Endpoint access checks follow the same general order:
 
 ## Migrations
 
-33 EF Core migrations are present:
+34 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -232,6 +232,7 @@ Endpoint access checks follow the same general order:
 | 31 | ProfileTrainingYearsDecimal | Allow decimal profile training years |
 | 32 | UserUnitPreferences | Store user weight and height display-unit preferences |
 | 33 | DirectMessages | Direct message table for trainer-athlete chat |
+| 34 | DirectMessageReferences | Nullable direct message program/exercise reference metadata |
 
 ## Migration Rules
 

@@ -36,6 +36,7 @@ Push notifications through Firebase Cloud Messaging are not active in the curren
 - Notification ownership is always per user.
 - Read status belongs to the recipient.
 - New in-app notifications are sent to active Web clients through SignalR after the database transaction succeeds.
+- Direct messages also emit `message.created` with the direct message DTO after the message and notification transaction succeeds.
 - Realtime delivery failure should not roll back the main transaction.
 - Clients still load `/api/notifications` on boot, so missed realtime events are recovered from the database.
 - Notifications are not physically deleted by the user retention setting.
@@ -61,9 +62,10 @@ Push notifications through Firebase Cloud Messaging are not active in the curren
 3. The Web app connects to `/hubs/notifications` with the JWT access token.
 4. Incoming notifications are prepended to Web notification state and show a toast.
 5. Relationship, program, and workout notifications also trigger a Web data refresh so open screens reflect the latest relationship/program/session state without a manual browser refresh. Message notifications update the unread message badge and route to the Messages page when opened.
-6. If the browser was offline or disconnected, the next `/api/notifications` fetch restores the current state.
-7. The topbar dropdown applies read-notification retention locally; the Notifications page does not.
-8. The Notifications page searches across localized title/body, notification type, and original stored title/body.
+6. Open message screens consume `message.created` to append the new message, update the conversation row, and mark the active thread read when appropriate.
+7. If the browser was offline or disconnected, the next `/api/notifications` and `/api/messages` fetches restore the current state.
+8. The topbar dropdown applies read-notification retention locally; the Notifications page does not.
+9. The Notifications page searches across localized title/body, notification type, and original stored title/body.
 
 ## Background Jobs
 

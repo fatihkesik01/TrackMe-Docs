@@ -42,8 +42,10 @@ Manages in-app notifications and realtime Web delivery.
 - Hub: `/hubs/notifications`
 - Auth: JWT bearer token
 - Client event: `notification.created`
+- Client event: `message.created`
 - Server target: `Clients.User(userId)`
 - Web clients refresh app data after relationship/program/workout notifications so currently-open screens reflect changed access, active/passive programs, and session state.
 - Web clients increment the unread message badge after `NewMessage` notifications.
+- Active message screens consume `message.created` to append the new direct message and refresh the relevant conversation without a page reload.
 
 Firebase/mobile push is a future enhancement and is not active in the current deployment.
