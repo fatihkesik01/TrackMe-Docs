@@ -76,7 +76,7 @@ dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
 ## Migration History (Phase 3)
 
 `Phase3_RepeatPattern_SetWeights_EquipmentIncrements` adds:
-- `workout_programs.repeat_pattern_weeks` (nullable int) — 1/2/4 week repeat cycle
+- `workout_programs.repeat_pattern_weeks` (nullable int) — 1/2/3/4 week repeat cycle
 - `workout_program_days.pattern_week_number` (nullable int) — which week-within-cycle the day belongs to
 - `workout_program_exercise_sets` table — per-set planned weights for program exercises
 - `workout_session_exercises.planned_set_weights_json` (varchar 4000) — JSON snapshot of per-set weights copied from program at session start
@@ -88,7 +88,7 @@ Repeat-pattern application is a data-preserving update path: it may create or up
 ## Migration History (Phase 4)
 
 `Phase4_TemplateTypes_WarmupSets` adds:
-- `program_templates.template_type` (int, no default) — `0` = DayTemplate, `1` = ProgramTemplate (`TemplateType` enum). No `HasDefaultValue()` — sentinel conflict with enum CLR default 0.
+- `program_templates.template_type` (int, no default) — `0` = DayTemplate, `1` = ProgramTemplate, `2` = PatternTemplate (`TemplateType` enum). No `HasDefaultValue()` — sentinel conflict with enum CLR default 0. `PatternTemplate` reuses the same column and does not need a new migration.
 - `workout_program_exercises.warm_up_sets` (int, default 0) — planned warm-up sets per exercise in a program day
 - `workout_session_exercises.planned_warm_up_sets` (int, default 0) — snapshot of warm-up sets taken at session start
 - `workout_set_logs.is_warm_up` (bool, default false) — marks a logged set as a warm-up (excluded from compliance)

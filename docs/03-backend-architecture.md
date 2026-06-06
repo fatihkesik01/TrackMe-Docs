@@ -88,7 +88,7 @@ Admin
 BodyMetrics
 ```
 
-`TemplateEndpoints`, `ClassEndpoints`, and `MarketplaceEndpoints` remain in the repository but are not mapped in `Program.cs`. Template helper logic is still referenced by program creation when a `templateId` is supplied.
+`TemplateEndpoints` is mapped in `Program.cs` for trainer-owned day, program, and pattern templates. `ClassEndpoints` and `MarketplaceEndpoints` remain in the repository but are not mapped.
 
 ## Key Services
 
@@ -196,7 +196,7 @@ Endpoint access checks follow the same general order:
 
 ## Migrations
 
-35 EF Core migrations are present:
+36 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -235,6 +235,7 @@ Endpoint access checks follow the same general order:
 | 33 | DirectMessages | Direct message table for trainer-athlete chat |
 | 34 | DirectMessageReferences | Nullable direct message program/exercise reference metadata |
 | 35 | Phase3_RepeatPattern_SetWeights_EquipmentIncrements | Repeat-pattern programs, per-set planned weights, athlete equipment increments |
+| 36 | Phase4_TemplateTypes_WarmupSets | Template types and warm-up set fields |
 
 ## Migration Rules
 
