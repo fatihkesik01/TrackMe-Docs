@@ -26,7 +26,7 @@ All `/api/*` endpoints require JWT Bearer authentication unless marked as public
 | PATCH | `/api/auth/preferred-role` | Required | Set preferred UI role (`Athlete` or `Trainer`) |
 | POST | `/api/auth/change-password` | Required | Change password and revoke sessions |
 
-`GET /api/auth/me`, login, refresh, and profile update responses include `sports` as a legacy name list and `sportDetails` as `{ name, trainingYears }` items for per-sport experience display. `trainingYears` accepts decimal values such as `0.5`. Responses also include `weightUnit` (`kg` or `lbs`) and `heightUnit` (`cm` or `ft-in`). API and database weight/height fields remain canonical (`weightKg`, `heightCm`); Web clients convert values at the input/display boundary.
+`GET /api/auth/me`, login, refresh, and profile update responses include `sports` as a legacy name list and `sportDetails` as `{ name, trainingYears }` items for per-sport experience display. `trainingYears` accepts decimal values such as `0.5`. Responses also include `weightUnit` (`kg` or `lbs`) and `heightUnit` (`cm` or `ft-in`). API and database weight/height fields remain canonical (`weightKg`, `heightCm`); Web clients convert values at the input/display boundary. Responses also include `dumbbellIncrementKg` (default 2.0) and `barbellPlatePerSideKg` (default 2.5) — athlete equipment increment settings used by the program builder and workout mode for the +Weight button. `PATCH /api/auth/profile` accepts the same two fields; values must be > 0 and ≤ 50.
 
 ## Users (`/api/users`)
 
@@ -145,9 +145,10 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
 | PUT | `/api/programs/{id}/days/{dayId}` | Required | Update day title/notes |
 | DELETE | `/api/programs/{id}/days/{dayId}` | Required | Delete day |
 | PATCH | `/api/programs/{id}/days/{dayId}/reschedule` | Required | Set day rescheduled date |
-| POST | `/api/programs/{id}/days/{dayId}/exercises` | Required | Add exercise to day |
-| PUT | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Update day exercise |
+| POST | `/api/programs/{id}/days/{dayId}/exercises` | Required | Add exercise to day (optional `setWeights` array for per-set planned weights) |
+| PUT | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Update day exercise (optional `setWeights` array) |
 | DELETE | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Remove exercise from day |
+| POST | `/api/programs/{id}/apply-pattern` | Required | Copy pattern-week days to all subsequent weeks in the program duration |
 
 ### Create Program Request
 
@@ -159,9 +160,31 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
   "description": "Optional notes",
   "startsOn": "2026-06-01",
   "endsOn": "2026-08-24",
-  "templateId": null
+  "templateId": null,
+  "repeatPatternWeeks": 1
 }
 ```
+
+`repeatPatternWeeks` — `null` (no repeat), `1`, `2`, or `4`. When set, `POST /apply-pattern` fills all weeks by copying the pattern period's days.
+
+### Add/Update Exercise Request (Phase 3)
+
+```json
+{
+  "exerciseId": "guid",
+  "sets": 4,
+  "reps": "8-10",
+  "targetWeightKg": 80.0,
+  "setWeights": [
+    { "setNumber": 1, "plannedWeightKg": 75.0 },
+    { "setNumber": 2, "plannedWeightKg": 80.0 },
+    { "setNumber": 3, "plannedWeightKg": 80.0 },
+    { "setNumber": 4, "plannedWeightKg": 82.5 }
+  ]
+}
+```
+
+`setWeights` is optional. When provided, per-set planned weights override the uniform `targetWeightKg` in workout mode. Existing set weights are replaced on each PUT.
 
 Access rules:
 
