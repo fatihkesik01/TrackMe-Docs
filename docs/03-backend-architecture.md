@@ -192,10 +192,11 @@ Endpoint access checks follow the same general order:
 - Program deletion cascades program days/exercises.
 - Historical sessions keep their records; `program_id` and `program_day_id` are nullable where needed.
 - Session exercises store planned snapshots so later program edits do not rewrite history.
+- Repeat-pattern application reuses/updates generated program days and must not delete linked workout sessions.
 
 ## Migrations
 
-34 EF Core migrations are present:
+35 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -233,6 +234,7 @@ Endpoint access checks follow the same general order:
 | 32 | UserUnitPreferences | Store user weight and height display-unit preferences |
 | 33 | DirectMessages | Direct message table for trainer-athlete chat |
 | 34 | DirectMessageReferences | Nullable direct message program/exercise reference metadata |
+| 35 | Phase3_RepeatPattern_SetWeights_EquipmentIncrements | Repeat-pattern programs, per-set planned weights, athlete equipment increments |
 
 ## Migration Rules
 

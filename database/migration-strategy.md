@@ -83,7 +83,19 @@ dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
 - `app_users.dumbbell_increment_kg` (numeric 5,2 default 2.0) — athlete dumbbell weight increment
 - `app_users.barbell_plate_per_side_kg` (numeric 5,2 default 2.5) — athlete barbell plate increment per side
 
-Total migrations: 22.
+Repeat-pattern application is a data-preserving update path: it may create or update generated program days/exercises, but it must not delete workout sessions already linked to generated days.
+
+## Migration History (Phase 4)
+
+`Phase4_TemplateTypes_WarmupSets` adds:
+- `program_templates.template_type` (int, no default) — `0` = DayTemplate, `1` = ProgramTemplate (`TemplateType` enum). No `HasDefaultValue()` — sentinel conflict with enum CLR default 0.
+- `workout_program_exercises.warm_up_sets` (int, default 0) — planned warm-up sets per exercise in a program day
+- `workout_session_exercises.planned_warm_up_sets` (int, default 0) — snapshot of warm-up sets taken at session start
+- `workout_set_logs.is_warm_up` (bool, default false) — marks a logged set as a warm-up (excluded from compliance)
+- `program_template_exercises.warm_up_sets` (int, default 0) — warm-up sets for template exercises
+- `program_template_exercises.target_weight_kg` (numeric 7,3, nullable) — target weight for template exercises
+
+Total migrations: 23.
 
 ## Rules
 

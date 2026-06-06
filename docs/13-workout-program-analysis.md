@@ -24,15 +24,17 @@ WorkoutProgram
 | `endsOn` | DateOnly | defaults to startsOn + 28 days |
 | `isActive` | bool | false when the trainer-athlete relationship is ended |
 | `templateId` | Guid? | optional — copies days/exercises from template on creation |
+| `repeatPatternWeeks` | int? | nullable; 1, 2, or 4 week repeat cycle |
 | `createdAt` | DateTimeOffset | |
 
 ## Day Fields
 
 | Field | Type | Notes |
 |---|---|---|
-| `dayNumber` | int | must be unique within program |
+| `dayNumber` | int | non-unique; multiple workouts may share the same calendar day |
 | `title` | string | e.g. "Push A", "Upper Body" |
 | `notes` | string? | |
+| `patternWeekNumber` | int? | week within the repeat cycle |
 
 ## Exercise Fields
 
@@ -46,6 +48,7 @@ WorkoutProgram
 | `targetRpe` | int? | 1–10 |
 | `restSeconds` | int? | ≥ 0 |
 | `notes` | string? | |
+| `setWeights` | array? | optional per-set planned weights |
 
 ## Creation Flow
 
@@ -105,6 +108,9 @@ The web app provides an Excel-style full-page program builder (`ProgramBuilderVi
 
 - Left panel: day list with exercise count badges
 - Right panel: exercise table with inline editing (Sets / Reps / Target kg / RPE / Rest)
+- Optional per-set planned weights for exercises such as 100/110/120 kg bench sets
+- Quick buttons for +weight, +reps, and +sets; +weight uses the exercise equipment and the athlete's dumbbell/barbell increment settings
+- Repeat pattern apply copies 1, 2, or 4 week blocks to later weeks and reuses existing generated days so linked workout sessions are preserved
 - Last performance hint per exercise row (fetched from analytics API)
 - Accessible to Trainer-JWT users and Athlete-JWT users in Trainer uiMode
 
@@ -140,3 +146,5 @@ Day 2 - Pull
 For the first version, program edits are simple. Session history is independent and
 unaffected by future program changes. For a future version, introduce program versioning
 with snapshots.
+
+Pattern re-apply is also history-safe: generated program days may be updated or added, but linked workout sessions must not be deleted as part of refreshing the pattern.

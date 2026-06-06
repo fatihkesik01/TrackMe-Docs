@@ -20,6 +20,7 @@ erDiagram
 
     workout_programs ||--o{ workout_program_days : contains
     workout_program_days ||--o{ workout_program_exercises : has
+    workout_program_exercises ||--o{ workout_program_exercise_sets : has_set_weights
     workout_program_days ||--o{ workout_sessions : planned_day_for
 
     exercises ||--o{ workout_program_exercises : planned_in
@@ -54,6 +55,7 @@ erDiagram
 | workout_programs | Trainer-led or self-guided programs |
 | workout_program_days | Planned days in a program, with optional rescheduled date |
 | workout_program_exercises | Planned exercises per program day |
+| workout_program_exercise_sets | Optional per-set planned weights for a program exercise |
 | workout_sessions | Actual workout sessions, optionally linked to a program and day |
 | workout_session_exercises | Exercises tracked inside a session |
 | workout_set_logs | Set-level workout logs |
@@ -77,6 +79,7 @@ trainers.id <- workout_programs.trainer_id
 athletes.id <- workout_programs.athlete_id
 workout_programs.id <- workout_program_days.program_id
 workout_program_days.id <- workout_program_exercises.day_id
+workout_program_exercises.id <- workout_program_exercise_sets.program_exercise_id
 
 athletes.id <- workout_sessions.athlete_id
 workout_programs.id <- workout_sessions.program_id
@@ -96,10 +99,11 @@ athletes.id <- body_metrics.athlete_id
 ## Notes
 
 - `users` and `trainers`/`athletes` are linked by matching email, not a direct foreign key.
-- `users` stores shared profile fields (`age`, `profession`, `training_years`, `primary_sport` as a normalized comma-separated sports list, and `sports_json` for per-sport experience years) plus `read_notification_retention_days`, which only controls the Web topbar dropdown, and display preferences (`weight_unit`, `height_unit`). Workout weights remain stored in kilograms and body height remains stored in centimeters; clients convert for display/input.
+- `users` stores shared profile fields (`age`, `profession`, `training_years`, `primary_sport` as a normalized comma-separated sports list, and `sports_json` for per-sport experience years) plus `read_notification_retention_days`, which only controls the Web topbar dropdown, display preferences (`weight_unit`, `height_unit`), and athlete-owned equipment increments (`dumbbell_increment_kg`, `barbell_plate_per_side_kg`). Workout weights remain stored in kilograms and body height remains stored in centimeters; clients convert for display/input.
 - `workout_programs.trainer_id` is nullable; null means self-guided.
 - `workout_programs.is_active = false` marks trainer-created programs as passive after a trainer-athlete relationship is ended. Passive programs remain visible/read-only and are reactivated if the same relationship is accepted again.
 - `workout_sessions.program_id` and `workout_sessions.program_day_id` are nullable so session history survives program/day deletion.
 - `exercises.owner_id` is nullable; null means the exercise is seeded/global.
-- `workout_session_exercises` stores planned value snapshots so future program edits do not rewrite training history.
+- `workout_programs.repeat_pattern_weeks` and `workout_program_days.pattern_week_number` support 1, 2, or 4 week repeat cycles. Reapplying a pattern must not delete workout sessions for generated days.
+- `workout_program_exercise_sets` stores optional per-set planned weights. `workout_session_exercises.planned_set_weights_json` snapshots those values at workout start so future program edits do not rewrite training history.
 - `direct_messages` can store one denormalized program or program-exercise reference (`reference_type`, `reference_id`, `reference_program_id`, `reference_exercise_id`, `reference_label`, `reference_detail`). These are nullable reference metadata fields, not enforced foreign keys.

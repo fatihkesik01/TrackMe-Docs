@@ -200,8 +200,8 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `AthletesView`       | Athlete list, create athlete, navigate to AthleteDetailView                    |
 | `AthleteDetailView`  | Tabs: Overview, Programs, Sessions, Progress for one athlete                   |
 | `ProgramsView`       | Full-width program row list, create program (w/ duration selector), open builder/viewer |
-| `ProgramBuilderView` | Day + exercise editor (read/write); includes `ProgramCalendar` full-width below the layout showing program days (teal dots) and completed sessions (green dots); clicking a date opens the add-day form pre-filled; `LastPerfBanner` per exercise row shows per-set actual vs planned |
-| `WorkoutMode`        | Full-screen workout overlay; prev/next nav and dots inside the exercise card   |
+| `ProgramBuilderView` | Day + exercise editor (read/write); repeat-pattern apply/propagation; per-exercise quick buttons for +weight/+reps/+sets; optional per-set planned weights; `LastPerfBanner` per exercise row shows per-set actual vs planned |
+| `WorkoutMode`        | Full-screen workout overlay; prev/next nav and dots inside the exercise card; set logging uses planned per-set weights and athlete equipment increments for +weight |
 | `SessionsView`       | Session history (list or calendar view toggle), manual session log form        |
 | `BodyMetricsView`    | 9-field measurement form, weight/fat/muscle trend charts                       |
 | `NotificationsView`  | Full notification history; mark-one and mark-all-read actions                  |
@@ -209,7 +209,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `RelationshipsView`  | Send requests, accept/reject pending, search users                             |
 | `ExercisesView`      | Exercise library, category/equipment/difficulty filters, create/delete         |
 | `AdminView`          | User management, exercise audit (Admin role only)                              |
-| `ProfileView`        | Update name, bio, goal, age, profession, sports list with per-sport experience years; separate General Settings modal for notification retention and measurement units |
+| `ProfileView`        | Update name, bio, goal, age, profession, sports list with per-sport experience years; separate General Settings modal for notification retention, measurement units, and athlete-owned dumbbell/barbell increment settings |
 | `WorkoutCalendar`    | Monthly calendar via `react-calendar` library; dark theme CSS override; session dot indicators via `tileContent`; green = completed, yellow = in-progress |
 | `ConsistencyGrid`    | Wrapper: shows aggregate stats (streak, 7d, 30d) + WorkoutCalendar            |
 | `ConfirmDialog`      | Shared confirmation modal used for destructive or state-changing actions instead of browser-native confirms |
@@ -229,6 +229,18 @@ Both `ProgramsView` and `AthleteDetailView` include a duration selector:
 | Özel Tarih | —           | User picks both start and end dates manually                     |
 
 Default: `startsOn` = today, `duration` = Haftalık, `count` = 1.
+
+## Repeat Pattern And Set Weights
+
+Program creation can set `repeatPatternWeeks` to 1, 2, or 4. `ProgramBuilderView` applies the first pattern block to later weeks through `/api/programs/{id}/apply-pattern`; the API updates/reuses generated days and must preserve any workout sessions already linked to those days.
+
+Exercise rows support quick increment buttons:
+
+| Button | Behaviour |
+|--------|-----------|
+| +W | Uses exercise equipment: dumbbell uses `currentUser.dumbbellIncrementKg`, barbell uses `currentUser.barbellPlatePerSideKg * 2`, other equipment uses +1 kg. If per-set weights exist, all planned set weights increment together. |
+| +R | Single numeric reps increment by 1; time values such as `30s` increment by 5 seconds; ranges and text values stay unchanged. |
+| +S | Adds one set and copies the last planned set weight when per-set weights are present. |
 
 ## Program Edit Permissions (Frontend)
 

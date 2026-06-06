@@ -2,7 +2,7 @@
 
 PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `TrackMeDbContext.OnModelCreating()` are the schema source of truth.
 
-## Active Tables (17)
+## Active Tables (18)
 
 ### users
 
@@ -22,6 +22,8 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | read_notification_retention_days | int | default 3; topbar dropdown display setting |
 | weight_unit | varchar(8) | default `kg`; user display/input preference, valid values `kg`, `lbs` |
 | height_unit | varchar(8) | default `cm`; user display/input preference, valid values `cm`, `ft-in` |
+| dumbbell_increment_kg | numeric(5,2) | default 2.0; athlete-owned dumbbell weight increment |
+| barbell_plate_per_side_kg | numeric(5,2) | default 2.5; athlete-owned barbell smallest plate per side |
 | is_active | bool | |
 | email_verified_at | timestamptz | nullable |
 | created_at | timestamptz | UTC |
@@ -167,6 +169,7 @@ Unique index on `(slug, owner_id)`.
 | starts_on | date | required |
 | ends_on | date | required |
 | is_active | bool | true for active programs; false after relationship end |
+| repeat_pattern_weeks | int | nullable; 1, 2, or 4 week repeat cycle |
 | created_at | timestamptz | |
 
 ### workout_program_days
@@ -179,6 +182,7 @@ Unique index on `(slug, owner_id)`.
 | title | varchar(180) | required |
 | notes | varchar(1000) | nullable |
 | rescheduled_date | date | nullable |
+| pattern_week_number | int | nullable; week within repeat cycle |
 | created_at | timestamptz | |
 
 Non-unique index on `(program_id, day_number)` allows multiple workouts on the same calendar day.
@@ -198,6 +202,18 @@ Non-unique index on `(program_id, day_number)` allows multiple workouts on the s
 | rest_seconds | int | nullable |
 | notes | varchar(500) | nullable |
 | created_at | timestamptz | |
+
+### workout_program_exercise_sets
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| program_exercise_id | uuid FK -> workout_program_exercises | cascade delete |
+| set_number | int | required |
+| planned_weight_kg | numeric(6,2) | nullable |
+| created_at | timestamptz | |
+
+Unique index on `(program_exercise_id, set_number)`. When present, these rows define per-set planned weights and override the uniform `target_weight_kg` for workout start snapshots.
 
 ### workout_sessions
 
@@ -233,6 +249,7 @@ Index on `(athlete_id, created_at)`.
 | planned_weight_kg | numeric(6,2) | nullable |
 | planned_rpe | int | nullable |
 | planned_rest_seconds | int | nullable |
+| planned_set_weights_json | varchar(4000) | nullable; JSON snapshot of per-set planned weights |
 | trainer_note | varchar(500) | nullable |
 | created_at | timestamptz | |
 
@@ -303,6 +320,7 @@ trainers -> workout_programs.trainer_id
 athletes -> workout_programs.athlete_id
 workout_programs -> workout_program_days
 workout_program_days -> workout_program_exercises
+workout_program_exercises -> workout_program_exercise_sets
 workout_program_days -> workout_sessions.program_day_id
 
 athletes -> workout_sessions
