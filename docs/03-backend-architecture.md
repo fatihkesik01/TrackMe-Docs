@@ -88,7 +88,7 @@ Admin
 BodyMetrics
 ```
 
-`TemplateEndpoints` is mapped in `Program.cs` for trainer-owned day, program, and pattern templates. `ClassEndpoints` and `MarketplaceEndpoints` remain in the repository but are not mapped.
+`TemplateEndpoints` is mapped in `Program.cs` for trainer-owned day and program templates. The backend enum still contains `PatternTemplate` for compatibility with existing rows, but the Web template management UI no longer exposes pattern template creation. `ClassEndpoints` and `MarketplaceEndpoints` remain in the repository but are not mapped.
 
 ## Key Services
 

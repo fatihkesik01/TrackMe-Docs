@@ -169,7 +169,7 @@ Unique index on `(slug, owner_id)`.
 | starts_on | date | required |
 | ends_on | date | required |
 | is_active | bool | true for active programs; false after relationship end |
-| repeat_pattern_weeks | int | nullable; 1, 2, 3, or 4 week repeat cycle |
+| repeat_pattern_weeks | int | nullable; 1, 2, or 4 week repeat cycle |
 | created_at | timestamptz | |
 
 ### workout_program_days
@@ -294,7 +294,7 @@ These tables remain in the EF model and database schema, but their route registr
 
 | Table | Originally for |
 |-------|----------------|
-| program_templates | Trainer-owned day, program, and pattern templates |
+| program_templates | Trainer-owned day and program templates; `PatternTemplate` enum values may exist for compatibility but are not exposed in the current Web template UI |
 | program_template_days | Template structure |
 | program_template_exercises | Template exercises |
 | template_purchases | Marketplace purchases |

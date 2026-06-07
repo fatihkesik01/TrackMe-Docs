@@ -24,7 +24,7 @@ WorkoutProgram
 | `endsOn` | DateOnly | defaults to startsOn + 28 days |
 | `isActive` | bool | false when the trainer-athlete relationship is ended |
 | `templateId` | Guid? | optional — copies days/exercises from template on creation |
-| `repeatPatternWeeks` | int? | nullable; 1, 2, 3, or 4 week repeat cycle |
+| `repeatPatternWeeks` | int? | nullable; 1, 2, or 4 week repeat cycle |
 | `createdAt` | DateTimeOffset | |
 
 ## Day Fields
@@ -109,9 +109,9 @@ The web app provides an Excel-style full-page program builder (`ProgramBuilderVi
 - Left panel: day list with exercise count badges
 - Right panel: exercise table with inline editing (Sets / Reps / Target kg / RPE / Rest)
 - Optional per-set planned weights for exercises such as 100/110/120 kg bench sets
-- Day/program/pattern templates can be copied into the program as snapshots
+- Day and program templates can be copied into the program as snapshots
 - Quick buttons for +weight, +reps, and +sets; +weight uses the exercise equipment and the athlete's dumbbell/barbell increment settings
-- Repeat pattern apply copies 1, 2, 3, or 4 week blocks to later weeks and reuses existing generated days so linked workout sessions are preserved
+- Repeat pattern apply copies 1, 2, or 4 week blocks to later weeks and reuses existing generated days so linked workout sessions are preserved
 - Last performance hint per exercise row (fetched from analytics API)
 - Accessible to Trainer-JWT users and Athlete-JWT users in Trainer uiMode
 

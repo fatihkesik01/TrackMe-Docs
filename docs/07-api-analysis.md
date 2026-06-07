@@ -149,7 +149,7 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
 | PUT | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Update day exercise (optional `setWeights` array) |
 | DELETE | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Remove exercise from day |
 | POST | `/api/programs/{id}/apply-pattern` | Required | Copy/update pattern-week days to all subsequent weeks in the program duration without deleting linked workout sessions |
-| POST | `/api/programs/{id}/apply-pattern/{weeks}` | Required | Set repeat weeks to 1/2/3/4 and apply the pattern |
+| POST | `/api/programs/{id}/apply-pattern/{weeks}` | Required | Set repeat weeks to 1/2/4 and apply the pattern |
 
 ### Create Program Request
 
@@ -166,7 +166,7 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
 }
 ```
 
-`repeatPatternWeeks` — `null` (no repeat), `1`, `2`, `3`, or `4`. Programs are normally created with `null`; `POST /apply-pattern/{weeks}` lets the builder set and apply the repeat later.
+`repeatPatternWeeks` — `null` (no repeat), `1`, `2`, or `4`. Programs are normally created with `null`; `POST /apply-pattern/{weeks}` lets the builder set and apply the repeat later.
 
 ## Templates (`/api/templates`)
 
@@ -176,13 +176,13 @@ Template routes are active and trainer-scoped. Access is resolved from the real 
 |--------|------|------|-------|
 | GET | `/api/templates` | Required | List current trainer templates |
 | GET | `/api/templates/{id}` | Required | Template detail with days/exercises |
-| POST | `/api/templates` | Required | Create `DayTemplate`, `ProgramTemplate`, or `PatternTemplate` |
+| POST | `/api/templates` | Required | Create `DayTemplate` or `ProgramTemplate` from the Web UI; `PatternTemplate` is backend-compatible but not exposed in the current template page |
 | PUT | `/api/templates/{id}` | Required | Update title/description |
 | DELETE | `/api/templates/{id}` | Required | Delete template |
 | POST | `/api/templates/{id}/days` | Required | Add template day |
 | POST | `/api/templates/{id}/days/{dayId}/exercises` | Required | Add template exercise, including warm-up count and plan fields |
 | POST | `/api/templates/{id}/apply-to-day` | Required | Copy a day template into a program day |
-| POST | `/api/templates/{id}/apply-to-program` | Required | Copy a program or pattern template into a program |
+| POST | `/api/templates/{id}/apply-to-program` | Required | Copy a program template into a program |
 
 ### Template/Pattern Error Messages
 
@@ -191,7 +191,7 @@ API error messages from template and pattern operations are returned as `{ "mess
 | API message | i18n key |
 |---|---|
 | `no days in the pattern period to copy.` | `errNoDaysInPattern` |
-| `repeat pattern must be 1, 2, 3, or 4 weeks.` | `errRepeatPatternInvalid` |
+| `repeat pattern must be 1, 2, or 4 weeks.` | `errRepeatPatternInvalid` |
 | `program has no repeat pattern set.` | `errNoRepeatPattern` |
 | `template was not found.` | `errTemplateNotFound` |
 | `program was not found.` | `errProgramNotFound` |

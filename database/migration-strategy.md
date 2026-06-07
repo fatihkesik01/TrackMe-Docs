@@ -76,7 +76,7 @@ dotnet ef database update --project .\src\TrackMe.Api\TrackMe.Api.csproj
 ## Migration History (Phase 3)
 
 `Phase3_RepeatPattern_SetWeights_EquipmentIncrements` adds:
-- `workout_programs.repeat_pattern_weeks` (nullable int) — 1/2/3/4 week repeat cycle
+- `workout_programs.repeat_pattern_weeks` (nullable int) — 1/2/4 week repeat cycle
 - `workout_program_days.pattern_week_number` (nullable int) — which week-within-cycle the day belongs to
 - `workout_program_exercise_sets` table — per-set planned weights for program exercises
 - `workout_session_exercises.planned_set_weights_json` (varchar 4000) — JSON snapshot of per-set weights copied from program at session start
