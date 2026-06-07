@@ -184,6 +184,18 @@ Template routes are active and trainer-scoped. Access is resolved from the real 
 | POST | `/api/templates/{id}/apply-to-day` | Required | Copy a day template into a program day |
 | POST | `/api/templates/{id}/apply-to-program` | Required | Copy a program or pattern template into a program |
 
+### Template/Pattern Error Messages
+
+API error messages from template and pattern operations are returned as `{ "message": "..." }` in the response body. These messages are translated in the frontend by an `apiErr()` helper function present in both `TemplatesView` and `ProgramBuilderView`. Known translated messages:
+
+| API message | i18n key |
+|---|---|
+| `no days in the pattern period to copy.` | `errNoDaysInPattern` |
+| `repeat pattern must be 1, 2, 3, or 4 weeks.` | `errRepeatPatternInvalid` |
+| `program has no repeat pattern set.` | `errNoRepeatPattern` |
+| `template was not found.` | `errTemplateNotFound` |
+| `program was not found.` | `errProgramNotFound` |
+
 ### Add/Update Exercise Request (Phase 3)
 
 ```json

@@ -232,7 +232,7 @@ Default: `startsOn` = today, `duration` = Haftalık, `count` = 1.
 
 ## Repeat Pattern And Set Weights
 
-Programs are created without a selected repeat by default. `ProgramBuilderView` can later apply a 1, 2, 3, or 4 week pattern through `/api/programs/{id}/apply-pattern/{weeks}`; the API updates/reuses generated days and must preserve any workout sessions already linked to those days. Trainer-owned day/program/pattern templates are managed on the Templates page, which uses list/detail views, multi-select exercise adding, warm-up counts, shared plan fields, and trainer-facing guidance text.
+Programs are created without a selected repeat by default. `ProgramBuilderView` can later apply a 1, 2, 3, or 4 week pattern through `/api/programs/{id}/apply-pattern/{weeks}`; the API updates/reuses generated days and must preserve any workout sessions already linked to those days. Trainer-owned day/program/pattern templates are managed on the `TemplatesView` page; it shows three tabs (Gün / Program / Desen), each with a concise description row below the tabs, a compact 3-column create form, a card grid listing templates, and a detail view with a split layout (day cards on the left, build-steps guide + add-day form on the right). Multi-select exercise adding, warm-up counts, and shared plan fields are all supported in the template detail view. API errors from pattern/template operations are translated into the active language via an `apiErr()` helper in both `TemplatesView` and `ProgramBuilderView`.
 
 Exercise rows support quick increment buttons:
 
