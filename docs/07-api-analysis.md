@@ -170,7 +170,7 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
 
 ## Templates (`/api/templates`)
 
-Template routes are active and trainer-scoped. Templates are copied into programs/days as snapshots; later template edits do not mutate existing programs.
+Template routes are active and trainer-scoped. Access is resolved from the real trainer profile, not only the current JWT role, so dual-role users in trainer UI mode can manage their trainer-owned templates. Templates are copied into programs/days as snapshots; later template edits do not mutate existing programs.
 
 | Method | Path | Auth | Notes |
 |--------|------|------|-------|
