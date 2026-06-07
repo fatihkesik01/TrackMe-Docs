@@ -290,17 +290,16 @@ At least one measurement field must be non-null. Index on `(athlete_id, date)`.
 
 ## Inactive Schema Tables
 
-These tables remain in the EF model and database schema, but their route registrations are not active in `Program.cs`.
+These tables remain in the EF model and database schema but are not exposed via active endpoints.
 
-| Table | Originally for |
-|-------|----------------|
-| program_templates | Trainer-owned day and program templates; `PatternTemplate` enum values may exist for compatibility but are not exposed in the current Web template UI |
-| program_template_days | Template structure |
-| program_template_exercises | Template exercises |
-| template_purchases | Marketplace purchases |
-| training_classes | Group sessions |
-| class_participants | Group session attendance |
-| user_integrations | Wearable/device integrations |
+| Table | Status |
+|-------|--------|
+| program_templates | Active — used by TemplateEndpoints |
+| program_template_days | Active — used by TemplateEndpoints |
+| program_template_exercises | Active — used by TemplateEndpoints |
+| user_integrations | Inactive — wearable/device integrations, schema reserved |
+
+`training_classes`, `class_participants`, and `template_purchases` were dropped in **Phase22_RemoveDeadFeatures** migration. `price_cents` and `is_marketplace` columns were removed from `program_templates` at the same time.
 
 ## Key Relationships
 

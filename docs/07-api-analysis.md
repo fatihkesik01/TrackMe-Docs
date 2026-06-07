@@ -215,6 +215,8 @@ API error messages from template and pattern operations are returned as `{ "mess
 
 `setWeights` is optional. When provided, per-set planned weights override the uniform `targetWeightKg` in workout mode. Existing set weights are replaced on each PUT. Program and session exercise responses include `exerciseEquipment` so clients can apply dumbbell/barbell increment rules.
 
+The `reps` field is validated against the pattern `^\d+$|^\d+-\d+$|^\d+\+$|^AMRAP$` (case-insensitive, max 20 chars). Invalid values return 400. Null/empty reps are accepted (no reps planned).
+
 Access rules:
 
 - Trainers can create programs for accepted athletes.
@@ -233,6 +235,7 @@ Access rules:
 | POST | `/api/sessions/start` | Required | Start in-progress session from WorkoutMode |
 | GET | `/api/sessions/{id}` | Required | Get session detail with exercises and sets |
 | POST | `/api/sessions/{id}/complete` | Required | Complete in-progress session |
+| DELETE | `/api/sessions/{id}` | Required | Cancel an InProgress session (sets status to Cancelled) |
 | GET | `/api/sessions/{sessionId}/exercises` | Required | List session exercises |
 | POST | `/api/sessions/{sessionId}/exercises` | Required | Add exercise to session |
 | PATCH | `/api/sessions/{sessionId}/exercises/{exerciseId}/feeling` | Required | Update completion/feeling for exercise |
@@ -240,6 +243,10 @@ Access rules:
 | PUT | `/api/sessions/{sessionId}/exercises/{exerciseId}/sets/{setId}` | Required | Update set log |
 | DELETE | `/api/sessions/{sessionId}/exercises/{exerciseId}` | Required | Remove exercise from session |
 | PATCH | `/api/sessions/{sessionId}/exercises/{exerciseId}/review` | Required | Trainer writes review note |
+
+`SessionStatus` values: `InProgress`, `Completed`, `Cancelled`. Cancelling an already-cancelled session returns 409 Conflict.
+
+When adding a set log (`POST …/sets`), warm-up set ordering is enforced: warm-up sets must have lower `setNumber` than any working set for the same exercise, and vice versa. Violations return 400 with a descriptive message.
 
 ### Start Session Request
 
@@ -277,6 +284,19 @@ When an Athlete completes an in-progress session linked to a trainer-owned progr
 | DELETE | `/api/body-metrics/{id}` | Required | Delete measurement |
 
 At least one measurement field is required when creating a body metric.
+
+## Export (`/api/export`)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/export/body-metrics` | Required | Download caller's body measurement history |
+| GET | `/api/export/sessions` | Required | Download caller's session + set log history |
+
+Query parameter `format=csv` (default) returns a `text/csv` file download with `Content-Disposition: attachment`. `format=json` returns a JSON array. Only `Athlete` and dual-role `Trainer` callers with an athlete profile can export. Admin callers receive 400.
+
+Body metrics CSV columns: `date, weight_kg, body_fat_pct, muscle_pct, height_cm, waist_cm, chest_cm, arms_cm, legs_cm, hips_cm, notes`
+
+Sessions CSV columns: `session_date, session_title, program, status, duration_min, session_rpe, exercise, set_number, is_warmup, reps, weight_kg, set_rpe, is_completed, notes` — one row per set log (denormalized).
 
 ## Notifications (`/api/notifications`)
 

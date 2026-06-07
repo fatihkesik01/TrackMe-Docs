@@ -26,11 +26,10 @@ TrackMe-Api/
         AnalyticsEndpoints.cs
         BodyMetricEndpoints.cs
         NotificationEndpoints.cs
+        TemplateEndpoints.cs
+        ExportEndpoints.cs
         AdminEndpoints.cs
         EndpointHelpers.cs
-        TemplateEndpoints.cs     - retained helper/API file; routes not registered
-        ClassEndpoints.cs        - routes not registered
-        MarketplaceEndpoints.cs  - routes not registered
       Migrations/
       Models/
         AppUser.cs
@@ -49,9 +48,7 @@ TrackMe-Api/
         DirectMessage.cs
         RefreshToken.cs
         PasswordResetToken.cs
-        ProgramTemplate.cs       - inactive schema
-        TrainingClass.cs         - inactive schema
-        TemplatePurchase.cs      - inactive schema
+        ProgramTemplate.cs
         UserIntegration.cs       - inactive schema
         Enums.cs
         Dtos.cs
@@ -86,9 +83,11 @@ Notifications
 Messages
 Admin
 BodyMetrics
+Templates
+Export
 ```
 
-`TemplateEndpoints` is mapped in `Program.cs` for trainer-owned day and program templates. The backend enum still contains `PatternTemplate` for compatibility with existing rows, but the Web template management UI no longer exposes pattern template creation. `ClassEndpoints` and `MarketplaceEndpoints` remain in the repository but are not mapped.
+`TemplateEndpoints` is mapped in `Program.cs` for trainer-owned day and program templates. The backend enum still contains `PatternTemplate` for compatibility with existing rows, but the Web template management UI no longer exposes pattern template creation. `ClassEndpoints` and `MarketplaceEndpoints` were removed (Phase22 migration dropped their tables).
 
 ## Key Services
 
@@ -196,7 +195,7 @@ Endpoint access checks follow the same general order:
 
 ## Migrations
 
-36 EF Core migrations are present:
+38 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -236,6 +235,8 @@ Endpoint access checks follow the same general order:
 | 34 | DirectMessageReferences | Nullable direct message program/exercise reference metadata |
 | 35 | Phase3_RepeatPattern_SetWeights_EquipmentIncrements | Repeat-pattern programs, per-set planned weights, athlete equipment increments |
 | 36 | Phase4_TemplateTypes_WarmupSets | Template types and warm-up set fields |
+| 37 | Phase22_RemoveDeadFeatures | Drop training_classes, class_participants, template_purchases; remove price_cents/is_marketplace from program_templates |
+| 38 | Phase23_SessionDayIndex | Index on workout_sessions.program_day_id |
 
 ## Migration Rules
 
