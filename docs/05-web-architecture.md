@@ -200,7 +200,7 @@ All state lives in `AppInner`. No Redux or Zustand.
 | `AthletesView`       | Athlete list, create athlete, navigate to AthleteDetailView                    |
 | `AthleteDetailView`  | Tabs: Overview, Programs, Sessions, Progress for one athlete                   |
 | `ProgramsView`       | Full-width program row list, create program (w/ duration selector), open builder/viewer |
-| `ProgramBuilderView` | Day + exercise editor (read/write); has a dedicated preparation tools panel for day/program templates and fixed 1/2/4 week repeat-pattern apply/propagation; per-exercise quick buttons for +weight/+reps/+sets; optional per-set planned weights; `LastPerfBanner` per exercise row shows per-set actual vs planned |
+| `ProgramBuilderView` | Day + exercise editor (read/write); preparation tools panel for day/program templates and 1–4 week repeat-pattern apply/propagation; per-exercise color-coded quick buttons for ±Kilo/±Tekrar/±Set; optional per-set planned weights; `LastPerfBanner` per exercise row shows per-set actual vs planned |
 | `WorkoutMode`        | Full-screen workout overlay; prev/next nav and dots inside the exercise card; set logging uses planned per-set weights, warm-up rows, set notes, and athlete equipment increments for +weight |
 | `SessionsView`       | Session history (list or calendar view toggle), manual session log form        |
 | `BodyMetricsView`    | 9-field measurement form, weight/fat/muscle trend charts                       |
@@ -234,13 +234,16 @@ Default: `startsOn` = today, `duration` = Haftalık, `count` = 1.
 
 Programs are created without a selected repeat by default. `ProgramBuilderView` can later apply a 1, 2, or 4 week pattern through `/api/programs/{id}/apply-pattern/{weeks}`; the API updates/reuses generated days and must preserve any workout sessions already linked to those days. Trainer-owned day/program templates are managed on the `TemplatesView` page; it shows two tabs (Gün / Program), a compact create form, a card grid listing templates, and a detail view with a split layout (day cards on the left, build-steps guide + add-day form on the right). Multi-select exercise adding now mirrors the Program Builder flow: trainers select exercises first, then enter shared sets, warm-up count, reps, target kg, RPE, rest, and plan note. API errors from pattern/template operations are translated into the active language via an `apiErr()` helper in both `TemplatesView` and `ProgramBuilderView`.
 
-Exercise rows support quick increment buttons:
+Exercise rows have six color-coded quick-action buttons (teal = increment, amber = decrement) plus a Set Ağırlıkları toggle and a warm-up count input:
 
 | Button | Behaviour |
 |--------|-----------|
-| +W | Uses exercise equipment: dumbbell uses `currentUser.dumbbellIncrementKg`, barbell uses `currentUser.barbellPlatePerSideKg * 2`, other equipment uses +1 kg. If per-set weights exist, all planned set weights increment together. |
-| +R | Single numeric reps increment by 1; time values such as `30s` increment by 5 seconds; ranges and text values stay unchanged. |
-| +S | Adds one set and copies the last planned set weight when per-set weights are present. |
+| +Kilo | Uses exercise equipment: dumbbell → `dumbbellIncrementKg`, barbell → `barbellPlatePerSideKg × 2`, other → +1 kg. All per-set weights increment together when set weights are present. |
+| −Kilo | Same increment amount subtracted; clamps to 0. Per-set weights decrement together. |
+| +Tekrar | Numeric reps +1; time values (`30s`, `30sn`) +5 s; ranges (`8-10`) and AMRAP stay unchanged. |
+| −Tekrar | Numeric reps −1 (minimum 1); time values −5 s (minimum 5); ranges/AMRAP unchanged. |
+| +Set | Adds one set; copies the last planned set weight into the new slot when set weights are present. |
+| −Set | Removes the last set (minimum 1); trims the set-weights array accordingly. |
 
 ## Program Edit Permissions (Frontend)
 
