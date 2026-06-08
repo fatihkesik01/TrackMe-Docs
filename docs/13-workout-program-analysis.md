@@ -126,19 +126,27 @@ This filtering prevents cross-mode leakage for dual-role users (Athlete-JWT with
 | Priority | Condition | Button shown |
 |----------|-----------|-------------|
 | 1 | Session status is InProgress | Continue button |
-| 2 | Day is today (rescheduledDate matches) | Start button |
-| 3 | Session status is Completed (past day) | Completed badge |
-| 4 | Otherwise | Pull to Today button |
+| 2 | Day is today AND session was completed today (local date match) | Completed badge — no restart |
+| 3 | Day is today | Start button |
+| 4 | Otherwise (including previously-completed past days) | Pull to Today button |
 
-IsToday takes priority over Completed so that pulling a previously-completed day to today always shows the Start button, allowing a new session on the same program day.
+"Completed today" is determined by comparing the session's `completedAt` timestamp to the current local date. A day pulled to today via "Bugüne Çek" whose session was completed on a previous date does NOT count as completed today, so the Start button appears.
+
+The API (`StartSession`) enforces the same rule: it allows creating a new session for a day whose existing completed session's `completedAt` is before today UTC, but returns `409 Conflict` when the same day was completed within today's UTC window.
 
 ## Last Performance in Program Builder
 
 `GET /api/analytics/athletes/{id}/exercises/{exerciseId}/last-performance` returns `ExerciseLastPerformanceDto[]` (up to 5 entries, newest first, empty array when no data). `ProgramBuilderView` stores per-exercise arrays in `lastPerformances` state.
 
 `LastPerfBanner` component displays:
-- **Most recent**: date, plan details, trainer note, and per-set detail rows
-- **Older (up to 4 more)**: compact rows with date and set summary (e.g. `3×8 @ 80kg`)
+- **Most recent**: date, plan details, trainer note, athlete note, and per-set detail rows
+- **Older (up to 4 more)**: compact rows with date, set summary (e.g. `3×8 @ 80kg`), trainer note, and athlete note
+
+Athlete note (`WorkoutSessionExercise.Notes`) is a general per-exercise note written by the athlete in WorkoutMode. It is saved via `PATCH /api/sessions/{sessionId}/exercises/{exerciseId}/note` when the athlete clicks "Setleri Kaydet". It is returned in both `SessionExerciseDto.notes` and `ExerciseLastPerformanceDto.athleteNote`.
+
+## WorkoutMode Set Logging
+
+Only sets explicitly ticked as done (`row.done === true`) are logged to the API. Unticked rows are skipped — they do not produce set log entries. The `isCompleted` flag on saved sets reflects the tick state.
 
 ## Program Builder (Web)
 
