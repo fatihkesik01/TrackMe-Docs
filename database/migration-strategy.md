@@ -95,7 +95,35 @@ Repeat-pattern application is a data-preserving update path: it may create or up
 - `program_template_exercises.warm_up_sets` (int, default 0) — warm-up sets for template exercises
 - `program_template_exercises.target_weight_kg` (numeric 7,3, nullable) — target weight for template exercises
 
-Total migrations: 23.
+## Migration History (Phase 22–24)
+
+`Phase22_RemoveDeadFeatures` drops unused tables and columns:
+- `training_classes`, `class_participants`, `template_purchases` tabloları silindi
+- `program_templates.price_cents` ve `is_marketplace` sütunları kaldırıldı
+
+`Phase23_SessionDayIndex` adds:
+- Index on `workout_sessions.program_day_id` — session-day lookup performance
+
+`Phase24_PerSetDetails` adds:
+- `workout_program_exercise_sets.planned_reps` (varchar 20, nullable) — per-set planned reps override
+- `workout_program_exercise_sets.planned_rpe` (int, nullable) — per-set planned RPE override
+- `workout_program_exercise_sets.planned_rest_seconds` (int, nullable) — per-set planned rest override
+- `workout_program_exercise_sets.notes` (varchar 500, nullable) — per-set trainer note
+
+## Migration History (Phase 5)
+
+`Phase5_TemplateExerciseSetWeights` adds:
+- `program_template_exercise_sets` table — per-set planned data for template exercises, mirroring `workout_program_exercise_sets`
+  - `id` uuid PK
+  - `template_exercise_id` uuid FK → `program_template_exercises` (cascade delete)
+  - `set_number` int — 1-based set index; unique constraint with `template_exercise_id`
+  - `planned_weight_kg` numeric(6,2) nullable
+  - `planned_reps` varchar(20) nullable
+  - `planned_rpe` int nullable
+  - `planned_rest_seconds` int nullable
+  - `notes` varchar(500) nullable
+  - `created_at` timestamptz
+- `ApplyToDay` and `ApplyToProgram` endpoints now copy `program_template_exercise_sets` rows as `workout_program_exercise_sets` when applying a template
 
 ## Rules
 

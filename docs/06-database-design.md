@@ -211,9 +211,13 @@ Non-unique index on `(program_id, day_number)` allows multiple workouts on the s
 | program_exercise_id | uuid FK -> workout_program_exercises | cascade delete |
 | set_number | int | required |
 | planned_weight_kg | numeric(6,2) | nullable |
+| planned_reps | varchar(20) | nullable — per-set reps override (added Phase24) |
+| planned_rpe | int | nullable — per-set RPE override (added Phase24) |
+| planned_rest_seconds | int | nullable — per-set rest override (added Phase24) |
+| notes | varchar(500) | nullable — per-set trainer note (added Phase24) |
 | created_at | timestamptz | |
 
-Unique index on `(program_exercise_id, set_number)`. When present, these rows define per-set planned weights and override the uniform `target_weight_kg` for workout start snapshots.
+Unique index on `(program_exercise_id, set_number)`. These rows define per-set planned data (weight, reps, RPE, rest, note) and override the exercise-level defaults for workout start snapshots.
 
 ### workout_sessions
 
@@ -297,6 +301,7 @@ These tables remain in the EF model and database schema but are not exposed via 
 | program_templates | Active — used by TemplateEndpoints |
 | program_template_days | Active — used by TemplateEndpoints |
 | program_template_exercises | Active — used by TemplateEndpoints |
+| program_template_exercise_sets | Active — per-set planned data for template exercises (added Phase5_TemplateExerciseSetWeights) |
 | user_integrations | Inactive — wearable/device integrations, schema reserved |
 
 `training_classes`, `class_participants`, and `template_purchases` were dropped in **Phase22_RemoveDeadFeatures** migration. `price_cents` and `is_marketplace` columns were removed from `program_templates` at the same time.
@@ -334,6 +339,10 @@ workout_sessions -> athlete_featured_exercises.session_id
 athletes -> athlete_featured_exercises.athlete_id
 
 athletes -> body_metrics
+
+program_templates -> program_template_days
+program_template_days -> program_template_exercises
+program_template_exercises -> program_template_exercise_sets
 ```
 
 ## Migration Workflow

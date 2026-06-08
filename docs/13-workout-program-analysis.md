@@ -108,9 +108,10 @@ The web app provides an Excel-style full-page program builder (`ProgramBuilderVi
 
 - Left panel: day list with exercise count badges
 - Right panel: exercise table with inline editing (Sets / Reps / Target kg / RPE / Rest)
-- Optional per-set planned weights for exercises such as 100/110/120 kg bench sets
-- Day and program templates can be copied into the program as snapshots
-- Quick buttons for +weight, +reps, and +sets; +weight uses the exercise equipment and the athlete's dumbbell/barbell increment settings
+- Per-set planned weight, reps, RPE, rest, and note per exercise row; rendered via shared `ExerciseEditorSection` component (also used by TemplatesView)
+- Edit mode uses `visibility:hidden` on quick-action buttons so layout is pixel-identical in view vs edit mode
+- Day and program templates can be copied into the program as snapshots, including per-set data
+- Quick buttons for ±weight/±reps/±RPE/±rest per set row; +weight uses exercise equipment and athlete's dumbbell/barbell increment settings; defaults: reps=10, RPE=5, rest=60s
 - Repeat pattern apply copies 1, 2, or 4 week blocks to later weeks and reuses existing generated days so linked workout sessions are preserved
 - Last performance hint per exercise row (fetched from analytics API)
 - Accessible to Trainer-JWT users and Athlete-JWT users in Trainer uiMode

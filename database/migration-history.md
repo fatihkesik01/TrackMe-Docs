@@ -49,6 +49,9 @@ Tüm EF Core migration'larının ne eklediğini açıklayan referans belgesi.
 | 36 | `Phase3_RepeatPattern_SetWeights_EquipmentIncrements` | `workout_programs.repeat_pattern_weeks`; `workout_program_exercise_sets` tablosu (set bazında planlı ağırlık); `workout_program_days.pattern_week_number` |
 | 37 | `Phase4_TemplateTypes_WarmupSets` | `program_templates.template_type` (DayTemplate/ProgramTemplate/PatternTemplate); `warm_up_sets` alanı exercise tablolarına eklendi |
 | 38 | `Phase22_RemoveDeadFeatures` | `training_classes`, `class_participants`, `template_purchases` tabloları silindi; `program_templates`'ten `price_cents`, `is_marketplace` kaldırıldı |
+| 39 | `Phase23_SessionDayIndex` | `workout_sessions.program_day_id` üzerine index — session-gün sorgu performansı |
+| 40 | `Phase24_PerSetDetails` | `workout_program_exercise_sets`'e `planned_reps`, `planned_rpe`, `planned_rest_seconds`, `notes` sütunları — set bazında tam plan desteği |
+| 41 | `Phase5_TemplateExerciseSetWeights` | `program_template_exercise_sets` tablosu — template egzersizleri için set bazında planlı veri (ağırlık/tekrar/RPE/dinlenme/not); ApplyToDay ve ApplyToProgram bu verileri programa kopyalar |
 
 ---
 

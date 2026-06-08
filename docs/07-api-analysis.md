@@ -180,9 +180,12 @@ Template routes are active and trainer-scoped. Access is resolved from the real 
 | PUT | `/api/templates/{id}` | Required | Update title/description |
 | DELETE | `/api/templates/{id}` | Required | Delete template |
 | POST | `/api/templates/{id}/days` | Required | Add template day |
-| POST | `/api/templates/{id}/days/{dayId}/exercises` | Required | Add template exercise, including warm-up count and plan fields |
-| POST | `/api/templates/{id}/apply-to-day` | Required | Copy a day template into a program day |
-| POST | `/api/templates/{id}/apply-to-program` | Required | Copy a program template into a program |
+| DELETE | `/api/templates/{id}/days/{dayId}` | Required | Remove template day |
+| POST | `/api/templates/{id}/days/{dayId}/exercises` | Required | Add template exercise; optional `setWeights` array for per-set data |
+| PUT | `/api/templates/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Update template exercise; optional `setWeights` replaces existing per-set data |
+| DELETE | `/api/templates/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Remove template exercise |
+| POST | `/api/templates/{id}/apply-to-day` | Required | Copy a day template into a program day (preserves per-set data) |
+| POST | `/api/templates/{id}/apply-to-program` | Required | Copy a program template into a program (preserves per-set data) |
 
 ### Template/Pattern Error Messages
 
@@ -196,7 +199,7 @@ API error messages from template and pattern operations are returned as `{ "mess
 | `template was not found.` | `errTemplateNotFound` |
 | `program was not found.` | `errProgramNotFound` |
 
-### Add/Update Exercise Request (Phase 3)
+### Add/Update Exercise Request (Program Day)
 
 ```json
 {
@@ -205,15 +208,17 @@ API error messages from template and pattern operations are returned as `{ "mess
   "reps": "8-10",
   "targetWeightKg": 80.0,
   "setWeights": [
-    { "setNumber": 1, "plannedWeightKg": 75.0 },
-    { "setNumber": 2, "plannedWeightKg": 80.0 },
-    { "setNumber": 3, "plannedWeightKg": 80.0 },
-    { "setNumber": 4, "plannedWeightKg": 82.5 }
+    { "setNumber": 1, "plannedWeightKg": 75.0, "plannedReps": "8", "plannedRpe": 7, "plannedRestSeconds": 120, "notes": null },
+    { "setNumber": 2, "plannedWeightKg": 80.0, "plannedReps": "8", "plannedRpe": 8, "plannedRestSeconds": 120, "notes": null }
   ]
 }
 ```
 
-`setWeights` is optional. When provided, per-set planned weights override the uniform `targetWeightKg` in workout mode. Existing set weights are replaced on each PUT. Program and session exercise responses include `exerciseEquipment` so clients can apply dumbbell/barbell increment rules.
+`setWeights` is optional. When provided, per-set planned weight/reps/RPE/rest/notes override the uniform exercise-level defaults in workout mode. Existing set weights are replaced on each PUT. Program and session exercise responses include `exerciseEquipment` so clients can apply dumbbell/barbell increment rules.
+
+### Add/Update Template Exercise Request (Phase 5)
+
+Same shape as program day exercises. `setWeights` is also supported for template exercises and is preserved when the template is applied to a program day or program via `apply-to-day` / `apply-to-program`.
 
 The `reps` field is validated against the pattern `^\d+$|^\d+-\d+$|^\d+\+$|^AMRAP$` (case-insensitive, max 20 chars). Invalid values return 400. Null/empty reps are accepted (no reps planned).
 
