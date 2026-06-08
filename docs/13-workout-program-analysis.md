@@ -121,6 +121,25 @@ This filtering prevents cross-mode leakage for dual-role users (Athlete-JWT with
 
 `onStartWorkout` is passed from App.jsx only when the viewer has an `athleteProfileId` (i.e., the JWT role includes an athlete profile). Trainer-JWT users never receive `onStartWorkout` and therefore cannot start workouts. Athletes can start workouts from both read-only (trainer-assigned) and edit-mode (self-guided) programs.
 
+### Day button priority order
+
+| Priority | Condition | Button shown |
+|----------|-----------|-------------|
+| 1 | Session status is InProgress | Continue button |
+| 2 | Day is today (rescheduledDate matches) | Start button |
+| 3 | Session status is Completed (past day) | Completed badge |
+| 4 | Otherwise | Pull to Today button |
+
+IsToday takes priority over Completed so that pulling a previously-completed day to today always shows the Start button, allowing a new session on the same program day.
+
+## Last Performance in Program Builder
+
+`GET /api/analytics/athletes/{id}/exercises/{exerciseId}/last-performance` returns `ExerciseLastPerformanceDto[]` (up to 5 entries, newest first, empty array when no data). `ProgramBuilderView` stores per-exercise arrays in `lastPerformances` state.
+
+`LastPerfBanner` component displays:
+- **Most recent**: date, plan details, trainer note, and per-set detail rows
+- **Older (up to 4 more)**: compact rows with date and set summary (e.g. `3×8 @ 80kg`)
+
 ## Program Builder (Web)
 
 The web app provides an Excel-style full-page program builder (`ProgramBuilderView`):
