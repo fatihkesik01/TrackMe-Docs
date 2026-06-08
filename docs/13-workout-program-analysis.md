@@ -102,6 +102,25 @@ Inactive program behavior:
 - WorkoutMode cannot be started from an inactive program day.
 - If the same trainer-athlete relationship is requested again and accepted, inactive trainer-created programs for that pair are reactivated.
 
+## Program Visibility Rules (Web)
+
+Program lists (`ProgramsView`) apply role-based filtering on the frontend after the API returns all relevant programs:
+
+| uiMode | Visible programs |
+|--------|-----------------|
+| Trainer | Only programs where `trainerId === current user's trainer entity` — excludes self-guided programs of athletes |
+| Athlete | Only programs where `athleteId === current user's athlete profile` — excludes programs written as a trainer for students |
+
+This filtering prevents cross-mode leakage for dual-role users (Athlete-JWT with a trainer entity). The API for Athlete-JWT deliberately returns both roles' programs in a single call so both modes work without extra round-trips; the frontend separates them by `uiRole`.
+
+## Start Workout Rules (Web)
+
+`ProgramBuilderView` shows the start/continue/status section when:
+- `onStartWorkout` prop is provided (non-null), AND
+- The current user's `athleteProfileId` matches `program.athleteId` (the program belongs to this user as athlete), OR the view is in `effectiveReadOnly` mode.
+
+`onStartWorkout` is passed from App.jsx only when the viewer has an `athleteProfileId` (i.e., the JWT role includes an athlete profile). Trainer-JWT users never receive `onStartWorkout` and therefore cannot start workouts. Athletes can start workouts from both read-only (trainer-assigned) and edit-mode (self-guided) programs.
+
 ## Program Builder (Web)
 
 The web app provides an Excel-style full-page program builder (`ProgramBuilderView`):
