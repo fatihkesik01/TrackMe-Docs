@@ -188,7 +188,7 @@ The web app provides an Excel-style full-page program builder (`ProgramBuilderVi
   - **Tamamlanan Antrenmanlar** — clickable rows (when `programDayId` is present); clicking navigates to the linked program day.
 - Rows use the `prog-cal-row-btn` class — simple buttons with `ChevronRight` indicator, no inline expansion.
 - In edit mode an "Bu Güne Antrenman Ekle" button adds a new day scheduled on the selected date.
-- A **Hazırlık Araçları** toolbar is rendered inside the calendar detail panel, above the planned workouts section. It has three rows: (1) day template + program template selects side by side, (2) repeat pattern select + months cap (1–3) + apply button. All operations use the selected calendar date as their reference point (`fromDate`).
+- A **Hazırlık Araçları** toolbar is rendered inside the calendar detail panel, above the planned workouts section. It has three rows: (1) day template + program template selects side by side, (2) repeat pattern select + months cap (1–3) + apply button. All operations use the selected calendar date as their reference point (`fromDate`). **Day template**: if the selected date already has a program day the template is applied to it; if not, a new program day is auto-created at that date (using the template name as the day title) and the template is applied immediately — no manual day creation step needed.
 
 ## Compliance Tracking
 
