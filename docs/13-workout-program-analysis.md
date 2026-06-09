@@ -138,15 +138,27 @@ The API (`StartSession`) enforces the same rule: it allows creating a new sessio
 
 `GET /api/analytics/athletes/{id}/exercises/{exerciseId}/last-performance` returns `ExerciseLastPerformanceDto[]` (up to 5 entries, newest first, empty array when no data). `ProgramBuilderView` stores per-exercise arrays in `lastPerformances` state.
 
+`ExerciseLastPerformanceDto` fields: `SessionId`, `Date`, `SessionTitle`, `Sets`, `TrainerNote`, `PlannedSets`, `PlannedReps`, `PlannedWeightKg`, `AthleteNote`.
+
 `LastPerfBanner` component displays:
-- **Most recent**: date, plan details, trainer note, athlete note, and per-set detail rows
-- **Older (up to 4 more)**: compact rows with date, set summary (e.g. `3×8 @ 80kg`), trainer note, and athlete note
+- **Performans** (top): the specific session for the currently-selected program day, matched by `lp.sessionId === daySession.id`. Shows date, trainer note, athlete note, and per-set detail rows with color coding (green = met/exceeded target, orange = below target, red `✗` = skipped).
+- **Son Performanslar** (bottom): up to 4 previous sessions for that exercise, displayed as **side-by-side compact columns** (`PrevPerfColumn`). Each column shows date + per-set `reps×weight` + RPE indicator + note icons.
+
+Set color coding in `PerfSetRows`: compares each working set's reps/weight against `plannedReps`/`plannedWeightKg`. Warm-up sets are shown with a neutral badge and dimmed opacity, no target comparison.
 
 Athlete note (`WorkoutSessionExercise.Notes`) is a general per-exercise note written by the athlete in WorkoutMode. It is saved via `PATCH /api/sessions/{sessionId}/exercises/{exerciseId}/note` when the athlete clicks "Setleri Kaydet". It is returned in both `SessionExerciseDto.notes` and `ExerciseLastPerformanceDto.athleteNote`.
+
+## Day Editing Lock
+
+When the athlete completes a workout for a day (`daySession.status === 'Completed'`), `isDayLocked` becomes `true` for that day. The trainer cannot edit exercises, add exercises, or change set plans for that day. A lock notice is shown in the program builder. The lock is frontend-only visibility control; the API already rejects edits on inactive programs.
 
 ## WorkoutMode Set Logging
 
 Only sets explicitly ticked as done (`row.done === true`) are logged to the API. Unticked rows are skipped — they do not produce set log entries. The `isCompleted` flag on saved sets reflects the tick state.
+
+Warm-up set rows default to empty reps and RPE (no pre-filled placeholders). Working set rows default to `reps=10`, `RPE=5` when no planned values are set.
+
+On "Antrenmanı Tamamla", any ticked-but-not-yet-saved sets are auto-logged and all session exercises are marked `isCompleted=true` so analytics can include them.
 
 ## Program Builder (Web)
 
