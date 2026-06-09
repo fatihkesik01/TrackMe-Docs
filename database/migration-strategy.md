@@ -125,6 +125,13 @@ Repeat-pattern application is a data-preserving update path: it may create or up
   - `created_at` timestamptz
 - `ApplyToDay` and `ApplyToProgram` endpoints now copy `program_template_exercise_sets` rows as `workout_program_exercise_sets` when applying a template
 
+## Migration History (Phase 3 continued)
+
+`Phase3_NullableEndsOn` modifies:
+- `workout_programs.ends_on` — changed from `NOT NULL` to nullable `DateOnly?` — enables indefinite programs with no fixed end date
+
+Pattern-application behavior change: `apply-pattern` now accepts an optional `months` route segment (1–3). When present it caps the fill range to that many months from `StartsOn`. For programs without an `ends_on` this parameter determines how far ahead to generate days. For programs with an end date, the effective limit is `min(endsOn, startsOn + months)`.
+
 ## Rules
 
 - **Never write migration files manually** — always use `dotnet ef migrations add`
