@@ -198,22 +198,39 @@ All state lives in `AppInner`. No Redux or Zustand.
 | Component            | Responsibility                                                                 |
 |----------------------|--------------------------------------------------------------------------------|
 | `DashboardView`      | Stats cards for trainer or athlete based on `uiRole`                           |
-| `AthletesView`       | Athlete list, create athlete, navigate to AthleteDetailView                    |
+| `AthletesView`       | Athlete list with full-width search bar (search by name/email); create athlete, navigate to AthleteDetailView |
 | `AthleteDetailView`  | Tabs: Overview, Programs, Sessions, Progress for one athlete                   |
-| `ProgramsView`       | Full-width program row list, create program (w/ duration selector), open builder/viewer |
-| `ProgramBuilderView` | Day + exercise editor (read/write); preparation tools panel for day/program templates and 1–4 week repeat-pattern apply/propagation; exercise rows rendered via `ExerciseEditorSection`; per-set rows with ±weight/±reps/±RPE/±rest/set-note buttons; edit mode uses `visibility:hidden` so layout is pixel-identical view vs edit; `LastPerfBanner` per exercise row shows per-set actual vs planned |
+| `ProgramsView`       | Full-width program row list with client-side search filter (by program title or athlete name); create program (w/ duration selector), open builder/viewer |
+| `ProgramBuilderView` | Day + exercise editor (read/write); preparation tools panel for day/program templates and 1–4 week repeat-pattern apply/propagation; exercise rows rendered via `ExerciseEditorSection`; per-set rows with ±weight/±reps/±RPE/±rest/set-note buttons; edit mode uses `visibility:hidden` so layout is pixel-identical view vs edit; `LastPerfBanner` per exercise row shows per-set actual vs planned; **Program Calendar** with custom ‹/› month navigation and clickable planned/completed rows that open the selected day in the builder below; **Day list** sorted newest-to-oldest by effective date with Hepsi/Haftalık/Aylık filter toggle, ‹/› period navigation, and ↺ reset |
 | `WorkoutMode`        | Full-screen workout overlay; prev/next nav and dots inside the exercise card; set logging uses planned per-set weights, warm-up rows, set notes, and athlete equipment increments for +weight |
 | `SessionsView`       | Session history (list or calendar view toggle), manual session log form        |
 | `BodyMetricsView`    | 9-field measurement form, weight/fat/muscle trend charts                       |
 | `NotificationsView`  | Full notification history; mark-one and mark-all-read actions                  |
 | `MessagesView`       | Direct message conversations for accepted trainer-athlete relationships        |
 | `RelationshipsView`  | Send requests, accept/reject pending, search users                             |
-| `ExercisesView`      | Exercise library, category/equipment/difficulty filters, create/delete         |
+| `ExercisesView`      | Exercise library with full-width search bar; category/equipment/difficulty chip filters; create/delete |
 | `AdminView`          | User management, exercise audit (Admin role only)                              |
 | `ProfileView`        | Update name, bio, goal, age, profession, sports list with per-sport experience years; separate General Settings modal for notification retention, measurement units, and athlete-owned dumbbell/barbell increment settings |
 | `WorkoutCalendar`    | Monthly calendar via `react-calendar` library; dark theme CSS override; session dot indicators via `tileContent`; green = completed, yellow = in-progress |
 | `ConsistencyGrid`    | Wrapper: shows aggregate stats (streak, 7d, 30d) + WorkoutCalendar            |
 | `ConfirmDialog`      | Shared confirmation modal used for destructive or state-changing actions instead of browser-native confirms |
+
+## Shared Search Pattern
+
+All list views (`AthletesView`, `ExercisesView`, `ProgramsView`, `NotificationsView`) use a consistent `.search-toolbar` strip at the top of the card:
+
+```css
+.search-toolbar {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.search-toolbar .search-bar { flex: 1; max-width: none; }
+```
+
+The `.search-bar` inside the toolbar is full-width, has a teal focus ring, and filters the list client-side. A count badge sits to the right of the input.
 
 ## Program List Layout
 

@@ -113,6 +113,8 @@ Program lists (`ProgramsView`) apply role-based filtering on the frontend after 
 
 This filtering prevents cross-mode leakage for dual-role users (Athlete-JWT with a trainer entity). The API for Athlete-JWT deliberately returns both roles' programs in a single call so both modes work without extra round-trips; the frontend separates them by `uiRole`.
 
+A second **client-side text search** is applied on top of the role filter. The search bar (`.search-toolbar` pattern) filters by program `title` or `athleteName` (case-insensitive substring match). Filtering is reactive; the count badge reflects the filtered total. When the search query produces no results the empty state says "Sonuç bulunamadı"; when no programs exist at all it says "Henüz program yok".
+
 ## Start Workout Rules (Web)
 
 `ProgramBuilderView` shows the start/continue/status section when:
@@ -164,7 +166,7 @@ On "Antrenmanı Tamamla", any ticked-but-not-yet-saved sets are auto-logged and 
 
 The web app provides an Excel-style full-page program builder (`ProgramBuilderView`):
 
-- Left panel: day list with exercise count badges
+- Left panel: day list sorted **newest-to-oldest** by effective date (`rescheduledDate` if set, else `startsOn + dayNumber − 1`). Toggle button cycles through **Hepsi / Haftalık / Aylık** views; in Haftalık/Aylık mode ‹/› buttons navigate by week/month and ↺ resets to Hepsi. Shows "Bu dönemde gün yok" when no days fall in the selected period.
 - Right panel: exercise table with inline editing (Sets / Reps / Target kg / RPE / Rest)
 - Per-set planned weight, reps, RPE, rest, and note per exercise row; rendered via shared `ExerciseEditorSection` component (also used by TemplatesView)
 - Edit mode uses `visibility:hidden` on quick-action buttons so layout is pixel-identical in view vs edit mode
@@ -173,6 +175,18 @@ The web app provides an Excel-style full-page program builder (`ProgramBuilderVi
 - Repeat pattern apply copies 1, 2, or 4 week blocks to later weeks and reuses existing generated days so linked workout sessions are preserved
 - Last performance hint per exercise row (fetched from analytics API)
 - Accessible to Trainer-JWT users and Athlete-JWT users in Trainer uiMode
+
+## Program Calendar (Web)
+
+`ProgramBuilderView` includes a **Program Calendar** card below the builder:
+
+- Custom ‹/› month navigation buttons (DayPicker built-in nav is disabled; controlled via `month` + `onMonthChange` state)
+- Calendar dots: teal dot = planned program day, green dot = completed session. Multiple planned days on the same date show a count.
+- Clicking a date shows a detail panel with two sections:
+  - **Planlanan Antrenmanlar** — clickable rows; clicking navigates to that day in the builder panel below and scrolls it into view.
+  - **Tamamlanan Antrenmanlar** — clickable rows (when `programDayId` is present); clicking navigates to the linked program day.
+- Rows use the `prog-cal-row-btn` class — simple buttons with `ChevronRight` indicator, no inline expansion.
+- In edit mode an "Bu Güne Antrenman Ekle" button adds a new day scheduled on the selected date.
 
 ## Compliance Tracking
 
