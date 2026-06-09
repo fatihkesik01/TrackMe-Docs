@@ -148,8 +148,9 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
 | POST | `/api/programs/{id}/days/{dayId}/exercises` | Required | Add exercise to day (optional `setWeights` array for per-set planned weights) |
 | PUT | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Update day exercise (optional `setWeights` array) |
 | DELETE | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Remove exercise from day |
-| POST | `/api/programs/{id}/apply-pattern` | Required | Copy/update pattern-week days to all subsequent weeks in the program duration without deleting linked workout sessions |
-| POST | `/api/programs/{id}/apply-pattern/{weeks}` | Required | Set repeat weeks to 1/2/4 and apply the pattern |
+| POST | `/api/programs/{id}/apply-pattern` | Required | Copy/update pattern-week days using program start as source; preserves linked workout sessions |
+| POST | `/api/programs/{id}/apply-pattern/{weeks}` | Required | Set repeat weeks to 1/2/3/4 and apply the pattern |
+| POST | `/api/programs/{id}/apply-pattern/{weeks}/{months}` | Required | Set repeat weeks, cap fill range to 1–3 months; accepts `?fromDate=YYYY-MM-DD` to use a specific calendar date as pattern source instead of program start |
 
 ### Create Program Request
 
@@ -160,13 +161,15 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
   "title": "Strength Program",
   "description": "Optional notes",
   "startsOn": "2026-06-01",
-  "endsOn": "2026-08-24",
+  "endsOn": null,
   "templateId": null,
   "repeatPatternWeeks": 1
 }
 ```
 
-`repeatPatternWeeks` — `null` (no repeat), `1`, `2`, or `4`. Programs are normally created with `null`; `POST /apply-pattern/{weeks}` lets the builder set and apply the repeat later.
+`endsOn` — nullable. Omit or send `null` for an indefinite (süresiz) program with no fixed end date.
+
+`repeatPatternWeeks` — `null` (no repeat), `1`, `2`, `3`, or `4`. Programs are normally created with `null`; `POST /apply-pattern/{weeks}/{months}` lets the builder set and apply the repeat later. The `fromDate` query param makes the chosen calendar date the first day of the source cycle; without it the pattern starts from `startsOn`.
 
 ## Templates (`/api/templates`)
 
@@ -185,7 +188,7 @@ Template routes are active and trainer-scoped. Access is resolved from the real 
 | PUT | `/api/templates/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Update template exercise; optional `setWeights` replaces existing per-set data |
 | DELETE | `/api/templates/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Remove template exercise |
 | POST | `/api/templates/{id}/apply-to-day` | Required | Copy a day template into a program day (preserves per-set data) |
-| POST | `/api/templates/{id}/apply-to-program` | Required | Copy a program template into a program (preserves per-set data) |
+| POST | `/api/templates/{id}/apply-to-program` | Required | Copy a program template into a program (preserves per-set data); optional `fromDate` in body offsets day numbers so template day 1 lands on the chosen calendar date |
 
 ### Template/Pattern Error Messages
 
@@ -194,7 +197,7 @@ API error messages from template and pattern operations are returned as `{ "mess
 | API message | i18n key |
 |---|---|
 | `no days in the pattern period to copy.` | `errNoDaysInPattern` |
-| `repeat pattern must be 1, 2, or 4 weeks.` | `errRepeatPatternInvalid` |
+| `repeat pattern must be 1, 2, 3, or 4 weeks.` | `errRepeatPatternInvalid` |
 | `program has no repeat pattern set.` | `errNoRepeatPattern` |
 | `template was not found.` | `errTemplateNotFound` |
 | `program was not found.` | `errProgramNotFound` |

@@ -21,10 +21,10 @@ WorkoutProgram
 | `title` | string | required |
 | `description` | string? | |
 | `startsOn` | DateOnly | defaults to today |
-| `endsOn` | DateOnly | defaults to startsOn + 28 days |
+| `endsOn` | DateOnly? | nullable — null means indefinite (süresiz) program |
 | `isActive` | bool | false when the trainer-athlete relationship is ended |
 | `templateId` | Guid? | optional — copies days/exercises from template on creation |
-| `repeatPatternWeeks` | int? | nullable; 1, 2, or 4 week repeat cycle |
+| `repeatPatternWeeks` | int? | nullable; 1, 2, 3, or 4 week repeat cycle |
 | `createdAt` | DateTimeOffset | |
 
 ## Day Fields
@@ -172,7 +172,8 @@ The web app provides an Excel-style full-page program builder (`ProgramBuilderVi
 - Edit mode uses `visibility:hidden` on quick-action buttons so layout is pixel-identical in view vs edit mode
 - Day and program templates can be copied into the program as snapshots, including per-set data
 - Quick buttons for ±weight/±reps/±RPE/±rest per set row; +weight uses exercise equipment and athlete's dumbbell/barbell increment settings; defaults: reps=10, RPE=5, rest=60s
-- Repeat pattern apply copies 1, 2, or 4 week blocks to later weeks and reuses existing generated days so linked workout sessions are preserved
+- Repeat pattern apply copies 1, 2, 3, or 4 week blocks; the selected calendar date is used as the source cycle start (`fromDate`); fill range is capped at 1–3 months; reuses existing generated days so linked workout sessions are preserved
+- Program template `apply-to-program` accepts an optional `fromDate` so template day 1 lands on the chosen calendar date
 - Last performance hint per exercise row (fetched from analytics API)
 - Accessible to Trainer-JWT users and Athlete-JWT users in Trainer uiMode
 
@@ -187,6 +188,7 @@ The web app provides an Excel-style full-page program builder (`ProgramBuilderVi
   - **Tamamlanan Antrenmanlar** — clickable rows (when `programDayId` is present); clicking navigates to the linked program day.
 - Rows use the `prog-cal-row-btn` class — simple buttons with `ChevronRight` indicator, no inline expansion.
 - In edit mode an "Bu Güne Antrenman Ekle" button adds a new day scheduled on the selected date.
+- A **Hazırlık Araçları** toolbar is rendered inside the calendar detail panel, above the planned workouts section. It has three rows: (1) day template + program template selects side by side, (2) repeat pattern select + months cap (1–3) + apply button. All operations use the selected calendar date as their reference point (`fromDate`).
 
 ## Compliance Tracking
 

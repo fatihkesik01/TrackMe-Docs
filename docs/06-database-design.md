@@ -167,9 +167,9 @@ Unique index on `(slug, owner_id)`.
 | title | varchar(180) | required |
 | description | varchar(1000) | nullable |
 | starts_on | date | required |
-| ends_on | date | required |
+| ends_on | date | nullable — null means indefinite program |
 | is_active | bool | true for active programs; false after relationship end |
-| repeat_pattern_weeks | int | nullable; 1, 2, or 4 week repeat cycle |
+| repeat_pattern_weeks | int | nullable; 1, 2, 3, or 4 week repeat cycle |
 | created_at | timestamptz | |
 
 ### workout_program_days

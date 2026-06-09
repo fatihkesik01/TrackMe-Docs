@@ -104,6 +104,7 @@ athletes.id <- body_metrics.athlete_id
 - `workout_programs.is_active = false` marks trainer-created programs as passive after a trainer-athlete relationship is ended. Passive programs remain visible/read-only and are reactivated if the same relationship is accepted again.
 - `workout_sessions.program_id` and `workout_sessions.program_day_id` are nullable so session history survives program/day deletion.
 - `exercises.owner_id` is nullable; null means the exercise is seeded/global.
-- `workout_programs.repeat_pattern_weeks` and `workout_program_days.pattern_week_number` support 1, 2, or 4 week repeat cycles. Reapplying a pattern must not delete workout sessions for generated days.
+- `workout_programs.ends_on` is nullable; a null value means the program is indefinite (süresiz) with no fixed end date.
+- `workout_programs.repeat_pattern_weeks` and `workout_program_days.pattern_week_number` support 1, 2, 3, or 4 week repeat cycles. Reapplying a pattern must not delete workout sessions for generated days. Pattern fill range is capped at 1–3 months per apply call; `fromDate` shifts the source cycle start.
 - `workout_program_exercise_sets` stores optional per-set planned weights. `workout_session_exercises.planned_set_weights_json` snapshots those values at workout start so future program edits do not rewrite training history.
 - `direct_messages` can store one denormalized program or program-exercise reference (`reference_type`, `reference_id`, `reference_program_id`, `reference_exercise_id`, `reference_label`, `reference_detail`). These are nullable reference metadata fields, not enforced foreign keys.
