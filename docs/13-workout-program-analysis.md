@@ -173,7 +173,7 @@ The web app provides an Excel-style full-page program builder (`ProgramBuilderVi
 - Day and program templates can be copied into the program as snapshots, including per-set data
 - Quick buttons for ±weight/±reps/±RPE/±rest per set row; +weight uses exercise equipment and athlete's dumbbell/barbell increment settings; defaults: reps=10, RPE=5, rest=60s
 - Repeat pattern apply copies 1, 2, 3, or 4 week blocks; the selected calendar date is used as the source cycle start (`fromDate`); fill range is capped at 1–3 months; reuses existing generated days so linked workout sessions are preserved
-- Program template `apply-to-program` accepts an optional `fromDate` so template day 1 lands on the chosen calendar date
+- Program template `apply-to-program` accepts an optional `fromDate` so template day 1 lands on the chosen calendar date; rest days in the template are skipped (no program day created) but preserve the day-number gap so subsequent training days land on the correct dates
 - Last performance hint per exercise row (fetched from analytics API)
 - Accessible to Trainer-JWT users and Athlete-JWT users in Trainer uiMode
 

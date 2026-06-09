@@ -299,7 +299,7 @@ These tables remain in the EF model and database schema but are not exposed via 
 | Table | Status |
 |-------|--------|
 | program_templates | Active — used by TemplateEndpoints |
-| program_template_days | Active — used by TemplateEndpoints |
+| program_template_days | Active — used by TemplateEndpoints; `is_rest_day` column added Phase4_RestDayInTemplate |
 | program_template_exercises | Active — used by TemplateEndpoints |
 | program_template_exercise_sets | Active — per-set planned data for template exercises (added Phase5_TemplateExerciseSetWeights) |
 | user_integrations | Inactive — wearable/device integrations, schema reserved |

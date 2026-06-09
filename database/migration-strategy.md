@@ -132,6 +132,11 @@ Repeat-pattern application is a data-preserving update path: it may create or up
 
 Pattern-application behavior change: `apply-pattern` now accepts an optional `months` route segment (1–3). When present it caps the fill range to that many months from `StartsOn`. For programs without an `ends_on` this parameter determines how far ahead to generate days. For programs with an end date, the effective limit is `min(endsOn, startsOn + months)`.
 
+## Migration History (Phase 4 continued)
+
+`Phase4_RestDayInTemplate` adds:
+- `program_template_days.is_rest_day` (bool, default false) — marks a template day as a rest day; no exercises are added and the day is skipped when the template is applied to a program. The day-number gap is preserved so subsequent training days land on the correct dates.
+
 ## Rules
 
 - **Never write migration files manually** — always use `dotnet ef migrations add`
