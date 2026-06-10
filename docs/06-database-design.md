@@ -196,6 +196,7 @@ Non-unique index on `(program_id, day_number)` allows multiple workouts on the s
 | exercise_id | uuid FK -> exercises | restrict delete |
 | order_index | int | required |
 | sets | int | required |
+| warm_up_sets | int | default 0; warm-up set count before working sets |
 | reps | varchar(20) | nullable; supports values like `8-12` |
 | target_weight_kg | numeric(6,2) | nullable |
 | target_rpe | int | nullable |
@@ -253,6 +254,7 @@ Index on `(athlete_id, created_at)`.
 | planned_weight_kg | numeric(6,2) | nullable |
 | planned_rpe | int | nullable |
 | planned_rest_seconds | int | nullable |
+| planned_warm_up_sets | int | default 0; warm-up set count snapshot from program exercise |
 | planned_set_weights_json | varchar(4000) | nullable; JSON snapshot of per-set planned weights |
 | trainer_note | varchar(500) | nullable |
 | created_at | timestamptz | |
@@ -268,6 +270,7 @@ Index on `(athlete_id, created_at)`.
 | weight_kg | numeric(6,2) | nullable |
 | rpe | int | nullable; 1-10 |
 | is_completed | bool | |
+| is_warm_up | bool | default false; excluded from compliance calculations |
 | notes | varchar(300) | nullable |
 | created_at | timestamptz | |
 

@@ -148,6 +148,7 @@ Query parameters for `GET /api/exercises`: `search`, `category`, `difficulty`, `
 | POST | `/api/programs/{id}/days/{dayId}/exercises` | Required | Add exercise to day (optional `setWeights` array for per-set planned weights) |
 | PUT | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Update day exercise (optional `setWeights` array) |
 | DELETE | `/api/programs/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Remove exercise from day |
+| PATCH | `/api/programs/{id}/days/{dayId}/exercises/reorder` | Required | Reorder exercises within a program day; body: `{ exerciseIds: string[] }` |
 | POST | `/api/programs/{id}/apply-pattern` | Required | Copy/update pattern-week days using program start as source; preserves linked workout sessions |
 | POST | `/api/programs/{id}/apply-pattern/{weeks}` | Required | Set repeat weeks to 1/2/3/4 and apply the pattern |
 | POST | `/api/programs/{id}/apply-pattern/{weeks}/{months}` | Required | Set repeat weeks, cap fill range to 1–3 months; accepts `?fromDate=YYYY-MM-DD` to use a specific calendar date as pattern source instead of program start |
@@ -187,6 +188,8 @@ Template routes are active and trainer-scoped. Access is resolved from the real 
 | POST | `/api/templates/{id}/days/{dayId}/exercises` | Required | Add template exercise; optional `setWeights` array for per-set data |
 | PUT | `/api/templates/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Update template exercise; optional `setWeights` replaces existing per-set data |
 | DELETE | `/api/templates/{id}/days/{dayId}/exercises/{exerciseId}` | Required | Remove template exercise |
+| PATCH | `/api/templates/{id}/days/reorder` | Required | Reorder template days; body: `{ dayIds: string[] }` (full ordered list) |
+| PATCH | `/api/templates/{id}/days/{dayId}/exercises/reorder` | Required | Reorder exercises within a template day; body: `{ exerciseIds: string[] }` |
 | POST | `/api/templates/{id}/apply-to-day` | Required | Copy a day template into a program day (preserves per-set data) |
 | POST | `/api/templates/{id}/apply-to-program` | Required | Copy a program template into a program (preserves per-set data); optional `fromDate` in body offsets day numbers so template day 1 lands on the chosen calendar date |
 
@@ -247,6 +250,7 @@ Access rules:
 | GET | `/api/sessions/{sessionId}/exercises` | Required | List session exercises |
 | POST | `/api/sessions/{sessionId}/exercises` | Required | Add exercise to session |
 | PATCH | `/api/sessions/{sessionId}/exercises/{exerciseId}/feeling` | Required | Update completion/feeling for exercise |
+| PATCH | `/api/sessions/{sessionId}/exercises/{exerciseId}/note` | Required | Update trainer/athlete note on session exercise |
 | POST | `/api/sessions/{sessionId}/exercises/{exerciseId}/sets` | Required | Add set log |
 | PUT | `/api/sessions/{sessionId}/exercises/{exerciseId}/sets/{setId}` | Required | Update set log |
 | DELETE | `/api/sessions/{sessionId}/exercises/{exerciseId}` | Required | Remove exercise from session |

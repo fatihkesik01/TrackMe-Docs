@@ -195,7 +195,7 @@ Endpoint access checks follow the same general order:
 
 ## Migrations
 
-38 EF Core migrations are present:
+43 EF Core migrations are present:
 
 | # | Name | Key change |
 |---|------|------------|
@@ -227,16 +227,21 @@ Endpoint access checks follow the same general order:
 | 26 | EndRelationshipDeactivatePrograms | Ended relationships deactivate linked trainer programs |
 | 27 | Phase3_FeaturedExercisesList | Featured exercise list with session-backed entries |
 | 28 | ProfileNotificationSettings | Shared profile fields and notification dropdown retention |
-| 29 | ProfileSportsList | Expand profile sport storage for multiple sports |
-| 30 | ProfileSportExperience | Store per-sport experience years in profile sports JSON |
-| 31 | ProfileTrainingYearsDecimal | Allow decimal profile training years |
-| 32 | UserUnitPreferences | Store user weight and height display-unit preferences |
-| 33 | DirectMessages | Direct message table for trainer-athlete chat |
-| 34 | DirectMessageReferences | Nullable direct message program/exercise reference metadata |
-| 35 | Phase3_RepeatPattern_SetWeights_EquipmentIncrements | Repeat-pattern programs, per-set planned weights, athlete equipment increments |
-| 36 | Phase4_TemplateTypes_WarmupSets | Template types and warm-up set fields |
-| 37 | Phase22_RemoveDeadFeatures | Drop training_classes, class_participants, template_purchases; remove price_cents/is_marketplace from program_templates |
-| 38 | Phase23_SessionDayIndex | Index on workout_sessions.program_day_id |
+| 29 | NotificationSenderMetadata | sender_name and sender_role fields on notifications |
+| 30 | ProfileSportsList | Expand profile sport storage for multiple sports |
+| 31 | ProfileSportExperience | Store per-sport experience years in profile sports JSON |
+| 32 | ProfileTrainingYearsDecimal | Allow decimal profile training years |
+| 33 | UserUnitPreferences | Store user weight and height display-unit preferences |
+| 34 | DirectMessages | Direct message table for trainer-athlete chat |
+| 35 | DirectMessageReferences | Nullable direct message program/exercise reference metadata |
+| 36 | Phase3_RepeatPattern_SetWeights_EquipmentIncrements | Repeat-pattern programs, per-set planned weights, athlete equipment increments |
+| 37 | Phase4_TemplateTypes_WarmupSets | Template types and warm-up set fields (is_warm_up, warm_up_sets, planned_warm_up_sets) |
+| 38 | Phase22_RemoveDeadFeatures | Drop training_classes, class_participants, template_purchases; remove price_cents/is_marketplace from program_templates |
+| 39 | Phase23_SessionDayIndex | Index on workout_sessions.program_day_id |
+| 40 | Phase24_PerSetDetails | Per-set planned reps, RPE, rest seconds, notes on workout_program_exercise_sets |
+| 41 | Phase5_TemplateExerciseSetWeights | program_template_exercise_sets table for per-set template data |
+| 42 | Phase3_NullableEndsOn | Make ends_on nullable in workout_programs (indefinite programs) |
+| 43 | Phase4_RestDayInTemplate | is_rest_day column on program_template_days |
 
 ## Migration Rules
 

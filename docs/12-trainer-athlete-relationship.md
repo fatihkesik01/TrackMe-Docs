@@ -10,8 +10,8 @@ Either side can initiate:
 
 | Initiator | Endpoint                        | `InitiatedByAthlete` | Who accepts |
 |-----------|---------------------------------|---------------------|-------------|
-| Trainer   | `POST /api/relationships/requests` | `false`          | Athlete     |
-| Athlete   | `POST /api/relationships/invite`   | `true`           | Trainer     |
+| Trainer   | `POST /api/coaching/requests`      | `false`          | Athlete     |
+| Athlete   | `POST /api/coaching/invite`        | `true`           | Trainer     |
 
 Both endpoints accept either an ID or an email address for the target user. If no matching profile entity exists, one is created lazily.
 
@@ -34,7 +34,7 @@ Both endpoints accept either an ID or an email address for the target user. If n
 
 Only `Pending` relationships can be accepted or rejected. Attempting to respond to an already-resolved relationship returns `409 Conflict`.
 
-`Accepted` relationships can be ended by either side with `DELETE /api/relationships/{id}`. Ending a relationship keeps the audit row, changes the status to `Ended`, removes trainer access, and marks active trainer-created programs for that trainer-athlete pair as inactive.
+`Accepted` relationships can be ended by either side with `DELETE /api/coaching/{id}`. Ending a relationship keeps the audit row, changes the status to `Ended`, removes trainer access, and marks active trainer-created programs for that trainer-athlete pair as inactive.
 
 ## Access Implications of Accepted Status
 
@@ -102,15 +102,19 @@ Inactive programs remain visible to their owner/assigned athlete with a passive 
 
 ## Frontend Behavior
 
-`RelationshipsView` uses `uiRole` to determine which panel to show:
+`RelationshipsView` has two tabs — **Sosyal Bağlantılar** and **Koçluk İlişkileri**.
+
+The coaching tab uses `uiRole` to determine which panel to show:
 
 - `uiRole === 'Trainer'` → shows "Send request" panel (search athletes, send request) + incoming athlete invites
 - `uiRole === 'Athlete'` → shows "Invite trainer" panel (search trainers, send invite) + incoming trainer requests
-
-The same view component handles both modes. Both TRAINER_NAV and ATHLETE_NAV include the `relationships` nav item.
 
 Accepted relationships show an "End relationship" action. The Web app displays a confirmation prompt because ending a relationship also deactivates linked trainer programs.
 
 Rejected and ended relationships show a "Reconnect relationship" action. It sends a new request/invite for the same trainer-athlete pair and reuses the existing relationship row.
 
 Relationship notifications are delivered through SignalR. When the Web client receives a relationship notification, it refreshes app data so both sides see the latest relationship status and related program active/passive state without reloading the browser.
+
+## Relationship vs Social Connection
+
+Coaching relationships (`trainer_athlete_relationships` / `/api/coaching`) are **strictly separate** from social connections (`user_connections` / `/api/connections`). An accepted coaching relationship grants all coaching permissions. An accepted social connection grants only messaging and profile viewing — never coaching permissions. A role change (athlete → trainer) does NOT convert a social connection into a coaching relationship. See `19-social-connections.md` for the social connection system.
