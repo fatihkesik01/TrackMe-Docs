@@ -65,10 +65,10 @@ Set when publishing or updating via `PublishProgramRequest`.
 
 | Query param | Matches |
 |-------------|---------|
-| `sportCategory` | Case-insensitive exact match on sport_category |
+| `sportCategory` | Case-insensitive substring match on sport_category |
 | `difficulty` | Case-insensitive exact match on difficulty_level |
-| `equipment` | Substring match in equipment_required |
-| `tag` | Substring match in tags |
+| `equipment` | Case-insensitive substring match in equipment_required |
+| `tag` | Case-insensitive substring match in tags |
 
 ---
 
