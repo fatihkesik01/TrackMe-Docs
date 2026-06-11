@@ -137,6 +137,22 @@ Pattern-application behavior change: `apply-pattern` now accepts an optional `mo
 `Phase4_RestDayInTemplate` adds:
 - `program_template_days.is_rest_day` (bool, default false) — marks a template day as a rest day; no exercises are added and the day is skipped when the template is applied to a program. The day-number gap is preserved so subsequent training days land on the correct dates.
 
+## Migration History (Phase 5 — Personal Records)
+
+`Phase5_PersonalRecords` adds:
+- `personal_records` table — one row per `(athlete_id, exercise_id)` combination (unique index)
+  - `id` uuid PK
+  - `athlete_id` uuid FK → `athletes` (cascade delete)
+  - `exercise_id` uuid FK → `exercises` (cascade delete)
+  - `exercise_name` varchar(160) — denormalized for display without join
+  - `max_weight_kg` numeric(8,2) — heaviest single set weight
+  - `estimated_one_rm_kg` numeric(8,2) — Epley formula: `weight × (1 + reps/30)`
+  - `max_volume_session_kg` numeric(10,2) — highest single-session volume for this exercise
+  - `record_session_id` uuid FK → `workout_sessions` (restrict delete)
+  - `recorded_at` timestamptz
+
+Records are UPSERTED automatically by the `CompleteSession` endpoint. If any metric is beaten, all three are updated atomically in the same `SaveChangesAsync` call.
+
 ## Rules
 
 - **Never write migration files manually** — always use `dotnet ef migrations add`
