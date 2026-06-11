@@ -34,7 +34,7 @@ Both endpoints accept either an ID or an email address for the target user. If n
 
 Only `Pending` relationships can be accepted or rejected. Attempting to respond to an already-resolved relationship returns `409 Conflict`.
 
-`Accepted` relationships can be ended by either side with `DELETE /api/coaching/{id}`. Ending a relationship keeps the audit row, changes the status to `Ended`, removes trainer access, and marks active trainer-created programs for that trainer-athlete pair as inactive.
+`Accepted` relationships can be ended by either side with `DELETE /api/coaching/{id}`. Ending a relationship keeps the audit row, changes the status to `Ended`, removes trainer access, and **locks** all trainer-created programs for that trainer-athlete pair (sets `locked_at` = now, `locked_reason` = `"coaching_ended"`). Locked programs remain visible and can still be used for workouts, but their content (exercises, structure) cannot be edited by anyone except Admin.
 
 ## Access Implications of Accepted Status
 
@@ -52,9 +52,17 @@ The athlete continues to own all their data; the trainer gets read-and-program-w
 
 When a relationship is `Ended`, the trainer immediately loses access because all access checks require `Accepted` status.
 
+## Auto Social Connection
+
+When a coaching relationship becomes `Accepted`, the system automatically creates or upgrades a `UserConnection` between the trainer's `AppUser` and the athlete's `AppUser` to `Accepted` status. This means accepting a coaching request also grants social connection visibility — programs published with `"connections"` visibility become visible to both sides. The reverse is not true: a social connection does not grant coaching access.
+
 ## Duplicate Prevention
 
-A unique index on `(trainer_id, athlete_id)` prevents creating two relationship rows for the same pair. `Pending` and `Accepted` duplicates return `409 Conflict`. `Rejected` or `Ended` rows can be reused by sending a new request/invite, which moves the existing row back to `Pending`. When that request is accepted, inactive trainer-created programs for the same pair are reactivated.
+A unique index on `(trainer_id, athlete_id)` prevents creating two relationship rows for the same pair. `Pending` and `Accepted` duplicates return `409 Conflict`. `Rejected` or `Ended` rows can be reused by sending a new request/invite, which moves the existing row back to `Pending`. When that request is accepted, locked trainer-created programs for the same pair are unlocked (clears `locked_at` and `locked_reason`).
+
+## Multi-Coach Support
+
+An athlete can have multiple simultaneous active coaches (e.g., a strength coach, a running coach, and a nutrition coach). The `trainer_athlete_relationships` table uses a unique constraint on `(trainer_id, athlete_id)` pairs, not on `athlete_id` alone. The legacy `Athlete.trainer_id` denormalized FK has been removed as of Migration 48; all coach lookups go through this relationship table.
 
 ## Dual-Role Resolution
 
@@ -89,16 +97,15 @@ Email match is a fallback for dual-role users whose JWT role does not directly m
 | Request rejected  | Initiating side    | `RelationshipRejected`  |
 | Relationship ended | Other side        | `RelationshipEnded`     |
 
-## Program Deactivation on End
+## Program Locking on End
 
-Ending an accepted relationship sets `workout_programs.is_active = false` for active programs where:
+Ending an accepted relationship locks trainer-created programs for that pair:
 
-- `trainer_id` matches the relationship trainer
-- `athlete_id` matches the relationship athlete
+- `locked_at` is set to the current timestamp.
+- `locked_reason` is set to `"coaching_ended"`.
+- `is_active` remains `true` — programs stay visible and usable for workouts.
 
-Self-guided programs are not affected. Existing workout session history is preserved.
-
-Inactive programs remain visible to their owner/assigned athlete with a passive state. They are read-only and cannot be used to start new workout sessions while inactive.
+Self-guided programs are not affected. Locked programs are read-only for everyone except Admin; the athlete can still reschedule days and start sessions. If the same trainer-athlete pair re-establishes their relationship (moves back to Accepted), all previously locked programs for that pair are automatically unlocked.
 
 ## Frontend Behavior
 
@@ -109,7 +116,7 @@ The coaching tab uses `uiRole` to determine which panel to show:
 - `uiRole === 'Trainer'` → shows "Send request" panel (search athletes, send request) + incoming athlete invites
 - `uiRole === 'Athlete'` → shows "Invite trainer" panel (search trainers, send invite) + incoming trainer requests
 
-Accepted relationships show an "End relationship" action. The Web app displays a confirmation prompt because ending a relationship also deactivates linked trainer programs.
+Accepted relationships show an "End relationship" action. The Web app displays a confirmation prompt because ending a relationship also locks linked trainer programs.
 
 Rejected and ended relationships show a "Reconnect relationship" action. It sends a new request/invite for the same trainer-athlete pair and reuses the existing relationship row.
 
