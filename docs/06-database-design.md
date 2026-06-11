@@ -2,7 +2,7 @@
 
 PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `TrackMeDbContext.OnModelCreating()` are the schema source of truth.
 
-## Active Tables (18)
+## Active Tables (21)
 
 ### users
 
@@ -166,8 +166,12 @@ Unique index on `(slug, owner_id)`.
 | athlete_id | uuid FK -> athletes | required, cascade delete |
 | title | varchar(180) | required |
 | description | varchar(1000) | nullable |
-| starts_on | date | required |
-| ends_on | date | nullable — null means indefinite program |
+| starts_on | date | nullable — null until program is explicitly started via `PATCH /api/programs/{id}/start` |
+| ends_on | date | nullable — calculated from duration fields on start; null means indefinite |
+| started_at | timestamptz | nullable — timestamp when `PATCH /start` was called |
+| duration_type | varchar(20) | nullable; `unlimited`, `weeks`, `months`, `years` |
+| duration_value | int | nullable; number of weeks/months/years |
+| source_published_program_id | uuid FK -> published_programs | nullable; set when program is saved from a published program |
 | is_active | bool | true for active programs; false after relationship end |
 | repeat_pattern_weeks | int | nullable; 1, 2, 3, or 4 week repeat cycle |
 | created_at | timestamptz | |
@@ -295,6 +299,50 @@ Index on `(athlete_id, created_at)`.
 
 At least one measurement field must be non-null. Index on `(athlete_id, date)`.
 
+### published_programs
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| publisher_user_id | uuid FK -> users | required, restrict delete |
+| source_program_id | uuid | nullable; the original workout_programs id (informational only, no FK) |
+| title | varchar(180) | required |
+| description | varchar(2000) | nullable |
+| duration_type | varchar(20) | nullable; `unlimited`, `weeks`, `months`, `years` |
+| duration_value | int | nullable |
+| visibility | varchar(20) | required; `public`, `connections`, `coach_only`, `private` |
+| snapshot_json | text | required; serialized `ProgramSnapshotDto` — plan structure only, no personal data |
+| is_active | bool | false after unpublish |
+| like_count | int | maintained counter (incremented/decremented on toggle) |
+| comment_count | int | maintained counter |
+| save_count | int | incremented when any user saves (copies) the program |
+| start_count | int | incremented when a saved copy is started via `PATCH /api/programs/{id}/start` |
+| published_at | timestamptz | UTC |
+
+Snapshot contains: day number, day title, exercise name, sets, warm-up sets, reps, rest seconds, notes. Never includes weights, workout logs, or performance history.
+
+### program_likes
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| published_program_id | uuid FK -> published_programs | cascade delete |
+| user_id | uuid FK -> users | cascade delete |
+| liked_at | timestamptz | UTC |
+
+Unique constraint on `(published_program_id, user_id)`.
+
+### program_comments
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| published_program_id | uuid FK -> published_programs | cascade delete |
+| author_user_id | uuid FK -> users | cascade delete |
+| text | varchar(1000) | required |
+| is_deleted | bool | soft-delete flag; deleted comments remain in DB |
+| created_at | timestamptz | UTC |
+
 ## Inactive Schema Tables
 
 These tables remain in the EF model and database schema but are not exposed via active endpoints.
@@ -306,6 +354,11 @@ These tables remain in the EF model and database schema but are not exposed via 
 | program_template_exercises | Active — used by TemplateEndpoints |
 | program_template_exercise_sets | Active — per-set planned data for template exercises (added Phase5_TemplateExerciseSetWeights) |
 | user_integrations | Inactive — wearable/device integrations, schema reserved |
+| program_forks | Inactive — future fork feature; tracks which user forked which published program into an editable copy |
+| program_collections | Inactive — future collections feature; curated named lists of published programs |
+| program_collection_items | Inactive — join table for program_collections ↔ published_programs |
+| program_favorites | Inactive — future bookmark feature; distinct from save-to-programs (no program copy) |
+| program_followers | Inactive — future follow feature; subscribe to a user's published program updates |
 
 `training_classes`, `class_participants`, and `template_purchases` were dropped in **Phase22_RemoveDeadFeatures** migration. `price_cents` and `is_marketplace` columns were removed from `program_templates` at the same time.
 
@@ -346,6 +399,13 @@ athletes -> body_metrics
 program_templates -> program_template_days
 program_template_days -> program_template_exercises
 program_template_exercises -> program_template_exercise_sets
+
+users -> published_programs.publisher_user_id
+published_programs -> program_likes
+published_programs -> program_comments
+users -> program_likes.user_id
+users -> program_comments.author_user_id
+published_programs -> workout_programs.source_published_program_id
 ```
 
 ## Migration Workflow

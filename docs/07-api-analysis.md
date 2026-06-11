@@ -81,14 +81,14 @@ Request targets can be supplied by id or email. Pending relationships do not gra
 
 ## Messages (`/api/messages`)
 
-Direct messages are available only between users with an accepted trainer-athlete relationship. The API resolves accepted relationships through matching trainer/athlete profile emails and returns user IDs for messaging.
+Direct messages are available between users with an accepted trainer-athlete relationship **or** an accepted social connection.
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | GET | `/api/messages` | Required | List conversations for the caller |
 | GET | `/api/messages/contacts` | Required | List accepted relationship contacts the caller can message |
 | GET | `/api/messages/unread-count` | Required | Return unread direct message count |
-| GET | `/api/messages/{userId}/references` | Required | List active programs and program exercises that can be attached to a message with this user |
+| GET | `/api/messages/{userId}/references` | Required | List attachable references; coaching relationships return programs + exercises + published programs; social-only connections return only the caller's published programs |
 | GET | `/api/messages/{userId}` | Required | Return a message thread with another user |
 | POST | `/api/messages` | Required | Send a direct message and notify the recipient |
 | PATCH | `/api/messages/{userId}/read` | Required | Mark messages from one user as read |
@@ -99,12 +99,12 @@ Direct messages are available only between users with an accepted trainer-athlet
 {
   "recipientId": "guid",
   "body": "Merhaba",
-  "referenceType": "Program-or-ProgramExercise-or-null",
+  "referenceType": "Program-or-ProgramExercise-or-PublishedProgram-or-null",
   "referenceId": "guid-or-null"
 }
 ```
 
-`body` may be empty only when a valid reference is attached. Reference access is validated against the accepted trainer-athlete relationship and active programs.
+`body` may be empty only when a valid reference is attached. `Program` and `ProgramExercise` references require an accepted coaching relationship. `PublishedProgram` references only require that the sender is the publisher of the referenced program.
 
 Direct message responses include nullable reference fields:
 
@@ -236,6 +236,67 @@ Access rules:
 - Admin can access all programs.
 - Inactive programs are returned with `isActive: false`, remain readable in detail, and reject day/exercise write operations.
 - Starting a workout session from an inactive program is forbidden.
+
+## Program Sharing (`/api/published-programs`)
+
+Published programs are snapshots of workout programs shared publicly or with connections. Snapshots contain plan structure only — no personal data (weights, logs, performance history).
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/published-programs` | Required | Publish a program; builds snapshot from current program state |
+| GET | `/api/published-programs` | Required | Browse published programs (visibility-filtered); supports `?q=&sort=newest&role=trainer&duration=unlimited&page=1&pageSize=20` |
+| GET | `/api/published-programs/{id}` | Required | Get detail with snapshot, like/save/start counts |
+| DELETE | `/api/published-programs/{id}` | Required | Unpublish (soft-delete, owner only) |
+| POST | `/api/published-programs/{id}/like` | Required | Toggle like; returns `{ liked, likeCount }` |
+| GET | `/api/published-programs/{id}/comments` | Required | List comments (paginated); supports `?page=1&pageSize=20` |
+| POST | `/api/published-programs/{id}/comments` | Required | Add comment; body: `{ text: string }` (max 1000 chars) |
+| DELETE | `/api/published-programs/{id}/comments/{commentId}` | Required | Delete comment (author or program owner) |
+| POST | `/api/published-programs/{id}/save` | Required | Copy program to caller's own programs (athlete required); increments `saveCount`; returns `{ id, skippedExercises? }` |
+| GET | `/api/published-programs/{id}/stats` | Required | Analytics for program owner: saveCount, startCount, likeCount, commentCount, completionCount, completionRate |
+| GET | `/api/users/{userId}/published-programs` | Required | List a user's published programs (visibility-filtered) |
+| PATCH | `/api/programs/{id}/start` | Required | Set program start date; body: `{ startDate?: "2026-06-01" }` (defaults to today); calculates `endsOn` from duration; increments source published program's `startCount` |
+
+### Browse Query Params
+
+- `sort`: `newest` (default) | `popular` (likes+comments) | `liked` | `saved`
+- `role`: `trainer` | `athlete` — filter by publisher role
+- `duration`: `unlimited` | `timed` — filter by duration type
+
+### Publish Request
+
+```json
+{
+  "programId": "guid",
+  "description": "Optional description",
+  "visibility": "public",
+  "durationType": "weeks",
+  "durationValue": 8
+}
+```
+
+`visibility` values: `public`, `connections`, `coach_only`, `private`.
+- `coach_only` — visible only to users whose trainer is the publisher (coaching relationship required).
+
+`durationType` values: `unlimited`, `weeks`, `months`, `years`. `durationValue` is required when `durationType` is not `unlimited`.
+
+### Snapshot Security
+
+Published program snapshots contain **only plan structure**: day number, day title, exercise name, sets, warm-up sets, reps, rest seconds, notes. The following are **never included**: `targetWeightKg`, `WorkoutSetLog` records, `WorkoutSession` performance history.
+
+### Save Response
+
+```json
+{
+  "id": "guid",
+  "skippedExercises": ["ExerciseName1"]
+}
+```
+
+`skippedExercises` is `null` if all exercises were copied successfully. Non-null means some exercises were not found in the caller's exercise library (global or owned) and were omitted from the copy.
+
+### Reference Type in Messages
+
+`referenceType: "PublishedProgram"` is supported in `POST /api/messages`. The sender must be the publisher of the referenced program. `GET /api/messages/{userId}/references` includes the caller's published programs for all connection types (coaching + social), in addition to program/exercise references which remain coaching-only.
 
 ## Sessions (`/api/sessions`)
 

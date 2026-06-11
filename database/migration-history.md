@@ -52,6 +52,9 @@ Tüm EF Core migration'larının ne eklediğini açıklayan referans belgesi.
 | 39 | `Phase23_SessionDayIndex` | `workout_sessions.program_day_id` üzerine index — session-gün sorgu performansı |
 | 40 | `Phase24_PerSetDetails` | `workout_program_exercise_sets`'e `planned_reps`, `planned_rpe`, `planned_rest_seconds`, `notes` sütunları — set bazında tam plan desteği |
 | 41 | `Phase5_TemplateExerciseSetWeights` | `program_template_exercise_sets` tablosu — template egzersizleri için set bazında planlı veri (ağırlık/tekrar/RPE/dinlenme/not); ApplyToDay ve ApplyToProgram bu verileri programa kopyalar |
+| 42–45 | `Phase6_*` / `Phase7_AvatarEmoji` | Social connections, profile privacy (6 alan), coaching endpoint rename, emoji avatar |
+| 46 | `Phase8_ProgramSharing` | `published_programs`, `program_likes`, `program_comments` tabloları; `workout_programs`'a `started_at`, `duration_type`, `duration_value`, `source_published_program_id` sütunları; `starts_on` nullable yapıldı |
+| 47 | `Phase9_ProgramAnalyticsAndInfra` | `published_programs`'a `save_count`, `start_count` sütunları; future infra: `program_forks`, `program_collections`, `program_collection_items`, `program_favorites`, `program_followers` tabloları |
 
 ---
 
