@@ -204,4 +204,31 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 - Index on `(athlete_id, taken_on)` for efficient timeline queries
 - R2 object key pattern: `athletes/{athleteId}/progress/{mediaId}{ext}`
 
-**Total migrations as of Phase 8: 54**
+## Migration History (Phase 9)
+
+`Phase9_SubmissionVideos` adds:
+- `video_submissions` table:
+  - `id` uuid PK
+  - `athlete_id` uuid FK to `athletes` (cascade delete)
+  - `media_asset_id` uuid FK to `media_assets` (cascade delete)
+  - `session_id` uuid FK to `workout_sessions` (set null)
+  - `session_exercise_id` uuid FK to `workout_session_exercises` (set null)
+  - `title` varchar(200) nullable
+  - `notes` varchar(2000) nullable
+  - `visibility` int NOT NULL (0=Private, 1=CoachOnly, 2=Public)
+  - `created_at` timestamptz
+- Index on `(athlete_id, created_at)` for athlete timeline queries
+- `video_feedbacks` table:
+  - `id` uuid PK
+  - `submission_id` uuid FK to `video_submissions` (cascade delete)
+  - `trainer_id` uuid FK to `trainers` (restrict delete)
+  - `media_asset_id` uuid FK to `media_assets` (cascade delete)
+  - `notes` varchar(2000) nullable
+  - `created_at` timestamptz
+  - `viewed_at` timestamptz nullable
+- Index on `submission_id` for feedback lookup
+- R2 object key patterns:
+  - `athletes/{athleteId}/submissions/{mediaId}{ext}`
+  - `trainers/{trainerId}/feedback/{mediaId}{ext}`
+
+**Total migrations as of Phase 9: 55**

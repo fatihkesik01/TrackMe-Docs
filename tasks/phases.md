@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 8 complete.** 54 EF Core migrations. All P0 features live in production. Progress photos (upload, timeline, before/after comparison, trainer access) shipped.
+**Phase 9 complete.** 55 EF Core migrations. All P0 features live in production. Submission videos and trainer video/audio feedback shipped.
 
 ---
 
@@ -71,23 +71,25 @@
 - ProgressPhotosView: date-grouped timeline grid, upload modal, lightbox (keyboard nav), before/after comparison modal
 - Inline visibility change per photo card and in lightbox
 
+### Phase 9 â€” Submission & Feedback Videos
+
+- `VideoSubmission` entity with optional `session_id` / `session_exercise_id` links
+- `VideoFeedback` entity with trainer media, notes, and `viewed_at`
+- `POST /api/submissions` â€” athlete multipart upload (MP4/WebM, max 200 MB)
+- `GET /api/submissions` â€” athlete own paginated list
+- `GET /api/athletes/{athleteId}/submissions` â€” trainer view, accepted relationship required, Private hidden
+- `GET /api/submissions/{id}` â€” detail with feedbacks
+- `POST /api/submissions/{id}/feedback` â€” trainer video/audio feedback
+- `PATCH /api/submissions/{id}/feedback/{feedbackId}/viewed` â€” athlete marks feedback viewed
+- `DELETE /api/submissions/{id}` and `DELETE /api/submissions/{id}/feedback/{feedbackId}`
+- Notifications: `SubmissionReceived`, `FeedbackReceived`
+- Web: Athlete Submissions view + trainer Videos tab in Athlete Detail
+
 ---
 
 ## Next Phases (Planned)
 
 ### Phase 9 — Submission & Feedback Videos (P1)
-
-Full implementation spec: [tasks/specs/phase9-submission-videos.md](specs/phase9-submission-videos.md)
-
-Depends on: Phase 8 (media infra patterns)
-
-| Task | Effort |
-|------|--------|
-| Athlete submission video (link to session/exercise) | M |
-| Trainer feedback video | M |
-| Audio feedback (record + playback) | M |
-| Feedback read/viewed status | S |
-| Trainer inbox for received submissions | M |
 
 ### Phase 10 — Mobile MVP (P3)
 
@@ -137,6 +139,7 @@ Depends on: Phase 11, standardized program schema
 | 6 | Connections, privacy, coaching rename | 49–52 |
 | 7 | ProgramCoverPhoto | 53 |
 | 8 | ProgressPhotos | 54 |
+| 9 | SubmissionVideos | 55 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

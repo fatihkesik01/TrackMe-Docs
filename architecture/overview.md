@@ -51,7 +51,7 @@ The Web container proxies `/api/` and `/hubs/` to the API on the shared Docker n
 |------|--------------|
 | **Admin** | Dashboard, Athletes, Sessions, Exercises, Admin panel |
 | **Trainer** | Dashboard, My Athletes, My Programs, Exercises, Relationships, Profile |
-| **Athlete** | Dashboard, My Program, Sessions, Body Metrics, Analytics, Relationships, Profile |
+| **Athlete** | Dashboard, My Program, Sessions, Body Metrics, Analytics, Progress Photos, Video Submissions, Relationships, Profile |
 
 ### Dual-Role User
 
@@ -122,3 +122,7 @@ Athlete selects Program Day → Start Workout
 | Mobile app (React Native) | 🔲 Planned |
 | Gym system + leaderboard | 🔲 Planned |
 | AI coaching suggestions | 🔲 Planned |
+
+## Phase 9 Update
+
+Submission/feedback videos are live: athletes can upload form-check videos, trainers with accepted relationships can send video/audio feedback, and both `SubmissionReceived` and `FeedbackReceived` notifications are pushed through SignalR.

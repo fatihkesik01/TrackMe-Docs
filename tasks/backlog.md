@@ -19,6 +19,19 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 
 ### Submission & Feedback Videos
 
+Phase 9 shipped: athlete video submissions, trainer video/audio feedback, notifications, and viewed status are complete.
+
+| Completed Task | Status |
+|----------------|--------|
+| Athlete submission video upload (linked to session/exercise) | Done |
+| Trainer notification: new submission video received | Done |
+| Trainer feedback video (record + upload) | Done |
+| Athlete notification: new video feedback received | Done |
+| Trainer audio feedback (record + upload + playback) | Done |
+| Feedback viewed/read status | Done |
+
+Historical pre-Phase 9 checklist:
+
 | Task | Status |
 |------|--------|
 | Athlete submission video upload (linked to session/exercise) | ⬜ |
