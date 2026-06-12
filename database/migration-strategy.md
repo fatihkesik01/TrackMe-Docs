@@ -232,3 +232,26 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
   - `trainers/{trainerId}/feedback/{mediaId}{ext}`
 
 **Total migrations as of Phase 9: 55**
+
+## Migration History (Phase 10)
+
+`Phase10_NutritionTracking` adds:
+- `nutrition_goals` table:
+  - `id` uuid PK
+  - `athlete_id` uuid FK to `athletes` (cascade delete)
+  - `set_by_trainer_id` uuid FK to `trainers` (set null)
+  - `calories_kcal`, `protein_g`, `carbs_g`, `fat_g` int NOT NULL
+  - `is_active` bool NOT NULL
+  - `created_at` timestamptz
+  - `deactivated_at` timestamptz nullable
+- Index on `(athlete_id, is_active)` for active goal lookup
+- `daily_nutrition_logs` table:
+  - `id` uuid PK
+  - `athlete_id` uuid FK to `athletes` (cascade delete)
+  - `date` date NOT NULL
+  - `calories_kcal`, `protein_g`, `carbs_g`, `fat_g` int NOT NULL
+  - `notes` varchar(1000) nullable
+  - `created_at`, `updated_at` timestamptz
+- Unique index on `(athlete_id, date)`; the API uses upsert behavior for same-day logs.
+
+**Total migrations as of Phase 10: 56**

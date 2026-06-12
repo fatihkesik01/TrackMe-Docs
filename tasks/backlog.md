@@ -68,18 +68,20 @@ Historical pre-Phase 9 checklist:
 
 A için tam implementation spec: [tasks/specs/p1.5a-nutrition-tracking.md](specs/p1.5a-nutrition-tracking.md)
 
+Phase 10 shipped P1.5-A: goal entity, daily log entity with `(athlete_id, date)` upsert, nutrition endpoints, athlete Nutrition view, trainer Nutrition tab, and Dashboard Nutrition Today card are complete.
+
 ### A — Günlük Hedef & Toplam Log (MVP)
 
 | Task | Status |
 |------|--------|
-| `NutritionGoal` entity — trainer athlete için günlük hedef koyar (kalori, protein, karb, yağ) | ⬜ |
-| `DailyNutritionLog` entity — athlete günlük toplamları girer | ⬜ |
-| `POST /api/nutrition/goals` — trainer hedef belirler | ⬜ |
-| `GET /api/nutrition/goals/{athleteId}` — aktif hedefi getir | ⬜ |
-| `POST /api/nutrition/logs` — athlete günlük toplamı kaydeder | ⬜ |
-| `GET /api/nutrition/logs/{athleteId}` — log geçmişi (tarih aralığı filtreli) | ⬜ |
-| Trainer: hedef vs gerçek uyum grafiği (son 30 gün) | ⬜ |
-| Athlete: günlük özet kart (Dashboard'a entegre) | ⬜ |
+| `NutritionGoal` entity — trainer athlete için günlük hedef koyar (kalori, protein, karb, yağ) | Done |
+| `DailyNutritionLog` entity — athlete günlük toplamları girer | Done |
+| `POST /api/nutrition/goals` — trainer hedef belirler | Done |
+| `GET /api/nutrition/goals/{athleteId}` — aktif hedefi getir | Done |
+| `POST /api/nutrition/logs` — athlete günlük toplamı kaydeder | Done |
+| `GET /api/nutrition/logs/{athleteId}` — log geçmişi (tarih aralığı filtreli) | Done |
+| Trainer: hedef vs gerçek uyum grafiği (son 30 gün) | Done |
+| Athlete: günlük özet kart (Dashboard'a entegre) | Done |
 | Bildirim: athlete günlük logu atladığında trainer'a uyarı (opsiyonel) | ⬜ |
 | Privacy: nutrition data varsayılan `coach_only` | ⬜ |
 

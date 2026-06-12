@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 9 complete.** 55 EF Core migrations. All P0 features live in production. Submission videos and trainer video/audio feedback shipped.
+**Phase 10 complete.** 56 EF Core migrations. All P0 features live in production. Submission videos, trainer video/audio feedback, and Nutrition Tracking MVP shipped.
 
 ---
 
@@ -85,13 +85,22 @@
 - Notifications: `SubmissionReceived`, `FeedbackReceived`
 - Web: Athlete Submissions view + trainer Videos tab in Athlete Detail
 
+### Phase 10 - Nutrition Tracking MVP
+
+- `NutritionGoal` entity for active calorie/protein/carbs/fat targets
+- `DailyNutritionLog` entity with unique `(athlete_id, date)` and API upsert behavior
+- Nutrition endpoints: goals, logs, athlete history, trainer history, and summary
+- Athlete Nutrition view: today progress bars, log modal, 30-day adherence grid
+- Trainer Athlete Detail Nutrition tab: set/update goal and last-30-day adherence list
+- Dashboard Nutrition Today card for athletes with an active goal
+
 ---
 
 ## Next Phases (Planned)
 
 ### Phase 9 — Submission & Feedback Videos (P1)
 
-### Phase 10 — Mobile MVP (P3)
+### Phase 11 - Mobile MVP (P3)
 
 Depends on: Stable API, Phase 8–9 complete
 
@@ -103,7 +112,7 @@ Depends on: Stable API, Phase 8–9 complete
 | Offline session draft | M |
 | Push notifications (FCM + APNs) | M |
 
-### Phase 11 — Gym & Community (P2)
+### Phase 12 - Gym & Community (P2)
 
 Depends on: Phase 9 or parallel
 
@@ -115,7 +124,7 @@ Depends on: Phase 9 or parallel
 | Gym leaderboard | M |
 | Global leaderboard | M |
 
-### Phase 12 — AI (P3)
+### Phase 13 - AI (P3)
 
 Depends on: Phase 11, standardized program schema
 
@@ -140,6 +149,7 @@ Depends on: Phase 11, standardized program schema
 | 7 | ProgramCoverPhoto | 53 |
 | 8 | ProgressPhotos | 54 |
 | 9 | SubmissionVideos | 55 |
+| 10 | NutritionTracking | 56 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

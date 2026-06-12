@@ -51,7 +51,7 @@ The Web container proxies `/api/` and `/hubs/` to the API on the shared Docker n
 |------|--------------|
 | **Admin** | Dashboard, Athletes, Sessions, Exercises, Admin panel |
 | **Trainer** | Dashboard, My Athletes, My Programs, Exercises, Relationships, Profile |
-| **Athlete** | Dashboard, My Program, Sessions, Body Metrics, Analytics, Progress Photos, Video Submissions, Relationships, Profile |
+| **Athlete** | Dashboard, My Program, Sessions, Analytics, Nutrition, Body Metrics, Progress Photos, Video Submissions, Relationships, Profile |
 
 ### Dual-Role User
 
@@ -93,7 +93,7 @@ Athlete selects Program Day → Start Workout
 ## Data Ownership (Athlete-Centric)
 
 - Programs belong to an athlete (`athlete_id` FK required, `trainer_id` FK optional)
-- Sessions, body metrics, PRs belong to an athlete
+- Sessions, body metrics, nutrition goals, nutrition logs, PRs belong to an athlete
 - A trainer accesses athlete data only through an accepted `trainer_athlete_relationships` record
 - Social connections grant messaging + privacy-filtered profile only — never coaching data
 
@@ -116,9 +116,10 @@ Athlete selects Program Day → Start Workout
 | Direct messaging (with program refs) | ✅ Live |
 | Media: avatar + cover photo + program cover | ✅ Live |
 | Progress photos (upload, timeline, before/after, trainer view) | ✅ Live |
+| Nutrition tracking MVP (goals, daily logs, adherence) | ✅ Live |
 | Admin panel | ✅ Live |
 | Dark mode + i18n (TR/EN) | ✅ Live |
-| Submission/feedback videos | 🔲 Planned |
+| Submission/feedback videos | ✅ Live |
 | Mobile app (React Native) | 🔲 Planned |
 | Gym system + leaderboard | 🔲 Planned |
 | AI coaching suggestions | 🔲 Planned |
@@ -126,3 +127,7 @@ Athlete selects Program Day → Start Workout
 ## Phase 9 Update
 
 Submission/feedback videos are live: athletes can upload form-check videos, trainers with accepted relationships can send video/audio feedback, and both `SubmissionReceived` and `FeedbackReceived` notifications are pushed through SignalR.
+
+## Phase 10 Update
+
+Nutrition Tracking MVP is live: trainers can set active daily calorie and macro goals for accepted athletes, athletes can upsert one daily total log per date, Dashboard shows Nutrition Today, and trainer Athlete Detail includes a Nutrition tab with last-30-day adherence.
