@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 7 complete.** 53 EF Core migrations. All P0 features live in production.
+**Phase 8 complete.** 54 EF Core migrations. All P0 features live in production. Progress photos (upload, timeline, before/after comparison, trainer access) shipped.
 
 ---
 
@@ -59,22 +59,21 @@
 - `CoverImageUrl` in `PublishedProgramDto` and `PublishedProgramDetailDto`
 - ProgramCard cover banner + detail modal cover management
 
+### Phase 8 — Progress Photos
+
+- `ProgressPhoto` entity (`athlete_id`, `media_asset_id`, `taken_on`, `notes`, `visibility`, `weight_kg_snapshot`)
+- `MediaPurpose.ProgressPhoto` — R2 key: `athletes/{id}/progress/{mediaId}{ext}`
+- `POST /api/progress-photos` — multipart upload with metadata fields
+- `GET /api/progress-photos` — own paginated list
+- `GET /api/athletes/{athleteId}/progress-photos` — trainer view (CoachOnly + Public, requires accepted coaching relationship)
+- `PATCH /api/progress-photos/{id}` — update metadata
+- `DELETE /api/progress-photos/{id}` — delete from DB + R2
+- ProgressPhotosView: date-grouped timeline grid, upload modal, lightbox (keyboard nav), before/after comparison modal
+- Inline visibility change per photo card and in lightbox
+
 ---
 
 ## Next Phases (Planned)
-
-### Phase 8 — Progress Photos (P1)
-
-Priority: high (next actionable P1 task)
-
-| Task | Effort |
-|------|--------|
-| `ProgressPhoto` entity + migration | S |
-| `POST /api/media/athletes/me/progress-photos` upload | M |
-| Progress photo visibility toggle | S |
-| ProfileView timeline (date-grouped grid) | M |
-| Before/after comparison modal | M |
-| Trainer access to shared photos | S |
 
 ### Phase 9 — Submission & Feedback Videos (P1)
 
@@ -135,6 +134,7 @@ Depends on: Phase 11, standardized program schema
 | 5 | Messages, notifications, versioning | 45–48 |
 | 6 | Connections, privacy, coaching rename | 49–52 |
 | 7 | ProgramCoverPhoto | 53 |
+| 8 | ProgressPhotos | 54 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

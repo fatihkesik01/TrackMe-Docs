@@ -10,11 +10,11 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 
 | Task | Status |
 |------|--------|
-| Progress photo upload (athlete → ProfileView) | ⬜ |
-| Progress photo visibility settings (Private / CoachOnly / Public) | ⬜ |
-| Progress photo timeline (date-grouped grid in ProfileView) | ⬜ |
-| Before/after comparison modal (side-by-side viewer) | ⬜ |
-| Trainer access to athlete's shared progress photos | ⬜ |
+| Progress photo upload (athlete → ProgressPhotosView) | ✅ |
+| Progress photo visibility settings (Private / CoachOnly / Public) | ✅ |
+| Progress photo timeline (date-grouped grid) | ✅ |
+| Before/after comparison modal (side-by-side viewer) | ✅ |
+| Trainer access to athlete's shared progress photos | ✅ |
 | Body metric linking (attach metric snapshot to photo) | ⬜ |
 
 ### Submission & Feedback Videos
@@ -46,6 +46,47 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 | Orphan asset cleanup job (GC for uploaded-but-unlinked assets) | ⬜ |
 | Media reporting (flag on `MediaAsset`) | ⬜ |
 | Admin media moderation queue | ⬜ |
+
+---
+
+## P1.5 — Nutrition Tracking
+
+İki aşamalı: önce hedef + günlük toplam log (A), sonra öğün + yemek bazlı takip (B).
+
+### A — Günlük Hedef & Toplam Log (MVP)
+
+| Task | Status |
+|------|--------|
+| `NutritionGoal` entity — trainer athlete için günlük hedef koyar (kalori, protein, karb, yağ) | ⬜ |
+| `DailyNutritionLog` entity — athlete günlük toplamları girer | ⬜ |
+| `POST /api/nutrition/goals` — trainer hedef belirler | ⬜ |
+| `GET /api/nutrition/goals/{athleteId}` — aktif hedefi getir | ⬜ |
+| `POST /api/nutrition/logs` — athlete günlük toplamı kaydeder | ⬜ |
+| `GET /api/nutrition/logs/{athleteId}` — log geçmişi (tarih aralığı filtreli) | ⬜ |
+| Trainer: hedef vs gerçek uyum grafiği (son 30 gün) | ⬜ |
+| Athlete: günlük özet kart (Dashboard'a entegre) | ⬜ |
+| Bildirim: athlete günlük logu atladığında trainer'a uyarı (opsiyonel) | ⬜ |
+| Privacy: nutrition data varsayılan `coach_only` | ⬜ |
+
+### B — Öğün & Yemek Bazlı Takip
+
+Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
+
+| Task | Status |
+|------|--------|
+| `Meal` entity — öğün (sabah / öğle / akşam / ara öğün) | 🔲 |
+| `FoodItem` entity — yemek adı + besin değerleri (kalori, protein, karb, yağ, lif) | 🔲 |
+| `MealEntry` entity — öğüne eklenen yemek + miktar (gram/porsiyon) | 🔲 |
+| Food database seeding — manuel başlangıç listesi (TR yemekleri dahil) | 🔲 |
+| OpenFoodFacts veya USDA API entegrasyonu (barcode lookup) | 🔲 |
+| `GET /api/nutrition/foods?q=` — yemek arama | 🔲 |
+| `POST /api/nutrition/foods` — özel yemek oluştur (trainer/athlete) | 🔲 |
+| `POST /api/nutrition/meals` — öğün oluştur + yemek ekle | 🔲 |
+| `GET /api/nutrition/meals/{athleteId}?date=` — günlük öğün detayı | 🔲 |
+| Günlük toplam otomatik hesap (A logunu öğünlerden türet) | 🔲 |
+| Öğün bazlı görünüm: athlete için sabah/öğle/akşam kartları | 🔲 |
+| Trainer: athlete öğün geçmişini görebilir (coaching relationship gerekli) | 🔲 |
+| Tarif / favori yemek kaydetme | 🔲 |
 
 ---
 
@@ -147,5 +188,6 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 ✅ Program versioning + update notifications  
 ✅ Avatar + cover photo (Cloudflare R2)  
 ✅ Published program cover photo  
+✅ Progress photos (upload, timeline, before/after, trainer view)  
 ✅ Today's workout widget (Dashboard)  
 ✅ Athlete analytics screen  

@@ -189,4 +189,19 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 `Phase7_ProgramCoverPhoto` adds:
 - `cover_media_asset_id` (nullable UUID, FK → `media_assets.id`, ON DELETE SET NULL) on `published_programs`
 
-**Total migrations as of Phase 7: 53**
+## Migration History (Phase 8)
+
+`Phase8_ProgressPhotos` adds:
+- `progress_photos` table:
+  - `id` uuid PK
+  - `athlete_id` uuid FK → `athletes` (cascade delete)
+  - `media_asset_id` uuid FK → `media_assets` (cascade delete)
+  - `taken_on` date NOT NULL
+  - `notes` varchar(1000) nullable
+  - `visibility` int NOT NULL (0=Private, 1=CoachOnly, 2=Public)
+  - `weight_kg_snapshot` numeric(6,2) nullable
+  - `created_at` timestamptz
+- Index on `(athlete_id, taken_on)` for efficient timeline queries
+- R2 object key pattern: `athletes/{athleteId}/progress/{mediaId}{ext}`
+
+**Total migrations as of Phase 8: 54**

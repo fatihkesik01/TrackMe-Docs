@@ -115,9 +115,9 @@ Athlete selects Program Day → Start Workout
 | In-app notifications + SignalR realtime | ✅ Live |
 | Direct messaging (with program refs) | ✅ Live |
 | Media: avatar + cover photo + program cover | ✅ Live |
+| Progress photos (upload, timeline, before/after, trainer view) | ✅ Live |
 | Admin panel | ✅ Live |
 | Dark mode + i18n (TR/EN) | ✅ Live |
-| Progress photos | 🔲 Planned |
 | Submission/feedback videos | 🔲 Planned |
 | Mobile app (React Native) | 🔲 Planned |
 | Gym system + leaderboard | 🔲 Planned |
