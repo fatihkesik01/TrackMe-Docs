@@ -182,3 +182,11 @@ Username=trackme
 ```
 
 The database port is bound to `127.0.0.1` on the VPS only. It is not exposed publicly.
+
+
+## Migration History (Phase 7)
+
+`Phase7_ProgramCoverPhoto` adds:
+- `cover_media_asset_id` (nullable UUID, FK → `media_assets.id`, ON DELETE SET NULL) on `published_programs`
+
+**Total migrations as of Phase 7: 53**
