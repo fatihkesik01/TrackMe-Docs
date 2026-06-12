@@ -1,29 +1,6 @@
-# TrackMe — Documentation
+# TrackMe Documentation
 
-TrackMe is a coach-athlete training management platform. Trainers manage athlete programs and track progress. Athletes log workouts, track body metrics, and follow their programs.
-
-## Repositories
-
-| Repo | URL |
-|------|-----|
-| TrackMe-Docs | https://github.com/fatihkesik01/TrackMe-Docs |
-| TrackMe-Api | https://github.com/fatihkesik01/TrackMe-Api |
-| TrackMe-Web | https://github.com/fatihkesik01/TrackMe-Web |
-| TrackMe-Mobile | https://github.com/fatihkesik01/TrackMe-Mobile (planned) |
-
-## Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Web App | React 18 + Vite |
-| Backend API | ASP.NET Core 10 Minimal API |
-| Database | PostgreSQL 16 |
-| ORM | Entity Framework Core 10 |
-| Auth | JWT + Refresh tokens |
-| Icons | Lucide React |
-| Charts | Recharts |
-| Hosting | Hostinger VPS + Docker Compose |
-| API Docs | Scalar (OpenAPI) |
+Single source of truth for the TrackMe platform. Each doc covers one concern completely; nothing is duplicated across files.
 
 ## Live Endpoints
 
@@ -38,54 +15,84 @@ TrackMe is a coach-athlete training management platform. Trainers manage athlete
 
 ---
 
-## Documentation Index
+## Product
 
-## Documentation
-
-- [Project Vision](docs/PROJECT_VISION.md)
-- [Product Bible](docs/PRODUCT_BIBLE.md)
-- [Roadmap](docs/ROADMAP.md)
-- [Backlog](docs/BACKLOG.md)
-- [Task Tree](docs/TASK_TREE.md)
-
-### System
-
-- [Project Overview](docs/00-project-overview.md)
-- [System Architecture](docs/02-system-architecture.md)
-- [Backend Architecture](docs/03-backend-architecture.md)
-- [Web App Architecture](docs/05-web-architecture.md)
-
-### Data
-
-- [Database Design](docs/06-database-design.md)
-- [ERD Diagram](database/erd.md)
-
-### API & Auth
-
-- [API Route Reference](docs/07-api-analysis.md)
-- [Authentication & Authorization](docs/10-auth-authorization.md)
-- [Deployment](docs/17-deployment.md)
-- [Security and Validation](docs/18-security-validation.md)
-
-### Domain
-
-- [Trainer-Athlete Relationship System](docs/12-trainer-athlete-relationship.md)
-
-## Roles
-
-| Role | Description |
+| File | What's in it |
 |------|-------------|
-| Admin | Full system access — user management, exercise library |
-| Trainer | Manages athletes, creates programs, views progress |
-| Athlete | Logs sessions, follows programs, tracks body metrics |
+| [product/vision.md](product/vision.md) | What TrackMe is, target users, design principles, non-goals |
+| [product/roadmap.md](product/roadmap.md) | P0–P3 phases with tasks, dependencies, success criteria |
+| [product/decisions.md](product/decisions.md) | Key architectural & product decisions with rationale |
 
-> **Dual-role users**: An account registered as Athlete can also function as a Trainer if a Trainer entity with the same email exists. The frontend `uiRole` localStorage value controls which UI is active. The backend resolves the trainer entity by email when needed.
+---
 
-## Core Principles
+## Architecture
 
-- Athlete-centric architecture: all content flows through athlete profiles
-- Trainer manages athletes; athletes manage themselves
-- Programs are created per athlete, built day-by-day in the builder
-- Sessions log actual performed work; program days log planned work
-- Analytics computed from session data; body metrics tracked separately
-- JWT auth with role-based access; data ownership enforced per endpoint
+| File | What's in it |
+|------|-------------|
+| [architecture/overview.md](architecture/overview.md) | Stack diagram, deployment, startup sequence, feature status table |
+| [architecture/backend.md](architecture/backend.md) | ASP.NET Core 10 layers, DI, EF Core, SignalR, patterns |
+| [architecture/web.md](architecture/web.md) | React 18 + Vite SPA structure, routing, state, components |
+| [architecture/mobile.md](architecture/mobile.md) | React Native plan, navigation, offline draft, push notifications |
+
+---
+
+## Features
+
+Each file is the canonical reference for that feature: data model, business rules, endpoints, and frontend.
+
+| File | Feature |
+|------|---------|
+| [features/auth.md](features/auth.md) | JWT auth, refresh tokens, roles, dual-role, CORS, rate limiting |
+| [features/coaching.md](features/coaching.md) | Trainer-athlete relationship lifecycle, access rules |
+| [features/programs.md](features/programs.md) | Workout programs, templates, locking, published programs, versioning |
+| [features/workout.md](features/workout.md) | Session lifecycle, set logging, WorkoutMode, history |
+| [features/analytics.md](features/analytics.md) | RPE, volume, consistency, PRs, last performance, today widget |
+| [features/social.md](features/social.md) | Social connections, follow system, profile privacy, feed |
+| [features/messaging.md](features/messaging.md) | Direct messages, program references, real-time delivery |
+| [features/notifications.md](features/notifications.md) | All notification types, SignalR delivery, retention rules |
+| [features/media.md](features/media.md) | MediaAsset model, R2 storage, avatar/cover/program cover |
+| [features/exercises.md](features/exercises.md) | Exercise library, measurement types, seeding, CRUD rules |
+| [features/admin.md](features/admin.md) | Admin capabilities, user management, exercise moderation |
+
+---
+
+## API
+
+| File | What's in it |
+|------|-------------|
+| [api/reference.md](api/reference.md) | Full endpoint list, request/response shapes |
+| [api/deployment.md](api/deployment.md) | Docker Compose, VPS setup, environment variables, deploy checklist |
+
+---
+
+## Database
+
+| File | What's in it |
+|------|-------------|
+| [database/schema.md](database/schema.md) | All tables, columns, indexes, FK relationships |
+| [database/migration-strategy.md](database/migration-strategy.md) | Migration rules, CLI commands, phase-by-phase history (53 migrations) |
+
+---
+
+## Tasks
+
+| File | What's in it |
+|------|-------------|
+| [tasks/phases.md](tasks/phases.md) | Phase sequence (0–12), current state, next phases with effort |
+| [tasks/backlog.md](tasks/backlog.md) | Prioritized task list by epic and phase (P1–P3 + infra) |
+
+---
+
+## Quick Navigation
+
+**I want to understand the system** → [architecture/overview.md](architecture/overview.md)
+
+**I'm implementing a new feature** → start with the relevant [features/](features/) doc, then check [database/migration-strategy.md](database/migration-strategy.md)
+
+**I want to know what's next** → [tasks/backlog.md](tasks/backlog.md) or [product/roadmap.md](product/roadmap.md)
+
+**I'm deploying** → [api/deployment.md](api/deployment.md)
+
+**I made a design decision** → add it to [product/decisions.md](product/decisions.md)
+
+**I'm adding a migration** → follow [database/migration-strategy.md](database/migration-strategy.md), never write migration files manually

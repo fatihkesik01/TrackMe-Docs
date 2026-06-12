@@ -1,0 +1,151 @@
+# Product Backlog
+
+Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 Future
+
+---
+
+## P1 — Media-Enabled Coaching
+
+### Progress Photos
+
+| Task | Status |
+|------|--------|
+| Progress photo upload (athlete → ProfileView) | ⬜ |
+| Progress photo visibility settings (Private / CoachOnly / Public) | ⬜ |
+| Progress photo timeline (date-grouped grid in ProfileView) | ⬜ |
+| Before/after comparison modal (side-by-side viewer) | ⬜ |
+| Trainer access to athlete's shared progress photos | ⬜ |
+| Body metric linking (attach metric snapshot to photo) | ⬜ |
+
+### Submission & Feedback Videos
+
+| Task | Status |
+|------|--------|
+| Athlete submission video upload (linked to session/exercise) | ⬜ |
+| Trainer notification: new submission video received | ⬜ |
+| Trainer feedback video (record + upload) | ⬜ |
+| Athlete notification: new video feedback received | ⬜ |
+| Trainer audio feedback (record + upload + playback) | ⬜ |
+| Feedback viewed/read status | ⬜ |
+
+### Exercise Videos
+
+| Task | Status |
+|------|--------|
+| Exercise demo video (link to exercise, official vs user-generated) | ⬜ |
+| Video display in exercise picker | ⬜ |
+| Video display in WorkoutMode | ⬜ |
+| Thumbnail generation (server or R2 Transform) | ⬜ |
+
+### Media Infrastructure
+
+| Task | Status |
+|------|--------|
+| Media upload size limits (per-user quota enforcement) | ⬜ |
+| Video compression plan (pre-upload, server, or transcoding) | ⬜ |
+| Orphan asset cleanup job (GC for uploaded-but-unlinked assets) | ⬜ |
+| Media reporting (flag on `MediaAsset`) | ⬜ |
+| Admin media moderation queue | ⬜ |
+
+---
+
+## P2 — Gym & Community
+
+### Gym Entity
+
+| Task | Status |
+|------|--------|
+| Gym create/edit (name, logo, cover, visibility) | 🔲 |
+| Multi-gym membership (user belongs to multiple gyms) | 🔲 |
+| Gym invite flow (owner invites by email) | 🔲 |
+| Gym member role management (Owner / Coach / Member) | 🔲 |
+
+### Gym Feed
+
+| Task | Status |
+|------|--------|
+| Gym feed post (text + media) | 🔲 |
+| Comments + reactions on feed posts | 🔲 |
+| Gym feed moderation (admin + gym owner) | 🔲 |
+| Gym feed notification (new post → members) | 🔲 |
+
+### Leaderboards
+
+| Task | Status |
+|------|--------|
+| Personal Records — display in analytics screen | ⬜ |
+| Gym leaderboard (top lifts per exercise, per period) | 🔲 |
+| Global leaderboard (verified PRs only) | 🔲 |
+| PR evidence video submission + verification | 🔲 |
+| Verified PR badge | 🔲 |
+
+---
+
+## P3 — AI, Growth & Monetization
+
+### AI Features
+
+| Task | Status |
+|------|--------|
+| Standardize program schema for AI prompt | 🔲 |
+| AI program draft (OpenAI integration) — trainer edits before save | 🔲 |
+| AI coaching suggestions (load progression, missed workout detection) | 🔲 |
+| Trainer approval gate for AI suggestions | 🔲 |
+| AI audit metadata (source tag on AI-generated programs) | 🔲 |
+
+### Mobile App
+
+| Task | Status |
+|------|--------|
+| React Native project setup (Expo managed workflow) | 🔲 |
+| Auth flow + expo-secure-store token storage | 🔲 |
+| Athlete Workout Mode (set-by-set logging) | 🔲 |
+| Offline-tolerant session draft (SQLite / expo-secure-store) | 🔲 |
+| Push notifications (FCM + APNs, device token storage) | 🔲 |
+| Camera capture + gallery upload | 🔲 |
+| Resumable + background upload for videos | 🔲 |
+
+### Monetization
+
+| Task | Status |
+|------|--------|
+| Subscription model (trainer plans, gym plans) | 🔲 |
+| Storage quota policy per plan tier | 🔲 |
+| Ad placement config (feed/discovery only; exclude WorkoutMode) | 🔲 |
+| Export/download policy (data portability) | 🔲 |
+
+---
+
+## Infrastructure & Quality
+
+| Task | Status |
+|------|--------|
+| Domain + HTTPS (currently IP:port) | ⬜ |
+| PostgreSQL scheduled backups with restore verification | ⬜ |
+| Staging environment (separate R2 bucket, DB) | ⬜ |
+| Product analytics events (Mixpanel / PostHog) | ⬜ |
+| Disable SSH password login on VPS | ⬜ |
+| Structured audit log table for admin actions | ⬜ |
+
+---
+
+## Completed (P0 — Core Coaching)
+
+✅ JWT auth + refresh token rotation  
+✅ Trainer-athlete relationship lifecycle  
+✅ Program Builder (repeat pattern, templates, per-set weights)  
+✅ Workout Mode (set-by-set logging, warm-up sets, RPE)  
+✅ Session history + analytics (RPE trend, volume, consistency, PRs)  
+✅ Body metrics (9 fields, trend graphs)  
+✅ Exercise library (141+ exercises, seeded)  
+✅ In-app notifications + SignalR real-time  
+✅ Direct messaging with program references  
+✅ Admin panel  
+✅ Dark mode + TR/EN i18n  
+✅ Public programs (publish, like, save, fork, version)  
+✅ Social connections + follow system  
+✅ Program versioning + update notifications  
+✅ Avatar + cover photo (Cloudflare R2)  
+✅ Published program cover photo  
+✅ Today's workout widget (Dashboard)  
+✅ Athlete analytics screen  
