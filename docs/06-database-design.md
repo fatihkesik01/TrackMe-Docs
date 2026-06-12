@@ -2,7 +2,7 @@
 
 PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `TrackMeDbContext.OnModelCreating()` are the schema source of truth.
 
-## Active Tables (21)
+## Active Tables (22)
 
 ### users
 
@@ -24,11 +24,44 @@ PostgreSQL 16 is managed by EF Core code-first migrations. Entity classes and `T
 | height_unit | varchar(8) | default `cm`; user display/input preference, valid values `cm`, `ft-in` |
 | dumbbell_increment_kg | numeric(5,2) | default 2.0; athlete-owned dumbbell weight increment |
 | barbell_plate_per_side_kg | numeric(5,2) | default 2.5; athlete-owned barbell smallest plate per side |
+| profile_privacy_json | varchar(2000) | nullable; JSON map of per-field visibility: `{ bio, goal, age, profession, sports, bodyMetrics, avatarEmoji, featuredExercises }` each `"public"\|"connections"\|"coach_only"\|"private"` |
+| avatar_emoji | varchar(10) | nullable; single emoji character shown as avatar fallback |
+| avatar_media_asset_id | uuid FK -> media_assets | nullable; SetNull on delete |
+| cover_media_asset_id | uuid FK -> media_assets | nullable; SetNull on delete |
 | is_active | bool | |
 | email_verified_at | timestamptz | nullable |
 | created_at | timestamptz | UTC |
 
 Workout and body-measurement values remain canonical in metric units in the database: workout weights are stored as kilograms (`*_weight_kg`) and body height is stored as centimeters (`height_cm`). Web clients convert values to the user's `weight_unit` and `height_unit` preferences for input and display.
+
+### media_assets
+
+Stores metadata for all uploaded binary files. Binary data is never stored in PostgreSQL — files live in Cloudflare R2 (production) or local filesystem (dev fallback).
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| owner_user_id | uuid FK -> users | cascade delete |
+| media_type | varchar(40) | `Image` / `Video` / `Audio` |
+| purpose | varchar(60) | `AvatarPhoto` / `CoverPhoto` / `ProgressPhoto` / `ExerciseVideo` / … |
+| visibility | varchar(40) | `Private` / `CoachOnly` / `Public` |
+| storage_provider | varchar(60) | `Local` or `CloudflareR2` |
+| bucket | varchar(160) | nullable; R2 bucket name |
+| object_key | varchar(600) | unique; storage path e.g. `users/{id}/profile/avatarphoto/{mediaId}.jpg` |
+| status | varchar(40) | `PendingUpload` / `Ready` / `Deleted` / `Failed` |
+| moderation_status | varchar(40) | `None` / `Reported` / `Approved` / `Rejected` / `Hidden` |
+| mime_type | varchar(120) | e.g. `image/jpeg` |
+| file_size_bytes | bigint | |
+| width | int | nullable; image width px |
+| height | int | nullable; image height px |
+| original_file_name | varchar(260) | nullable |
+| public_url | varchar(1000) | nullable; direct CDN URL when R2 public access enabled |
+| metadata_json | varchar(4000) | nullable; reserved for future use |
+| created_at | timestamptz | |
+| uploaded_at | timestamptz | nullable |
+| deleted_at | timestamptz | nullable; soft delete marker |
+
+Indexes: `object_key` unique; `(owner_user_id, purpose)` composite. Deleted assets (`deleted_at IS NOT NULL` or `status = Deleted`) are never served via `GET /api/media/{id}/content`.
 
 ### refresh_tokens
 

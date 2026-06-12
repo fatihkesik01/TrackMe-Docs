@@ -40,6 +40,14 @@ TrackMe is a coach-athlete training management platform. Trainers manage athlete
 
 ## Documentation Index
 
+## Documentation
+
+- [Project Vision](docs/PROJECT_VISION.md)
+- [Product Bible](docs/PRODUCT_BIBLE.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Backlog](docs/BACKLOG.md)
+- [Task Tree](docs/TASK_TREE.md)
+
 ### System
 
 - [Project Overview](docs/00-project-overview.md)

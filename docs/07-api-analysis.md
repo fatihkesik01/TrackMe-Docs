@@ -358,6 +358,26 @@ When an Athlete completes an in-progress session linked to a trainer-owned progr
 
 At least one measurement field is required when creating a body metric.
 
+## Media (`/api/media`)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/media/profile/avatar` | Required | Upload avatar photo (multipart/form-data, field name `file`) |
+| DELETE | `/api/media/profile/avatar` | Required | Delete current avatar photo |
+| POST | `/api/media/profile/cover` | Required | Upload cover photo (multipart/form-data, field name `file`) |
+| DELETE | `/api/media/profile/cover` | Required | Delete current cover photo |
+| GET | `/api/media/{id}/content` | Public | Proxy/redirect to stored media content |
+
+**Upload constraints:** Max 5 MB. Accepted MIME types: `image/jpeg`, `image/png`, `image/webp`. The request must be `multipart/form-data`; the file field must be named `file`.
+
+**Avatar/cover upload behavior:** Old asset is soft-deleted (status → `Deleted`, `deleted_at` set) and removed from storage before the new asset is persisted. The user's `avatar_media_asset_id` or `cover_media_asset_id` FK is updated atomically with the new record.
+
+**`GET /api/media/{id}/content`:** Public, no auth required. Returns 404 if the asset does not exist, is deleted (`deleted_at IS NOT NULL` or `status = Deleted`), or is restricted to an unsupported purpose (only `AvatarPhoto` and `CoverPhoto` are served). If `R2_PUBLIC_BASE_URL` is configured and the asset has a `public_url`, responds with `302 Redirect` to the CDN URL. Otherwise streams the binary from storage with the original `Content-Type` header.
+
+**`GET /api/auth/me` additions (Sprint 1):** Includes `avatarPhoto` and `coverPhoto` objects (`{ id, url, mimeType }`) derived from the linked `MediaAsset`. The `url` field is the CDN URL if available, otherwise `/api/media/{id}/content` (relative). Frontend resolves relative URLs to absolute using the API base URL before display.
+
+**Storage selection:** Controlled by `MEDIA_STORAGE_PROVIDER` env var. `CloudflareR2` is used when the var is set and R2 credentials (`R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`) are all present; otherwise falls back to `Local` (stored under `App_Data/media`). Binary data is never written to PostgreSQL.
+
 ## Export (`/api/export`)
 
 | Method | Path | Auth | Description |
