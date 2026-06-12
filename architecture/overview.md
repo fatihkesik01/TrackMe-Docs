@@ -124,10 +124,3 @@ Athlete selects Program Day → Start Workout
 | Gym system + leaderboard | 🔲 Planned |
 | AI coaching suggestions | 🔲 Planned |
 
-## Phase 9 Update
-
-Submission/feedback videos are live: athletes can upload form-check videos, trainers with accepted relationships can send video/audio feedback, and both `SubmissionReceived` and `FeedbackReceived` notifications are pushed through SignalR.
-
-## Phase 10 Update
-
-Nutrition Tracking MVP is live: trainers can set active daily calorie and macro goals for accepted athletes, athletes can upsert one daily total log per date, Dashboard shows Nutrition Today, and trainer Athlete Detail includes a Nutrition tab with last-30-day adherence.

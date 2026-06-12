@@ -19,29 +19,18 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 
 ### Submission & Feedback Videos
 
-Phase 9 shipped: athlete video submissions, trainer video/audio feedback, notifications, and viewed status are complete.
-
-| Completed Task | Status |
-|----------------|--------|
-| Athlete submission video upload (linked to session/exercise) | Done |
-| Trainer notification: new submission video received | Done |
-| Trainer feedback video (record + upload) | Done |
-| Athlete notification: new video feedback received | Done |
-| Trainer audio feedback (record + upload + playback) | Done |
-| Feedback viewed/read status | Done |
-
-Historical pre-Phase 9 checklist:
-
 | Task | Status |
 |------|--------|
-| Athlete submission video upload (linked to session/exercise) | ⬜ |
-| Trainer notification: new submission video received | ⬜ |
-| Trainer feedback video (record + upload) | ⬜ |
-| Athlete notification: new video feedback received | ⬜ |
-| Trainer audio feedback (record + upload + playback) | ⬜ |
-| Feedback viewed/read status | ⬜ |
+| Athlete submission video upload (linked to session/exercise) | ✅ |
+| Trainer notification: new submission video received | ✅ |
+| Trainer feedback video (record + upload) | ✅ |
+| Athlete notification: new video feedback received | ✅ |
+| Trainer audio feedback (record + upload + playback) | ✅ |
+| Feedback viewed/read status | ✅ |
 
 ### Exercise Videos
+
+Spec: [tasks/specs/exercise-demo-videos.md](specs/exercise-demo-videos.md)
 
 | Task | Status |
 |------|--------|
@@ -66,22 +55,18 @@ Historical pre-Phase 9 checklist:
 
 İki aşamalı: önce hedef + günlük toplam log (A), sonra öğün + yemek bazlı takip (B).
 
-A için tam implementation spec: [tasks/specs/p1.5a-nutrition-tracking.md](specs/p1.5a-nutrition-tracking.md)
-
-Phase 10 shipped P1.5-A: goal entity, daily log entity with `(athlete_id, date)` upsert, nutrition endpoints, athlete Nutrition view, trainer Nutrition tab, and Dashboard Nutrition Today card are complete.
-
 ### A — Günlük Hedef & Toplam Log (MVP)
 
 | Task | Status |
 |------|--------|
-| `NutritionGoal` entity — trainer athlete için günlük hedef koyar (kalori, protein, karb, yağ) | Done |
-| `DailyNutritionLog` entity — athlete günlük toplamları girer | Done |
-| `POST /api/nutrition/goals` — trainer hedef belirler | Done |
-| `GET /api/nutrition/goals/{athleteId}` — aktif hedefi getir | Done |
-| `POST /api/nutrition/logs` — athlete günlük toplamı kaydeder | Done |
-| `GET /api/nutrition/logs/{athleteId}` — log geçmişi (tarih aralığı filtreli) | Done |
-| Trainer: hedef vs gerçek uyum grafiği (son 30 gün) | Done |
-| Athlete: günlük özet kart (Dashboard'a entegre) | Done |
+| `NutritionGoal` entity — trainer athlete için günlük hedef koyar (kalori, protein, karb, yağ) | ✅ |
+| `DailyNutritionLog` entity — athlete günlük toplamları girer | ✅ |
+| `POST /api/nutrition/goals` — trainer hedef belirler | ✅ |
+| `GET /api/nutrition/goals/{athleteId}` — aktif hedefi getir | ✅ |
+| `POST /api/nutrition/logs` — athlete günlük toplamı kaydeder | ✅ |
+| `GET /api/nutrition/logs/{athleteId}` — log geçmişi (tarih aralığı filtreli) | ✅ |
+| Trainer: hedef vs gerçek uyum grafiği (son 30 gün) | ✅ |
+| Athlete: günlük özet kart (Dashboard'a entegre) | ✅ |
 | Bildirim: athlete günlük logu atladığında trainer'a uyarı (opsiyonel) | ⬜ |
 | Privacy: nutrition data varsayılan `coach_only` | ⬜ |
 
@@ -128,6 +113,8 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 | Gym feed notification (new post → members) | 🔲 |
 
 ### Leaderboards
+
+Spec: [tasks/specs/pr-display.md](specs/pr-display.md) (frontend only — backend endpoint exists)
 
 | Task | Status |
 |------|--------|
@@ -206,5 +193,7 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 ✅ Avatar + cover photo (Cloudflare R2)  
 ✅ Published program cover photo  
 ✅ Progress photos (upload, timeline, before/after, trainer view)  
+✅ Submission & feedback videos (athlete upload + trainer video/audio feedback)  
+✅ Nutrition tracking MVP (daily goals, logs, adherence graph, Dashboard card)  
 ✅ Today's workout widget (Dashboard)  
 ✅ Athlete analytics screen  

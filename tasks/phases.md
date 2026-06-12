@@ -71,16 +71,16 @@
 - ProgressPhotosView: date-grouped timeline grid, upload modal, lightbox (keyboard nav), before/after comparison modal
 - Inline visibility change per photo card and in lightbox
 
-### Phase 9 â€” Submission & Feedback Videos
+### Phase 9 — Submission & Feedback Videos
 
 - `VideoSubmission` entity with optional `session_id` / `session_exercise_id` links
 - `VideoFeedback` entity with trainer media, notes, and `viewed_at`
-- `POST /api/submissions` â€” athlete multipart upload (MP4/WebM, max 200 MB)
-- `GET /api/submissions` â€” athlete own paginated list
-- `GET /api/athletes/{athleteId}/submissions` â€” trainer view, accepted relationship required, Private hidden
-- `GET /api/submissions/{id}` â€” detail with feedbacks
-- `POST /api/submissions/{id}/feedback` â€” trainer video/audio feedback
-- `PATCH /api/submissions/{id}/feedback/{feedbackId}/viewed` â€” athlete marks feedback viewed
+- `POST /api/submissions` — athlete multipart upload (MP4/WebM, max 200 MB)
+- `GET /api/submissions` — athlete own paginated list
+- `GET /api/athletes/{athleteId}/submissions` — trainer view, accepted relationship required, Private hidden
+- `GET /api/submissions/{id}` — detail with feedbacks
+- `POST /api/submissions/{id}/feedback` — trainer video/audio feedback
+- `PATCH /api/submissions/{id}/feedback/{feedbackId}/viewed` — athlete marks feedback viewed
 - `DELETE /api/submissions/{id}` and `DELETE /api/submissions/{id}/feedback/{feedbackId}`
 - Notifications: `SubmissionReceived`, `FeedbackReceived`
 - Web: Athlete Submissions view + trainer Videos tab in Athlete Detail
@@ -98,9 +98,7 @@
 
 ## Next Phases (Planned)
 
-### Phase 9 — Submission & Feedback Videos (P1)
-
-### Phase 11 - Mobile MVP (P3)
+### Phase 11 — Mobile MVP (P3)
 
 Depends on: Stable API, Phase 8–9 complete
 
@@ -112,7 +110,7 @@ Depends on: Stable API, Phase 8–9 complete
 | Offline session draft | M |
 | Push notifications (FCM + APNs) | M |
 
-### Phase 12 - Gym & Community (P2)
+### Phase 12 — Gym & Community (P2)
 
 Depends on: Phase 9 or parallel
 
@@ -124,7 +122,7 @@ Depends on: Phase 9 or parallel
 | Gym leaderboard | M |
 | Global leaderboard | M |
 
-### Phase 13 - AI (P3)
+### Phase 13 — AI (P3)
 
 Depends on: Phase 11, standardized program schema
 
