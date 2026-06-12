@@ -77,6 +77,8 @@
 
 ### Phase 9 — Submission & Feedback Videos (P1)
 
+Full implementation spec: [tasks/specs/phase9-submission-videos.md](specs/phase9-submission-videos.md)
+
 Depends on: Phase 8 (media infra patterns)
 
 | Task | Effort |

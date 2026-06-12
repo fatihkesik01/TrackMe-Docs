@@ -53,6 +53,8 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 
 İki aşamalı: önce hedef + günlük toplam log (A), sonra öğün + yemek bazlı takip (B).
 
+A için tam implementation spec: [tasks/specs/p1.5a-nutrition-tracking.md](specs/p1.5a-nutrition-tracking.md)
+
 ### A — Günlük Hedef & Toplam Log (MVP)
 
 | Task | Status |
