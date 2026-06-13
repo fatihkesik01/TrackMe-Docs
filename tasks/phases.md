@@ -85,7 +85,7 @@
 - Notifications: `SubmissionReceived`, `FeedbackReceived`
 - Web: Athlete Submissions view + trainer Videos tab in Athlete Detail
 
-### Phase 10 - Nutrition Tracking MVP
+### Phase 10 — Nutrition Tracking MVP
 
 - `NutritionGoal` entity for active calorie/protein/carbs/fat targets
 - `DailyNutritionLog` entity with unique `(athlete_id, date)` and API upsert behavior
@@ -94,7 +94,7 @@
 - Trainer Athlete Detail Nutrition tab: set/update goal and last-30-day adherence list
 - Dashboard Nutrition Today card for athletes with an active goal
 
-### Phase 11 - Exercise Demo Videos
+### Phase 11 — Exercise Demo Videos
 
 - Nullable `exercises.demo_video_media_asset_id` FK to `media_assets`
 - Trainer upload/delete for owned private exercises; admin upload/delete for global exercises
@@ -118,7 +118,7 @@ Depends on: Stable API, Phase 8-11 complete
 | Offline session draft | M |
 | Push notifications (FCM + APNs) | M |
 
-### Phase 13 - Gym & Community (P2)
+### Phase 13 — Gym & Community (P2)
 
 Depends on: Phase 11 or parallel
 
@@ -130,7 +130,7 @@ Depends on: Phase 11 or parallel
 | Gym leaderboard | M |
 | Global leaderboard | M |
 
-### Phase 14 - AI (P3)
+### Phase 14 — AI (P3)
 
 Depends on: Phase 13, standardized program schema
 

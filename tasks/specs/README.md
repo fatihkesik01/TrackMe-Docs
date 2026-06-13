@@ -7,15 +7,16 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 
 | Dosya | Kapsam | Öncelik | Zorluk |
 |-------|--------|---------|--------|
-| [pr-display.md](pr-display.md) | PR tablosu athlete analytics'e eklenir — backend yok, sadece frontend | P2 — Hemen | S |
-| [exercise-demo-videos.md](exercise-demo-videos.md) | Egzersizlere demo video ekleme (upload, picker, WorkoutMode) | P1 — Planlandı | M |
+| [p1.5b-nutrition-meals.md](p1.5b-nutrition-meals.md) | Öğün + yemek bazlı takip — FoodItem, Meal, MealEntry, food search, meal cards | P1.5 | L |
 
 ## Tamamlanan Spec'ler (silindi)
 
 | Feature | Phase | Durum |
 |---------|-------|-------|
-| Submission & Feedback Videos | Phase 9 | ✅ Tamamlandı |
-| Nutrition Tracking A (daily log + goal) | Phase 10 | ✅ Tamamlandı |
+| Submission & Feedback Videos | Phase 9 | ✅ |
+| Nutrition Tracking A (daily log + goal) | Phase 10 | ✅ |
+| Exercise Demo Videos | Phase 11 | ✅ |
+| Personal Records display | – (frontend only) | ✅ |
 
 ---
 
@@ -32,9 +33,10 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 6. **Forbidden**: `EndpointHelpers.Forbidden("message")` → HTTP 403
 7. **Dual-role user**: Trainer JWT ile athlete profiline erişim → email lookup ile `Athletes` tablosunda arama
 8. **DTO pattern**: `sealed record` in `Models/Dtos.cs`
-9. **Frontend API**: `authFetch` helper'ı kullan, multipart için `fetch` + FormData ile `Authorization` header ekle
-10. **i18n**: Her string için hem TR hem EN key ekle — `i18n.js` içindeki mevcut yapıyı takip et
-11. **Docs güncelleme**: Her feature sonunda şunları güncelle:
+9. **Enum pattern**: Tüm enum'lar `Models/Enums.cs`'te, entity dosyasında tanımlanmaz
+10. **Frontend API**: `authFetch` helper, multipart için `fetch` + FormData + `Authorization` header
+11. **i18n**: Her string için hem TR hem EN key ekle
+12. **Docs güncelleme**: Her feature sonunda şunları güncelle:
     - `TrackMe-Docs/tasks/phases.md` — phase entry + migration count
     - `TrackMe-Docs/tasks/backlog.md` — task'ları ✅ yap, Completed section'a ekle
     - `TrackMe-Docs/architecture/overview.md` — feature status tablosu
@@ -48,28 +50,30 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 ```
 TrackMe-Api/
   src/TrackMe.Api/
-    Data/TrackMeDbContext.cs     — DbSet + OnModelCreating (her entity için)
-    Endpoints/                   — Endpoint dosyaları (birer static class)
+    Data/
+      TrackMeDbContext.cs    — DbSet + OnModelCreating (her entity için)
+      ExerciseSeeder.cs      — global egzersiz seeding
+      FoodItemSeeder.cs      — (P1.5-B sonrası) global food seeding
+    Endpoints/               — Endpoint dosyaları (birer static class)
     Models/
-      Enums.cs                   — Tüm enum'lar burada
-      Dtos.cs                    — Tüm DTO record'ları burada
-      <EntityName>.cs            — Her entity ayrı dosyada
+      Enums.cs               — Tüm enum'lar burada
+      Dtos.cs                — Tüm DTO record'ları burada
+      <EntityName>.cs        — Her entity ayrı dosyada
     Services/
-      MediaService.cs            — R2 upload/delete metodları
-      IMediaStorageProvider.cs   — Storage abstraction
-    Program.cs                   — DI kayıt + endpoint map
+      MediaService.cs        — R2 upload/delete metodları
+    Program.cs               — DI kayıt + endpoint map + seeder çağrıları
 
 TrackMe-Web/src/
-  views/                         — Her view ayrı .jsx dosyası
-  components/                    — Paylaşılan bileşenler
-  services/api.js                — Tüm API çağrıları
-  i18n.js                        — TR + EN string'ler
-  App.jsx                        — Nav config, routing, view render
+  views/                     — Her view ayrı .jsx dosyası
+  components/                — Paylaşılan bileşenler
+  services/api.js            — Tüm API çağrıları
+  i18n.js                    — TR + EN string'ler
+  App.jsx                    — Nav config, routing, view render
 ```
 
 ## Mevcut migration sayısı
 
-**Phase 10 sonrası: 56 migration**
+**Phase 11 sonrası: 57 migration**
 
 ## Production bilgileri
 

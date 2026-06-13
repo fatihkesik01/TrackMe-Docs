@@ -30,8 +30,6 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 
 ### Exercise Videos
 
-Spec: [tasks/specs/exercise-demo-videos.md](specs/exercise-demo-videos.md)
-
 | Task | Status |
 |------|--------|
 | Exercise demo video (link to exercise, official vs user-generated) | ✅ |
@@ -114,8 +112,6 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 
 ### Leaderboards
 
-Spec: [tasks/specs/pr-display.md](specs/pr-display.md) (frontend only — backend endpoint exists)
-
 | Task | Status |
 |------|--------|
 | Personal Records — display in analytics screen | ✅ |
@@ -195,5 +191,7 @@ Spec: [tasks/specs/pr-display.md](specs/pr-display.md) (frontend only — backen
 ✅ Progress photos (upload, timeline, before/after, trainer view)  
 ✅ Submission & feedback videos (athlete upload + trainer video/audio feedback)  
 ✅ Nutrition tracking MVP (daily goals, logs, adherence graph, Dashboard card)  
+✅ Exercise demo videos (upload by trainer/admin, view in picker + WorkoutMode)  
+✅ Personal Records display in athlete analytics  
 ✅ Today's workout widget (Dashboard)  
 ✅ Athlete analytics screen  
