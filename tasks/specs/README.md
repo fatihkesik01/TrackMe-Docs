@@ -7,7 +7,6 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 
 | Dosya | Feature | Zorluk | Durum |
 |-------|---------|--------|-------|
-| [spec-media-upload-quota.md](spec-media-upload-quota.md) | Per-user media storage quota | M | ⬜ Hazır |
 
 Diğer adaylar için bkz: [backlog.md](../backlog.md)
 
@@ -22,6 +21,7 @@ Diğer adaylar için bkz: [backlog.md](../backlog.md)
 | Nutrition Meals B (FoodItem, Meal, MealEntry) | Phase 12 | ✅ |
 | Body Metric Linking to Progress Photos | Phase 14 | ✅ |
 | Missed Workout & Nutrition Notifications | Phase 15 | ✅ |
+| Per-user Media Storage Quota | – (migration yok) | ✅ |
 
 ---
 

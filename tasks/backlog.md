@@ -8,7 +8,6 @@ Durum: ✅ Tamamlandı · ⬜ Yapılabilir (kod işi) · 🔲 Gelecek (plan)
 
 | Görev | Epic | Zorluk | Notlar |
 |-------|------|--------|--------|
-| Media upload size limits (per-user quota) | Media | M | Toplam `file_size_bytes` say; rol bazlı limit (ör. Athlete 500 MB, Trainer 2 GB) |
 | Privacy: nutrition data varsayılan `coach_only` | Nutrition | S | Athlete profiline `nutrition_visibility` alanı ekle |
 | Thumbnail generation for videos | Media | L | Cloudflare R2 Image Transform veya FFmpeg sidecar |
 | Video compression plan | Media | M | Pre-upload client-side veya server-side transcode kararı |
@@ -67,6 +66,7 @@ Durum: ✅ Tamamlandı · ⬜ Yapılabilir (kod işi) · 🔲 Gelecek (plan)
 - Admin audit log (aktör, işlem, hedef, IP — Phase 13)
 - Orphan media cleanup background servisi (24s GC)
 - Media raporlama + admin moderasyon kuyruğu (Phase 16)
+- Media upload size limits — kullanıcı başına Athlete 500 MB, Trainer 2 GB, Admin sınırsız kota
 
 ### Koçluk Çekirdeği
 - Trainer-athlete ilişki yaşam döngüsü (pending → accepted → ended)
