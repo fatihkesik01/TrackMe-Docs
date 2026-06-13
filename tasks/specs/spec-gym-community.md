@@ -17,6 +17,8 @@ Bağımlılık yok. Hemen uygulanabilir.
 - `EndpointHelpers.Forbidden("mesaj")` → HTTP 403
 - `ClaimsReader.GetUserId(principal)` → `Guid?` current user ID
 - `ClaimsReader.IsRole(principal, UserRole.Admin)` → bool
+- Frontend API helper'ı `authFetch` değil, `services/api.js` içindeki mevcut `request(...)` ve multipart için `uploadFile(...)` fonksiyonlarıdır
+- Frontend React Router kullanmıyor; navigasyon `App.jsx` içindeki `view` state + `window.location.hash` ile yapılır
 
 ---
 
@@ -286,7 +288,7 @@ public sealed record GymDto(
 public sealed record GymDetailDto(
     Guid Id, string Name, string Slug, string? Description, string Visibility,
     string? LogoUrl, string? CoverUrl, int MemberCount,
-    string MyRole, string MyStatus, DateTimeOffset CreatedAt);
+    string? MyRole, string? MyStatus, DateTimeOffset CreatedAt);
 
 public sealed record GymMemberDto(
     Guid UserId, string FullName, string? AvatarUrl, string? AvatarEmoji,
@@ -295,7 +297,8 @@ public sealed record GymMemberDto(
 public sealed record GymPostDto(
     Guid Id, Guid AuthorUserId, string AuthorName, string? AuthorAvatarUrl,
     string Body, string? MediaUrl, int ReactionCount, int CommentCount,
-    bool MyReaction, DateTimeOffset CreatedAt);
+    bool MyReaction, IReadOnlyList<GymPostCommentDto> Comments,
+    DateTimeOffset CreatedAt);
 
 public sealed record GymPostCommentDto(
     Guid Id, Guid AuthorUserId, string AuthorName, string? AuthorAvatarUrl,
@@ -313,6 +316,8 @@ public sealed record CreateGymPostRequest(string Body);
 public sealed record CreateGymCommentRequest(string Body);
 public sealed record ChangeMemberRoleRequest(string Role);
 ```
+
+`GymPostDto.Comments`, silinmemiş yorumları `CreatedAt ASC` sırasıyla içerir. Ayrı bir comment-list endpoint'i yoktur; böylece toplam endpoint sayısı **20** kalır ve `GymPostCard` yorum panelini doğrudan feed response'undan açabilir.
 
 ---
 
@@ -359,6 +364,8 @@ public static class GymEndpoints
     }
 ```
 
+Toplam: **20 endpoint** (5 CRUD + 2 medya + 6 üyelik + 3 feed + 3 sosyal + 1 leaderboard).
+
 ### Access Gate Yardımcısı
 
 `GymEndpoints` içinde private static helper:
@@ -372,13 +379,31 @@ private static bool CanModerate(GymMembership? m)
 
 private static bool IsOwner(GymMembership? m)
     => m is { Status: GymMemberStatus.Active, Role: GymRole.Owner };
+
+private static bool IsActiveMember(GymMembership? m)
+    => m is { Status: GymMemberStatus.Active };
+
+private static int RoleRank(GymRole role) => role switch
+{
+    GymRole.Owner => 3,
+    GymRole.Coach => 2,
+    _ => 1,
+};
 ```
+
+Tüm handler'ların ilk ortak kuralları:
+- `ClaimsReader.GetUserId(principal)` null ise `Results.Unauthorized()`.
+- Gym sorgularında her zaman `!g.IsDeleted` filtresi kullan.
+- Caller'ın membership kaydı `Banned` ise gym Public olsa bile `EndpointHelpers.Forbidden("banned members cannot access this gym.")` döndür.
+- Kaynak başka gym'e aitse `404`; yalnızca ID ile post/comment bulup işlem yapma.
+- Request enum string'lerini `Enum.TryParse(..., ignoreCase: true, out ...)` ile doğrula; geçersiz değer `400`.
 
 ### Endpoint Davranışları
 
 **`CreateGym`**
 - Request body: `CreateGymRequest`
-- `Slug` = name'i küçük harfe çevir, boşlukları `-` yap, benzersizlik yoksa UUID suffix ekle
+- Name trimlenmiş halde 2–100 karakter olmalı; Description en fazla 2000 karakter
+- `SlugGenerator.Create(request.Name)` kullan; sonuç boşsa 400. Slug doluysa aynı slug varken `-{Guid.NewGuid():N}` değerinin ilk 8 karakterini suffix olarak ekle
 - `Gym` oluştur + `GymMembership { Role = Owner, Status = Active }` oluştur
 - `SaveChangesAsync` → `Results.Created($"/api/gyms/{gym.Id}", GymDetailDto(...))`
 
@@ -387,64 +412,83 @@ private static bool IsOwner(GymMembership? m)
 - `GymDto` listesi döndür; `IsDeleted` olanları filtrele
 
 **`GetGym`**
-- `gym.Visibility == Private` ise → membership kontrolü (üye değilse 404 döndür, varlığını gizle)
-- `GymDetailDto` döndür; `MyRole` = membership?.Role.ToString() ?? "None", `MemberCount` = aktif üye sayısı
+- `gym.Visibility == Private` ise → aktif membership kontrolü (üye değilse 404 döndür, varlığını gizle)
+- Public gym'i üye olmayan authenticated kullanıcı okuyabilir; `MyRole` ve `MyStatus` null olur
+- `GymDetailDto` döndür; `MemberCount` yalnızca aktif üyeleri sayar
 
 **`UpdateGym`**
 - Owner kontrolü gerekir
-- Sadece null olmayan alanları güncelle
+- Sadece null olmayan alanları güncelle; Create ile aynı trim/uzunluk/enum validasyonlarını uygula
+- Name değişirse slug'ı değiştirme; mevcut paylaşılan bağlantıları kırmamak için slug immutable kalır
 
 **`DeleteGym`**
 - Owner veya Admin gerekir
 - `gym.IsDeleted = true; SaveChangesAsync()` — hard-delete kullanma
 
+**`UploadLogo` / `UploadCover`**
+- Sadece aktif Owner yükleyebilir; Admin membership olmadan medya yükleyemez
+- Caller `AppUser` kaydı bulunur ve ilgili `MediaService` metodu çağrılır
+- Başarıda `MediaService.ToDto(asset)` döndür
+- Hata dönüşü `EndpointHelpers.UploadError(error, "upload failed.")` kullanır; kota aşımı böylece HTTP 413 olur
+
 **`InviteMember`**
 - Owner/Coach gerekir
+- Owner `Coach` veya `Member`, Coach yalnızca `Member` rolüyle davet oluşturabilir; `Owner` request'i 400
 - Mevcut aktif üyeye davet atma (zaten üye hata döndür)
+- Aynı gym + normalize email için süresi dolmamış, kabul edilmemiş davet varsa yeni kayıt açmak yerine token'ı döndür
 - `Token = Guid.NewGuid().ToString("N")`, `ExpiresAt = UtcNow + 7 gün`
 - E-posta gönderimi: projeye e-posta servisi yoksa şimdilik token'ı response'da döndür
 - `Results.Ok(new { Token = invite.Token })`
 
 **`AcceptInvite`**
 - Token'ı bul; süresi dolmuşsa veya zaten kabul edilmişse 400
-- Caller'ın e-posta = `invite.InvitedEmail` kontrolü yap
-- Zaten aktif üyeyse 409
-- `GymMembership` oluştur, `invite.AcceptedAt = UtcNow`; `SaveChangesAsync`
+- Caller'ın normalize e-postası (`Trim().ToLowerInvariant()`) = invite e-postası kontrolü yap
+- Gym silinmişse 404; zaten aktif veya banned üyelik varsa 409
+- `GymMembership` oluştur, `invite.AcceptedAt = UtcNow`; `SaveChangesAsync`; `GymDetailDto` döndür
 
 **`GetMembers`**
 - Caller aktif üye olmalı
 - `db.GymMemberships.Where(m => m.GymId == id).Include(m => m.User)` → `GymMemberDto` listesi
+- Sıra: Owner, Coach, Member; aynı rolde `FullName ASC`. Banned kayıtlar listede kalır ve status ile gösterilir
 
 **`ChangeMemberRole`**
 - Sadece Owner yapabilir
 - Owner kendi rolünü değiştiremez
-- `GymRole.Owner` rolüne sadece başka bir Owner atayabilir (transfer mantığı: önceki owner Coach'a düşer)
+- Hedef üyelik aktif olmalı
+- Request `Coach` veya `Member` ise rolü doğrudan güncelle
+- Request `Owner` ise ownership transferidir: hedef membership `Owner`, caller membership `Coach`, `gym.OwnerUserId = target.UserId` aynı transaction/save içinde güncellenir
 
 **`RemoveMember`**
 - Owner/Coach yapabilir; Owner'ı kimse atamaz
-- Kendi kendini atmak için `DELETE /api/gyms/{id}/members/{myUserId}` kullanılabilir (her seviye kendi için geçerli)
+- Kendi kendini çıkarmak için aynı endpoint kullanılabilir; Owner gym'den ayrılamaz, önce ownership transfer etmelidir
+- Coach yalnızca Member çıkarabilir; Owner Coach veya Member çıkarabilir. Kendisinden eşit/yüksek role işlem yapılamaz
+- Membership hard-delete edilir; geçmiş post/comment kayıtları user FK üzerinden korunur
 
 **`ToggleBan`**
 - Owner/Coach; Owner ban edilemez
+- Coach yalnızca Member banlayabilir; Owner Coach veya Member banlayabilir. Caller kendisini banlayamaz
 - `Status == Banned` ise `Active` yap, `Active` ise `Banned` yap
 
 **`CreatePost`**
 - Caller aktif üye olmalı (Banned → 403)
+- Body trimlenmiş halde 1–5000 karakter olmalı
 - Opsiyonel medya: multipart form değil, sadece metin. Medya için ayrı bir upload endpoint eklenebilir ama bu spec kapsam dışı bırakıyor — `MediaAssetId` nullable olarak saklı
 - `Results.Created(..., GymPostDto(...))`
 
 **`GetPosts`**
 - Caller aktif üye olmalı
 - `IsDeleted = false` filtresi
-- Sayfalama: `?cursor={lastCreatedAt}&limit=20` (cursor tabanlı) VEYA basit `?page=1&limit=20`
-- Her post için: `ReactionCount`, `CommentCount`, `MyReaction` (caller'ın reaksiyonu var mı)
+- Sabit sayfalama sözleşmesi: `?page=1&pageSize=20`; `page >= 1`, `pageSize` 1–50 aralığına clamp edilir; `PagedResult<GymPostDto>` döner
+- Sıra `CreatedAt DESC`; her post için `ReactionCount`, silinmemiş `CommentCount`, `MyReaction` ve silinmemiş `Comments` (`CreatedAt ASC`, en fazla son 50) doldurulur
 
 **`DeletePost`**
 - Yazar VEYA Owner/Coach VEYA Admin silebilir
 - `post.IsDeleted = true` — hard-delete değil
 
 **`AddComment`** / **`DeleteComment`**
-- Aynı kural: aktif üye yorum ekleyebilir; yazar/Owner/Coach/Admin silebilir
+- Aktif üye yorum ekleyebilir; body trimlenmiş halde 1–1000 karakter olmalı; created `GymPostCommentDto` döner
+- Yazar/Owner/Coach/Admin silebilir; `comment.PostId == postId` ve `post.GymId == gymId` doğrulanır
+- Silme soft-delete (`IsDeleted = true`) yapar
 
 **`ToggleReaction`**
 - Aktif üye
@@ -453,47 +497,122 @@ private static bool IsOwner(GymMembership? m)
 
 **`GetLeaderboard`**
 - Aktif üye gerekir
-- Bu ayki oturum sayısı + toplam hacim (kg)
-- Query:
-```sql
-SELECT m.user_id, SUM(sl.weight_kg * sl.reps) as volume, COUNT(DISTINCT s.id) as sessions
-FROM gym_memberships m
-JOIN workout_sessions s ON s.athlete_id = ... -- app_users → athletes FK üzerinden
-JOIN workout_set_logs sl ON sl.session_id = s.id
-WHERE m.gym_id = @gymId
-  AND m.status = 'Active'
-  AND s.started_at >= CURRENT_DATE - INTERVAL '30 days'
-  AND s.status = 'Completed'
-GROUP BY m.user_id
-ORDER BY volume DESC
-LIMIT 50
-```
-- **Dikkat:** `workout_sessions.athlete_id` → `athletes` tablosu; athlete'in `user_id`'si üzerinden `gym_memberships.user_id` ile join gerekir
+- Takvim ayı kullanılır: UTC ayın ilk günü dahil, sonraki ayın ilk günü hariç. "Son 30 gün" kullanma
+- `WorkoutSession.CompletedAt` tarihini ve `SessionStatus.Completed` filtresini kullan
+- Hacim yalnızca `WorkoutSetLog.IsCompleted && !IsWarmUp && WeightKg != null && Reps != null` setlerinde `WeightKg * Reps` toplamıdır
+- Mevcut şemada `athletes.user_id` yoktur. Eşleşme `GymMembership.User.Email` ↔ `Athlete.Email` (case-insensitive) üzerinden yapılır
+- Uygulama kalıbı: aktif membership + user listesini çek; normalize email → user map oluştur; ay içindeki completed session'ları `Athlete` ve set loglarıyla sorgula; bellekte user bazında aggregate et
+- Sıra: `TotalVolumeKg DESC`, sonra `SessionCount DESC`, sonra `FullName ASC`; ilk 50 kayıt. Ay içinde verisi olmayan aktif üyeler 0 değerleriyle listenin sonunda kalabilir
 
 ---
 
 ## 6. MediaService — Medya Upload
 
-`Services/MediaService.cs` dosyasına iki yeni metod ekle (mevcut `SaveProgressPhotoAsync` kalıbını takip et):
+`Services/MediaService.cs` dosyasına aşağıdaki iki public metodu ve private ortak helper'ı ekle. Kod mevcut image validasyonu, per-user kota kontrolü, soft-delete ve storage silme davranışıyla uyumludur:
 
 ```csharp
 public async Task<(MediaAsset? Asset, string? Error)> SaveGymLogoAsync(
-    Gym gym, AppUser owner, IFormFile file, TrackMeDbContext db, CancellationToken ct)
-{
-    // Sadece image kabul et (AllowedImageTypes)
-    // CheckQuotaAsync çağır
-    // R2 key: $"gyms/{gym.Id}/logo/{mediaId}{extension}"
-    // MediaPurpose.GymLogo
-    // Eski logo varsa R2'den sil + MediaAsset sil
-    // gym.LogoMediaAssetId = asset.Id; SaveChangesAsync
-}
+    TrackMeDbContext db,
+    AppUser owner,
+    Gym gym,
+    IFormFile file,
+    CancellationToken cancellationToken = default)
+    => await SaveGymImageAsync(
+        db, owner, gym, file, MediaPurpose.GymLogo, "logo", cancellationToken);
 
 public async Task<(MediaAsset? Asset, string? Error)> SaveGymCoverAsync(
-    Gym gym, AppUser owner, IFormFile file, TrackMeDbContext db, CancellationToken ct)
+    TrackMeDbContext db,
+    AppUser owner,
+    Gym gym,
+    IFormFile file,
+    CancellationToken cancellationToken = default)
+    => await SaveGymImageAsync(
+        db, owner, gym, file, MediaPurpose.GymCover, "cover", cancellationToken);
+
+private async Task<(MediaAsset? Asset, string? Error)> SaveGymImageAsync(
+    TrackMeDbContext db,
+    AppUser owner,
+    Gym gym,
+    IFormFile file,
+    MediaPurpose purpose,
+    string objectSegment,
+    CancellationToken cancellationToken)
 {
-    // Aynı yapı, MediaPurpose.GymCover, key: gyms/{gym.Id}/cover/{mediaId}{ext}
+    if (file.Length <= 0)
+        return (null, "file is required.");
+    if (file.Length > MaxProfileImageBytes)
+        return (null, "file must be 5MB or smaller.");
+    if (!AllowedImageTypes.TryGetValue(file.ContentType, out var extension))
+        return (null, "only JPEG, PNG and WebP images are supported.");
+
+    var quotaError = await CheckQuotaAsync(db, owner.Id, owner.Role, file.Length, cancellationToken);
+    if (quotaError is not null)
+        return (null, quotaError);
+
+    var mediaId = Guid.NewGuid();
+    var objectKey = $"gyms/{gym.Id}/{objectSegment}/{mediaId}{extension}";
+
+    await using var stream = file.OpenReadStream();
+    var stored = await storage.SaveAsync(stream, objectKey, file.ContentType, cancellationToken);
+
+    var asset = new MediaAsset
+    {
+        Id = mediaId,
+        OwnerUserId = owner.Id,
+        MediaType = MediaType.Image,
+        Purpose = purpose,
+        Visibility = MediaVisibility.Public,
+        StorageProvider = stored.StorageProvider,
+        Bucket = stored.Bucket,
+        ObjectKey = stored.ObjectKey,
+        Status = MediaStatus.Ready,
+        ModerationStatus = MediaModerationStatus.None,
+        MimeType = file.ContentType,
+        FileSizeBytes = file.Length,
+        OriginalFileName = Path.GetFileName(file.FileName),
+        PublicUrl = stored.PublicUrl,
+        CreatedAt = DateTimeOffset.UtcNow,
+        UploadedAt = DateTimeOffset.UtcNow
+    };
+
+    var previousId = purpose == MediaPurpose.GymLogo
+        ? gym.LogoMediaAssetId
+        : gym.CoverMediaAssetId;
+    var previous = previousId is null
+        ? null
+        : await db.MediaAssets.FirstOrDefaultAsync(m => m.Id == previousId, cancellationToken);
+
+    if (purpose == MediaPurpose.GymLogo)
+        gym.LogoMediaAssetId = asset.Id;
+    else
+        gym.CoverMediaAssetId = asset.Id;
+
+    if (previous is not null && previous.DeletedAt is null)
+    {
+        previous.Status = MediaStatus.Deleted;
+        previous.DeletedAt = DateTimeOffset.UtcNow;
+        await storage.DeleteAsync(previous.ObjectKey, cancellationToken);
+    }
+
+    db.MediaAssets.Add(asset);
+    await db.SaveChangesAsync(cancellationToken);
+    return (asset, null);
 }
 ```
+
+### Media içeriği ve orphan cleanup
+
+İki ek entegrasyon zorunludur; aksi halde yükleme başarılı görünür ama medya 404 olur veya 24 saat sonra cleanup tarafından silinir:
+
+1. `MediaEndpoints.GetContent` içindeki allowed-purpose kontrolüne `MediaPurpose.GymLogo` ve `MediaPurpose.GymCover` ekle.
+2. `OrphanMediaCleanupService` sorgusuna şunları ekle:
+
+```csharp
+&& !db.Gyms.Any(g => g.LogoMediaAssetId == m.Id)
+&& !db.Gyms.Any(g => g.CoverMediaAssetId == m.Id)
+```
+
+Gym DTO URL'leri mevcut convention ile `/api/media/{assetId}/content` biçiminde üretilir; `PublicUrl` doğrudan DTO'ya yazılmaz.
 
 ---
 
@@ -512,51 +631,66 @@ app.MapGymEndpoints();
 ### `services/api.js` — yeni metodlar
 
 ```js
-getMyGyms: () => authFetch('/api/gyms/my'),
-getGym: (id) => authFetch(`/api/gyms/${id}`),
-createGym: (data) => authFetch('/api/gyms', { method: 'POST', body: JSON.stringify(data) }),
-updateGym: (id, data) => authFetch(`/api/gyms/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
-deleteGym: (id) => authFetch(`/api/gyms/${id}`, { method: 'DELETE' }),
-inviteGymMember: (id, data) => authFetch(`/api/gyms/${id}/invite`, { method: 'POST', body: JSON.stringify(data) }),
-acceptGymInvite: (token) => authFetch(`/api/gyms/invites/${token}/accept`, { method: 'POST' }),
-getGymMembers: (id) => authFetch(`/api/gyms/${id}/members`),
-changeMemberRole: (id, userId, data) => authFetch(`/api/gyms/${id}/members/${userId}/role`, { method: 'PATCH', body: JSON.stringify(data) }),
-removeMember: (id, userId) => authFetch(`/api/gyms/${id}/members/${userId}`, { method: 'DELETE' }),
-toggleBan: (id, userId) => authFetch(`/api/gyms/${id}/members/${userId}/ban`, { method: 'PATCH' }),
-getGymPosts: (id, cursor) => authFetch(`/api/gyms/${id}/posts${cursor ? `?cursor=${cursor}` : ''}`),
-createGymPost: (id, data) => authFetch(`/api/gyms/${id}/posts`, { method: 'POST', body: JSON.stringify(data) }),
-deleteGymPost: (id, postId) => authFetch(`/api/gyms/${id}/posts/${postId}`, { method: 'DELETE' }),
-addComment: (id, postId, data) => authFetch(`/api/gyms/${id}/posts/${postId}/comments`, { method: 'POST', body: JSON.stringify(data) }),
-deleteComment: (id, postId, commentId) => authFetch(`/api/gyms/${id}/posts/${postId}/comments/${commentId}`, { method: 'DELETE' }),
-toggleReaction: (id, postId) => authFetch(`/api/gyms/${id}/posts/${postId}/reactions`, { method: 'POST' }),
-getGymLeaderboard: (id) => authFetch(`/api/gyms/${id}/leaderboard`),
+getMyGyms: () => request('/api/gyms/my'),
+getGym: (id) => request(`/api/gyms/${id}`),
+createGym: (data) => request('/api/gyms', { method: 'POST', body: JSON.stringify(data) }),
+updateGym: (id, data) => request(`/api/gyms/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+deleteGym: (id) => request(`/api/gyms/${id}`, { method: 'DELETE' }),
+uploadGymLogo: (id, file) => uploadFile(`/api/gyms/${id}/logo`, file),
+uploadGymCover: (id, file) => uploadFile(`/api/gyms/${id}/cover`, file),
+inviteGymMember: (id, data) => request(`/api/gyms/${id}/invite`, { method: 'POST', body: JSON.stringify(data) }),
+acceptGymInvite: (token) => request(`/api/gyms/invites/${token}/accept`, { method: 'POST' }),
+getGymMembers: (id) => request(`/api/gyms/${id}/members`),
+changeGymMemberRole: (id, userId, data) => request(`/api/gyms/${id}/members/${userId}/role`, { method: 'PATCH', body: JSON.stringify(data) }),
+removeGymMember: (id, userId) => request(`/api/gyms/${id}/members/${userId}`, { method: 'DELETE' }),
+toggleGymMemberBan: (id, userId) => request(`/api/gyms/${id}/members/${userId}/ban`, { method: 'PATCH' }),
+getGymPosts: (id, page = 1, pageSize = 20) => request(`/api/gyms/${id}/posts?page=${page}&pageSize=${pageSize}`),
+createGymPost: (id, data) => request(`/api/gyms/${id}/posts`, { method: 'POST', body: JSON.stringify(data) }),
+deleteGymPost: (id, postId) => request(`/api/gyms/${id}/posts/${postId}`, { method: 'DELETE' }),
+addGymComment: (id, postId, data) => request(`/api/gyms/${id}/posts/${postId}/comments`, { method: 'POST', body: JSON.stringify(data) }),
+deleteGymComment: (id, postId, commentId) => request(`/api/gyms/${id}/posts/${postId}/comments/${commentId}`, { method: 'DELETE' }),
+toggleGymReaction: (id, postId) => request(`/api/gyms/${id}/posts/${postId}/reactions`, { method: 'POST' }),
+getGymLeaderboard: (id) => request(`/api/gyms/${id}/leaderboard`),
 ```
 
 ### `views/GymsView.jsx`
 
 - Üst: "Gym'lerim" başlığı + "Gym Oluştur" butonu
 - Gym kartı: logo, isim, üye sayısı, rolüm, "Gör" linki
-- Bekleyen davet varsa (query param `?invite={token}`): "Daveti Kabul Et" banner → `acceptGymInvite(token)` → yenile
+- Props: `currentUser`, `onOpenGym`, `t`
+- Create modal: name, description, Public/Private segmented control; başarıda listeyi yenile ve `onOpenGym(created.id)` çağır
+- Bekleyen davet varsa hash'in üçüncü parçasından (`#gyms/invite/{token}`) token alınabilir: "Daveti Kabul Et" banner → `acceptGymInvite(token)` → yenile
+- Empty, loading ve API error state'leri görünür olmalı
 
 ### `views/GymDetailView.jsx`
 
-Route: `/gyms/:id`
+Props: `gymId`, `currentUser`, `onBack`, `t`. Ayrı router yoktur; `App.jsx` `#gyms/{id}` hash'inden gymId geçirir.
 
 Sekme yapısı:
 - **Feed** — `GymPostCard` listesi + "Post Ekle" formu (aktif üyeler)
-- **Üyeler** — `GymMemberDto` listesi; Owner/Coach için Rol değiştir / At / Ban butonları
+- **Üyeler** — `GymMemberDto` listesi; Owner/Coach için hiyerarşiye uygun Rol değiştir / At / Ban butonları
 - **Ayarlar** (Owner only) — İsim/açıklama düzenle, logo/kapak yükle, gym sil
 - **Leaderboard** — Bu ayki top 10 üye
+- Tab state component içinde tutulur; gym detail, aktif tabın verisini yükler ve mutation sonrası yalnızca ilgili listeyi yeniler
+- Logo/cover inputları `image/jpeg,image/png,image/webp`, client-side max 5 MB validasyonu uygular; API kota/413 mesajı mevcut toast ile gösterilir
 
 ### `components/GymPostCard.jsx`
 
 ```jsx
 // Props: post, gymId, currentUserId, onDelete, canModerate
 // İçerik: AuthorName + avatar, CreatedAt, Body, opsiyonel medya
-// Alt: ❤️ {reactionCount} butonu (toggle), 💬 {commentCount} (expand)
-// Expand açılınca: yorum listesi + yorum ekleme inputu
+// Alt: Heart ve MessageCircle lucide ikonlarıyla reactionCount/commentCount
+// Expand açılınca: post.comments listesi + yorum ekleme inputu
 // Sil butonu: post.authorUserId === currentUserId || canModerate
 ```
+
+Reaction ve comment mutation'larında tüm feed'i zorunlu yeniden yüklemek yerine ilgili post state'i güncellenebilir; API hatasında optimistic değişiklik geri alınır.
+
+### `components/GymLeaderboardCard.jsx`
+
+- `entries`, `loading`, `t` props alır
+- İlk 10 kaydı rank, avatar/emoji, ad, session count ve `formatWeight(totalVolumeKg, weightUnit)` ile gösterir
+- Veri yoksa `gymLeaderboardEmpty`; sabit satır yüksekliği kullan, liste yüklenirken layout kaymasın
 
 ### `i18n.js` — Yeni TR/EN key'ler
 
@@ -587,6 +721,19 @@ gymCreated: 'Gym oluşturuldu',
 gymDeleted: 'Gym silindi',
 gymInviteSent: 'Davet gönderildi',
 gymInviteAccepted: 'Gym\'e katıldın',
+gyms: 'Gym\'ler',
+gymRoleOwner: 'Sahip',
+gymRoleCoach: 'Koç',
+gymRoleMember: 'Üye',
+gymMemberCount: 'üye',
+gymLeave: 'Gym\'den Ayrıl',
+gymTransferOwnership: 'Sahipliği Devret',
+gymConfirmDelete: 'Bu gym ve topluluk akışı kapatılacak. Emin misin?',
+gymNoGyms: 'Henüz üye olduğun bir gym yok',
+gymNoPosts: 'Henüz paylaşım yok',
+gymLoadMore: 'Daha Fazla Yükle',
+gymLogo: 'Gym logosu',
+gymCover: 'Gym kapak görseli',
 
 // EN
 gymMyGyms: 'My Gyms',
@@ -614,15 +761,46 @@ gymCreated: 'Gym created',
 gymDeleted: 'Gym deleted',
 gymInviteSent: 'Invite sent',
 gymInviteAccepted: 'Joined gym',
+gyms: 'Gyms',
+gymRoleOwner: 'Owner',
+gymRoleCoach: 'Coach',
+gymRoleMember: 'Member',
+gymMemberCount: 'members',
+gymLeave: 'Leave Gym',
+gymTransferOwnership: 'Transfer Ownership',
+gymConfirmDelete: 'This gym and its community feed will be closed. Are you sure?',
+gymNoGyms: 'You have not joined a gym yet',
+gymNoPosts: 'No posts yet',
+gymLoadMore: 'Load More',
+gymLogo: 'Gym logo',
+gymCover: 'Gym cover image',
 ```
 
-### `App.jsx` — Yeni route ekle
+### `App.jsx` — Hash/view entegrasyonu
+
+- `Building2` lucide ikonunu import et
+- `TRAINER_NAV`, `ATHLETE_NAV`, `ADMIN_NAV` dizilerine `{ id: 'gyms', icon: Building2 }` ekle
+- `VALID_VIEWS` set'ine `'gyms'` ekle
+- `selectedGymId` state ekle
+- Hash parse sırasında `#gyms/{id}` ise `selectedGymId = id`; yalnız `#gyms` ise null yap
+- `#gyms/invite/{token}` özel durumunda `selectedGymId` null kalır; token `GymsView` prop'una verilir veya view içinde hash'ten okunur. `invite` kelimesini gym ID sanma
+- Liste açma: `window.location.hash = 'gyms'`
+- Detay açma: `setSelectedGymId(id); window.location.hash = `gyms/${id}``
+- Geri: `setSelectedGymId(null); window.location.hash = 'gyms'`
+- Render:
 
 ```jsx
-// Nav'a Gyms linki ekle (giriş yapmış tüm kullanıcılar)
-{ path: '/gyms', label: t('gymMyGyms'), component: GymsView }
-// GymDetail route
-{ path: '/gyms/:id', component: GymDetailView }
+{view === 'gyms' && !selectedGymId && (
+  <GymsView currentUser={currentUser} onOpenGym={openGymDetail} t={t} />
+)}
+{view === 'gyms' && selectedGymId && (
+  <GymDetailView
+    gymId={selectedGymId}
+    currentUser={currentUser}
+    onBack={closeGymDetail}
+    t={t}
+  />
+)}
 ```
 
 ---
@@ -633,13 +811,15 @@ gymInviteAccepted: 'Joined gym',
 2. 6 entity dosyası oluştur
 3. `TrackMeDbContext.cs` — DbSet'ler + OnModelCreating konfigürasyonları
 4. `MediaService.cs` — `SaveGymLogoAsync` + `SaveGymCoverAsync`
-5. Migration: `dotnet ef migrations add Phase19_GymCommunity --project src/TrackMe.Api/TrackMe.Api.csproj`
-6. `Models/Dtos.cs` — yeni DTO'lar + request record'ları
-7. `Endpoints/GymEndpoints.cs` — tüm endpoint'ler
-8. `Program.cs` — `app.MapGymEndpoints()`
-9. Build: `dotnet build src/TrackMe.Api/TrackMe.Api.csproj`
-10. Frontend: `api.js`, `GymsView.jsx`, `GymDetailView.jsx`, `GymPostCard.jsx`, `i18n.js`, `App.jsx`
-11. Docs güncelle: `phases.md`, `backlog.md`, `migration-strategy.md`, `specs/README.md`, `TrackMe-Api/README.md`
+5. `MediaEndpoints.cs` allowed purpose + `OrphanMediaCleanupService.cs` gym referansları
+6. Migration: `dotnet ef migrations add Phase19_GymCommunity --project src/TrackMe.Api/TrackMe.Api.csproj`
+7. `Models/Dtos.cs` — yeni DTO'lar + request record'ları
+8. `Endpoints/GymEndpoints.cs` — tam 20 endpoint
+9. `Program.cs` — `app.MapGymEndpoints()`
+10. Build: `dotnet build src/TrackMe.Api/TrackMe.Api.csproj`
+11. Frontend: `api.js`, `GymsView.jsx`, `GymDetailView.jsx`, `GymPostCard.jsx`, `GymLeaderboardCard.jsx`, `i18n.js`, `App.jsx`, `styles.css`
+12. Build: `npm.cmd run build`
+13. Docs güncelle ve API/Web/Docs repolarını ayrı commit et; push atma
 
 ---
 
@@ -650,3 +830,30 @@ gymInviteAccepted: 'Joined gym',
 - `TrackMe-Docs/tasks/phases.md` → Phase 19 "Planned" bölümünü "Complete" olarak güncelle
 - `TrackMe-Docs/tasks/backlog.md` → Phase 19 Tamamlananlar'a taşı
 - `TrackMe-Docs/database/migration-strategy.md` → Phase 19 migration history ekle
+- `TrackMe-Docs/architecture/overview.md` → "Gym system + leaderboard" durumunu `✅ Live` yap
+- `TrackMe-Web/README.md` → `GymsView`, `GymDetailView`, `GymPostCard`, `GymLeaderboardCard` ve hash navigasyonunu yaz
+- `TrackMe-Api/README.md` → 20 endpoint'i gruplar halinde belgele; media purpose ve quota davranışını belirt
+- `TrackMe-Docs/tasks/specs/README.md` → spec'i Completed tablosuna taşı ve bu dosyayı sil
+
+Önerilen commit mesajları:
+
+```text
+TrackMe-Api: feat: Phase 19 gym community entities and endpoints
+TrackMe-Web: feat: add gym community views and leaderboard
+TrackMe-Docs: docs: Phase 19 gym community complete
+```
+
+---
+
+## 11. Kabul Kriterleri
+
+1. Migration CLI ile üretilmiş ve toplam migration sayısı 65.
+2. Altı tablo ve tüm enum sütunları PostgreSQL'de snake_case/string conversion ile oluşuyor.
+3. Aynı kullanıcı aynı gym'de ikinci membership veya aynı postta ikinci reaction kaydı oluşturamıyor.
+4. Banned kullanıcı Public gym dahil feed, members, post, comment, reaction ve leaderboard endpoint'lerinden 403 alıyor.
+5. Coach eşit/yüksek role işlem yapamıyor; owner transferi `gyms.owner_user_id` ile membership rollerini birlikte güncelliyor.
+6. Logo/cover yüklemesi 5 MB/type/kota kontrolünden geçiyor; kota aşımı 413, content endpoint'i 404 vermiyor, orphan cleanup medyayı silmiyor.
+7. Feed `PagedResult<GymPostDto>` dönüyor ve comment paneli ayrı GET endpoint olmadan çalışıyor.
+8. Leaderboard takvim ayını, completed non-warmup set hacmini ve email tabanlı AppUser↔Athlete eşleşmesini kullanıyor.
+9. `#gyms` ve `#gyms/{id}` doğrudan açıldığında doğru ekran render ediliyor; browser geri hareketi liste/detay durumunu bozmaz.
+10. `dotnet build` ve `npm.cmd run build` başarılı; migration elle düzenlenmemiş; push yapılmamış.
