@@ -7,7 +7,8 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 
 | Dosya | Kapsam | Öncelik | Zorluk |
 |-------|--------|---------|--------|
-| [p1.5b-nutrition-meals.md](p1.5b-nutrition-meals.md) | Öğün + yemek bazlı takip — FoodItem, Meal, MealEntry, food search, meal cards | P1.5 | L |
+| [body-metric-linking.md](body-metric-linking.md) | Progress photo'ya BodyMetric FK ekle — lightbox ve before/after'da 9 alan göster | P1 polish | M |
+| [missed-workout-notification.md](missed-workout-notification.md) | Günlük background check — 7 gün antrenman yapmayan / 3 gün beslenme kaydetmeyen athlete → trainer'a bildirim | P1.5 | M |
 
 ## Tamamlanan Spec'ler (silindi)
 
@@ -17,6 +18,7 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 | Nutrition Tracking A (daily log + goal) | Phase 10 | ✅ |
 | Exercise Demo Videos | Phase 11 | ✅ |
 | Personal Records display | – (frontend only) | ✅ |
+| Nutrition Meals B (FoodItem, Meal, MealEntry) | Phase 12 | ✅ |
 
 ---
 
@@ -53,7 +55,7 @@ TrackMe-Api/
     Data/
       TrackMeDbContext.cs    — DbSet + OnModelCreating (her entity için)
       ExerciseSeeder.cs      — global egzersiz seeding
-      FoodItemSeeder.cs      — (P1.5-B sonrası) global food seeding
+      FoodItemSeeder.cs      — global TR yemek seeding
     Endpoints/               — Endpoint dosyaları (birer static class)
     Models/
       Enums.cs               — Tüm enum'lar burada
@@ -61,6 +63,8 @@ TrackMe-Api/
       <EntityName>.cs        — Her entity ayrı dosyada
     Services/
       MediaService.cs        — R2 upload/delete metodları
+      OrphanMediaCleanupService.cs  — 24h GC background service
+      RefreshTokenCleanupService.cs — 24h token prune background service
     Program.cs               — DI kayıt + endpoint map + seeder çağrıları
 
 TrackMe-Web/src/
