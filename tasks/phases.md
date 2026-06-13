@@ -171,29 +171,44 @@
 
 ### Phase 19 — Gym & Community (P2)
 
-Depends on: Phase 11 or parallel
+Bağımlılık yok — hemen başlanabilir.
 
-| Task | Effort |
-|------|--------|
-| Gym entity + membership | L |
-| Gym coach permissions | M |
-| Gym feed (text + media posts) | L |
-| Feed comments + reactions | M |
-| Gym feed moderation | S |
-| Gym leaderboard | M |
-| Global leaderboard | M |
-| PR proof video + verification | L |
+**Yeni entities:** `Gym`, `GymMembership`, `GymInvite`, `GymPost`, `GymPostComment`, `GymPostReaction`
 
-### Phase 20 — AI Coaching (P3)
+**Migration:** `Phase19_GymCommunity` — 6 yeni tablo + `MediaPurpose.GymLogo` + `MediaPurpose.GymCover` enum değerleri
 
-Depends on: Phase 13, standardized program schema
+**Backend endpoint grupları:**
+- Gym CRUD: `POST /api/gyms`, `GET /api/gyms/my`, `GET /api/gyms/{id}`, `PATCH /api/gyms/{id}`, `DELETE /api/gyms/{id}`
+- Medya: `POST /api/gyms/{id}/logo`, `POST /api/gyms/{id}/cover`
+- Üyelik: `POST /api/gyms/{id}/invite`, `POST /api/gyms/invites/{token}/accept`, `GET /api/gyms/{id}/members`, `PATCH /api/gyms/{id}/members/{userId}/role`, `DELETE /api/gyms/{id}/members/{userId}`, `PATCH /api/gyms/{id}/members/{userId}/ban`
+- Feed: `POST /api/gyms/{id}/posts`, `GET /api/gyms/{id}/posts`, `DELETE /api/gyms/{id}/posts/{postId}`
+- Sosyal: `POST /api/gyms/{id}/posts/{postId}/comments`, `DELETE /api/gyms/{id}/posts/{postId}/comments/{id}`, `POST /api/gyms/{id}/posts/{postId}/reactions`
+- Leaderboard: `GET /api/gyms/{id}/leaderboard` (bu ay workout hacmi + oturum)
 
-| Task | Effort |
-|------|--------|
-| Standardize program schema for AI prompts | M |
-| AI program draft (OpenAI) — trainer reviews + saves | L |
-| AI load progression suggestions | L |
-| Trainer approval gate | M |
+**Access gate:** `GymMembership` varlığı + role kontrolü; Banned üyeler 403; yardımcı: `GetGymMembershipAsync(db, gymId, userId)`
+
+**Frontend:** `GymsView.jsx`, `GymDetailView.jsx` (feed/üyeler/ayarlar tabları), `GymPostCard.jsx`, `GymLeaderboardCard.jsx`
+
+---
+
+### Phase 20 — AI Koçluk (P3)
+
+Bağımlılık: Phase 13 ✅ — OpenAI API key gerekir (`OPENAI_API_KEY` env).
+
+**Yeni entity:** `AiProgramDraft` — trainer, athlete, context JSON, response JSON, status (Pending/Accepted/Rejected), timestamps
+
+**Migration:** `Phase20_AiProgramDraft`
+
+**Backend:**
+- OpenAI HTTP client kaydı (`IHttpClientFactory`)
+- System prompt: trainer egzersiz kütüphanesi (ilk 50) + athlete son 30 gün özeti + `WorkoutProgram` JSON şeması
+- `POST /api/programs/ai-draft` — Request: `{ athleteId, goals, availableDays, fitnessLevel }` → AI çağrısı → taslak kaydet → döndür
+- `GET /api/programs/ai-draft/{id}` — Taslak detayı (trainer kendi taslağı)
+- `POST /api/programs/ai-draft/{id}/accept` — Taslaktan gerçek program + günler + egzersizler oluştur
+- `POST /api/programs/ai-draft/{id}/reject` — Status → Rejected
+- Admin audit log: `ai.draft.accepted`
+
+**Frontend:** "AI ile Oluştur" butonu (Program Builder, trainer only), `AiDraftModal.jsx` (taslak görüntüle + düzenle), Kabul/Reddet akışı, "AI Önerisi" badge
 
 ---
 
