@@ -284,3 +284,13 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 - `ON DELETE SET NULL` so deleting a body metric preserves the progress photo
 
 **Total migrations as of Phase 14: 60**
+
+## Migration History (Phase 15)
+
+`Phase15_MissedActivityNotification` adds:
+- `missed_activity_alerts` table with trainer, athlete, alert type, and sent timestamp
+- Cascade FKs to `trainers` and `athletes`
+- Composite index on `(trainer_id, athlete_id, alert_type, sent_at)` for duplicate suppression checks
+- `NotificationType.MissedWorkout` and `NotificationType.MissedNutritionLog` are stored as strings and require no notification-column schema change
+
+**Total migrations as of Phase 15: 61**

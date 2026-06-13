@@ -65,7 +65,7 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 | `GET /api/nutrition/logs/{athleteId}` — log geçmişi (tarih aralığı filtreli) | ✅ |
 | Trainer: hedef vs gerçek uyum grafiği (son 30 gün) | ✅ |
 | Athlete: günlük özet kart (Dashboard'a entegre) | ✅ |
-| Bildirim: athlete günlük logu atladığında trainer'a uyarı (opsiyonel) | ⬜ |
+| Bildirim: athlete günlük logu atladığında trainer'a uyarı (opsiyonel) | ✅ |
 | Privacy: nutrition data varsayılan `coach_only` | ⬜ |
 
 ### B — Öğün & Yemek Bazlı Takip
@@ -193,6 +193,7 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 ✅ Submission & feedback videos (athlete upload + trainer video/audio feedback)  
 ✅ Nutrition tracking MVP (daily goals, logs, adherence graph, Dashboard card)  
 ✅ Nutrition meals (food library, meal entries, computed totals, trainer view)  
+✅ Missed workout and nutrition alerts (daily check + duplicate suppression)  
 ✅ Exercise demo videos (upload by trainer/admin, view in picker + WorkoutMode)  
 ✅ Personal Records display in athlete analytics  
 ✅ Today's workout widget (Dashboard)  

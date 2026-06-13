@@ -46,6 +46,7 @@ The Web container proxies `/api/` and `/hubs/` to the API on the shared Docker n
 3. `FoodItemSeeder.SeedAsync(db)` — seeds the global Turkish food library when no global foods exist
 4. `RefreshTokenCleanupService` starts — background service, purges expired/revoked refresh tokens every 24 h
 5. `OrphanMediaCleanupService` starts — background service, soft-deletes and removes from R2 any `MediaAsset` rows not referenced by any entity (avatar, cover, progress photo, submission, feedback, exercise demo), with a 1-hour grace period; runs every 24 h
+6. `MissedActivityAlertService` starts — after a 10-minute startup delay, checks accepted coaching pairs every 24 h and sends suppressed missed-workout/missed-nutrition notifications through the database and SignalR
 
 ## Core Roles & Navigation
 
@@ -121,6 +122,7 @@ Athlete selects Program Day → Start Workout
 | Progress photos (upload, timeline, before/after, trainer view) | ✅ Live |
 | Nutrition tracking MVP (goals, daily logs, adherence) | ✅ Live |
 | Nutrition meals (food search, meal cards, trainer view) | ✅ Live |
+| Missed workout and nutrition alerts | ✅ Live |
 | Admin panel | ✅ Live |
 | Dark mode + i18n (TR/EN) | ✅ Live |
 | Submission/feedback videos | ✅ Live |

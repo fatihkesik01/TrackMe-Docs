@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 14 complete.** 60 EF Core migrations. Progress photos can now link to a full nine-field body metric snapshot for athlete comparisons and trainer review.
+**Phase 15 complete.** 61 EF Core migrations. Trainers now receive suppressed daily alerts when coached athletes miss workouts or nutrition logging.
 
 ---
 
@@ -127,11 +127,20 @@
 - Before/after comparison includes per-field metric deltas
 - Upload modal can select from the athlete's existing dated body measurements
 
+### Phase 15 — Missed Activity Notifications
+
+- `MissedActivityAlert` entity records trainer, athlete, alert type, and sent timestamp
+- Daily `MissedActivityAlertService` checks accepted coaching relationships
+- Workout alerts require an active program and no completed session for more than 7 days
+- Nutrition alerts require an active goal and no daily log for more than 3 days
+- Per trainer/athlete/type suppression prevents duplicate workout alerts for 7 days and nutrition alerts for 3 days
+- Notifications are persisted and pushed through the existing SignalR notification channel
+
 ---
 
 ## Next Phases (Planned)
 
-### Phase 15 — Mobile MVP (P3)
+### Phase 16 — Mobile MVP (P3)
 
 Depends on: Stable API, Phase 8-11 complete
 
@@ -143,7 +152,7 @@ Depends on: Stable API, Phase 8-11 complete
 | Offline session draft | M |
 | Push notifications (FCM + APNs) | M |
 
-### Phase 16 — Gym & Community (P2)
+### Phase 17 — Gym & Community (P2)
 
 Depends on: Phase 11 or parallel
 
@@ -155,7 +164,7 @@ Depends on: Phase 11 or parallel
 | Gym leaderboard | M |
 | Global leaderboard | M |
 
-### Phase 17 — AI (P3)
+### Phase 18 — AI (P3)
 
 Depends on: Phase 13, standardized program schema
 
@@ -185,6 +194,7 @@ Depends on: Phase 13, standardized program schema
 | 12 | NutritionMeals | 58 |
 | 13 | AdminAuditLog | 59 |
 | 14 | ProgressPhotoBodyMetricLink | 60 |
+| 15 | MissedActivityNotification | 61 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

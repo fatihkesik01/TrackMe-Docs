@@ -7,8 +7,7 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 
 | Dosya | Kapsam | Öncelik | Zorluk |
 |-------|--------|---------|--------|
-| [body-metric-linking.md](body-metric-linking.md) | Progress photo'ya BodyMetric FK ekle — lightbox ve before/after'da 9 alan göster | P1 polish | M |
-| [missed-workout-notification.md](missed-workout-notification.md) | Günlük background check — 7 gün antrenman yapmayan / 3 gün beslenme kaydetmeyen athlete → trainer'a bildirim | P1.5 | M |
+| — | Aktif spec bulunmuyor | — | — |
 
 ## Tamamlanan Spec'ler (silindi)
 
@@ -19,6 +18,8 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 | Exercise Demo Videos | Phase 11 | ✅ |
 | Personal Records display | – (frontend only) | ✅ |
 | Nutrition Meals B (FoodItem, Meal, MealEntry) | Phase 12 | ✅ |
+| Body Metric Linking to Progress Photos | Phase 14 | ✅ |
+| Missed Workout & Nutrition Notifications | Phase 15 | ✅ |
 
 ---
 
@@ -77,7 +78,7 @@ TrackMe-Web/src/
 
 ## Mevcut migration sayısı
 
-**Phase 13 sonrası: 59 migration**
+**Phase 15 sonrası: 61 migration**
 
 ## Production bilgileri
 
