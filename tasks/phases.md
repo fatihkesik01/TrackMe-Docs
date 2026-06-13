@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 15 complete.** 61 EF Core migrations. Trainers now receive suppressed daily alerts when coached athletes miss workouts or nutrition logging.
+**Phase 17 complete.** 63 EF Core migrations. Athletes can now create and use their own program templates — previously only trainers could. `athlete_id` FK added to `program_templates`; all template ownership checks updated.
 
 ---
 
@@ -136,23 +136,30 @@
 - Per trainer/athlete/type suppression prevents duplicate workout alerts for 7 days and nutrition alerts for 3 days
 - Notifications are persisted and pushed through the existing SignalR notification channel
 
+### Phase 16 — Media Reporting & Moderation
+
+- `ReportedByUserId`, `ReportedAt`, `ReportReason` nullable fields added to `media_assets`
+- `POST /api/media/{id}/report` — any authenticated user can flag media they don't own
+- Cannot report own media, already-rejected, or already-hidden assets
+- `GET /api/admin/media/reported` — paginated list of all reported assets with owner and reporter names
+- `PATCH /api/admin/media/{id}/moderate` — admin sets moderation status to `Approved`, `Rejected`, or `Hidden`; audit-logged as `media.moderate`
+- Admin panel: new Media Moderation card with inline approve/hide/reject buttons
+
+### Phase 17 — Athlete Templates
+
+- `athlete_id` nullable FK added to `program_templates` (alongside existing `trainer_id`)
+- Athletes can create their own day templates and program templates
+- `GET /api/templates` — filters by caller's trainer ID **or** athlete ID; admin sees all
+- `POST /api/templates` — athletes set `athlete_id`; trainers set `trainer_id`; admin leaves both null
+- Full CRUD, day/exercise management, apply-to-day/apply-to-program — all ownership checks updated to support athletes
+- `OwnerName` field replaces `TrainerName` in DTOs (shows trainer, athlete, or "System")
+- `ResolveAthleteProfileIdAsync` helper added to `TemplateEndpoints`
+
 ---
 
 ## Next Phases (Planned)
 
-### Phase 16 — Mobile MVP (P3)
-
-Depends on: Stable API, Phase 8-11 complete
-
-| Task | Effort |
-|------|--------|
-| Expo project setup | S |
-| Auth + secure token storage | M |
-| Athlete Workout Mode | L |
-| Offline session draft | M |
-| Push notifications (FCM + APNs) | M |
-
-### Phase 17 — Gym & Community (P2)
+### Phase 18 — Gym & Community (P2)
 
 Depends on: Phase 11 or parallel
 
@@ -160,17 +167,21 @@ Depends on: Phase 11 or parallel
 |------|--------|
 | Gym entity + membership | L |
 | Gym coach permissions | M |
-| Gym feed | L |
+| Gym feed (text + media posts) | L |
+| Feed comments + reactions | M |
+| Gym feed moderation | S |
 | Gym leaderboard | M |
 | Global leaderboard | M |
+| PR proof video + verification | L |
 
-### Phase 18 — AI (P3)
+### Phase 19 — AI Coaching (P3)
 
 Depends on: Phase 13, standardized program schema
 
 | Task | Effort |
 |------|--------|
-| AI program draft (OpenAI) | L |
+| Standardize program schema for AI prompts | M |
+| AI program draft (OpenAI) — trainer reviews + saves | L |
 | AI load progression suggestions | L |
 | Trainer approval gate | M |
 
@@ -195,6 +206,8 @@ Depends on: Phase 13, standardized program schema
 | 13 | AdminAuditLog | 59 |
 | 14 | ProgressPhotoBodyMetricLink | 60 |
 | 15 | MissedActivityNotification | 61 |
+| 16 | MediaReporting | 62 |
+| 17 | AthleteTemplates | 63 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

@@ -56,6 +56,8 @@ The Web container proxies `/api/` and `/hubs/` to the API on the shared Docker n
 | **Trainer** | Dashboard, My Athletes, My Programs, Exercises, Relationships, Profile |
 | **Athlete** | Dashboard, My Program, Sessions, Analytics, Nutrition, Body Metrics, Progress Photos, Video Submissions, Relationships, Profile |
 
+Detaylı özellik izin tablosu için bkz: [roles-permissions.md](roles-permissions.md)
+
 ### Dual-Role User
 
 A single account can operate as both Trainer and Athlete:
@@ -107,7 +109,7 @@ Athlete selects Program Day → Start Workout
 | Auth (JWT + refresh tokens) | ✅ Live |
 | Trainer-Athlete relationships | ✅ Live |
 | Social connections + follow | ✅ Live |
-| Program builder + templates | ✅ Live |
+| Program builder + templates (trainer & athlete) | ✅ Live |
 | Program versioning | ✅ Live |
 | Public programs (browse, like, save, fork) | ✅ Live |
 | Workout Mode (set-by-set logging) | ✅ Live |
@@ -120,6 +122,7 @@ Athlete selects Program Day → Start Workout
 | Direct messaging (with program refs) | ✅ Live |
 | Media: avatar + cover photo + program cover | ✅ Live |
 | Progress photos (upload, timeline, before/after, trainer view) | ✅ Live |
+| Progress photo body metric linking (9-field snapshot + comparison deltas) | ✅ Live |
 | Nutrition tracking MVP (goals, daily logs, adherence) | ✅ Live |
 | Nutrition meals (food search, meal cards, trainer view) | ✅ Live |
 | Missed workout and nutrition alerts | ✅ Live |
@@ -128,6 +131,7 @@ Athlete selects Program Day → Start Workout
 | Submission/feedback videos | ✅ Live |
 | Orphan media asset cleanup (background GC) | ✅ Live |
 | Admin audit log (action history, IP tracking) | ✅ Live |
+| Media reporting + admin moderation queue | ✅ Live |
 | Mobile app (React Native) | 🔲 Planned |
 | Gym system + leaderboard | 🔲 Planned |
 | AI coaching suggestions | 🔲 Planned |

@@ -276,6 +276,16 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 
 **Total migrations as of Phase 12: 58**
 
+## Migration History (Phase 13)
+
+`Phase13_AdminAuditLog` adds:
+- `admin_audit_logs` table with `actor_user_id` FK to `users`, `action` varchar(80), `target_user_id` nullable FK, `target_email` varchar(220) nullable, `detail` varchar(1000) nullable, `ip_address` varchar(45) nullable, `created_at` timestamptz
+- Index on `created_at` for time-ordered pagination
+- Index on `action` for filter queries
+- Cascade delete on `actor_user_id`
+
+**Total migrations as of Phase 13: 59**
+
 ## Migration History (Phase 14)
 
 `Phase14_ProgressPhotoBodyMetricLink` adds:
@@ -294,3 +304,21 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 - `NotificationType.MissedWorkout` and `NotificationType.MissedNutritionLog` are stored as strings and require no notification-column schema change
 
 **Total migrations as of Phase 15: 61**
+
+## Migration History (Phase 16)
+
+`Phase16_MediaReporting` adds:
+- `media_assets.reported_by_user_id` — nullable uuid FK to `users.id` (ON DELETE SET NULL)
+- `media_assets.report_reason` — nullable varchar(500)
+- `media_assets.reported_at` — nullable timestamptz
+
+**Total migrations as of Phase 16: 62**
+
+## Migration History (Phase 17)
+
+`Phase17_AthleteTemplates` adds:
+- `program_templates.athlete_id` — nullable uuid FK to `athletes.id` (ON DELETE SET NULL)
+
+Athletes can now own program templates independently of trainers. The `trainer_id` column remains; a template belongs to exactly one owner (trainer or athlete) or neither (system/admin).
+
+**Total migrations as of Phase 17: 63**

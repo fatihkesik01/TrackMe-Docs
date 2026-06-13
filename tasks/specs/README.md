@@ -5,11 +5,11 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 
 ## Aktif Spec Dosyaları
 
-| Dosya | Kapsam | Öncelik | Zorluk |
-|-------|--------|---------|--------|
-| — | Aktif spec bulunmuyor | — | — |
+Şu an aktif spec bulunmuyor. Yeni bir task alınacağında bu klasöre dosya eklenir.
 
-## Tamamlanan Spec'ler (silindi)
+Sıradaki adaylar için bkz: [backlog.md](../backlog.md)
+
+## Tamamlanan Spec'ler (dosyalar silindi)
 
 | Feature | Phase | Durum |
 |---------|-------|-------|
@@ -78,7 +78,7 @@ TrackMe-Web/src/
 
 ## Mevcut migration sayısı
 
-**Phase 15 sonrası: 61 migration**
+**Phase 17 sonrası: 63 migration**
 
 ## Production bilgileri
 

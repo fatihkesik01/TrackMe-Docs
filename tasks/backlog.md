@@ -1,202 +1,105 @@
 # Product Backlog
 
-Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 Future
+Durum: ✅ Tamamlandı · ⬜ Yapılabilir (kod işi) · 🔲 Gelecek (plan)
 
 ---
 
-## P1 — Media-Enabled Coaching
+## Yapılabilir — P1 (Hemen Alınabilir)
 
-### Progress Photos
-
-| Task | Status |
-|------|--------|
-| Progress photo upload (athlete → ProgressPhotosView) | ✅ |
-| Progress photo visibility settings (Private / CoachOnly / Public) | ✅ |
-| Progress photo timeline (date-grouped grid) | ✅ |
-| Before/after comparison modal (side-by-side viewer) | ✅ |
-| Trainer access to athlete's shared progress photos | ✅ |
-| Body metric linking (attach metric snapshot to photo) | ✅ |
-
-### Submission & Feedback Videos
-
-| Task | Status |
-|------|--------|
-| Athlete submission video upload (linked to session/exercise) | ✅ |
-| Trainer notification: new submission video received | ✅ |
-| Trainer feedback video (record + upload) | ✅ |
-| Athlete notification: new video feedback received | ✅ |
-| Trainer audio feedback (record + upload + playback) | ✅ |
-| Feedback viewed/read status | ✅ |
-
-### Exercise Videos
-
-| Task | Status |
-|------|--------|
-| Exercise demo video (link to exercise, official vs user-generated) | ✅ |
-| Video display in exercise picker | ✅ |
-| Video display in WorkoutMode | ✅ |
-| Thumbnail generation (server or R2 Transform) | ⬜ |
-
-### Media Infrastructure
-
-| Task | Status |
-|------|--------|
-| Media upload size limits (per-user quota enforcement) | ⬜ |
-| Video compression plan (pre-upload, server, or transcoding) | ⬜ |
-| Orphan asset cleanup job (GC for uploaded-but-unlinked assets) | ✅ |
-| Media reporting (flag on `MediaAsset`) | ⬜ |
-| Admin media moderation queue | ⬜ |
+| Görev | Epic | Zorluk | Notlar |
+|-------|------|--------|--------|
+| Media upload size limits (per-user quota) | Media | M | Toplam `file_size_bytes` say; rol bazlı limit (ör. Athlete 500 MB, Trainer 2 GB) |
+| Privacy: nutrition data varsayılan `coach_only` | Nutrition | S | Athlete profiline `nutrition_visibility` alanı ekle |
+| Thumbnail generation for videos | Media | L | Cloudflare R2 Image Transform veya FFmpeg sidecar |
+| Video compression plan | Media | M | Pre-upload client-side veya server-side transcode kararı |
 
 ---
 
-## P1.5 — Nutrition Tracking
+## Yapılabilir — Infrastructure (DevOps, Kod Gerektirmez)
 
-İki aşamalı: önce hedef + günlük toplam log (A), sonra öğün + yemek bazlı takip (B).
-
-### A — Günlük Hedef & Toplam Log (MVP)
-
-| Task | Status |
-|------|--------|
-| `NutritionGoal` entity — trainer athlete için günlük hedef koyar (kalori, protein, karb, yağ) | ✅ |
-| `DailyNutritionLog` entity — athlete günlük toplamları girer | ✅ |
-| `POST /api/nutrition/goals` — trainer hedef belirler | ✅ |
-| `GET /api/nutrition/goals/{athleteId}` — aktif hedefi getir | ✅ |
-| `POST /api/nutrition/logs` — athlete günlük toplamı kaydeder | ✅ |
-| `GET /api/nutrition/logs/{athleteId}` — log geçmişi (tarih aralığı filtreli) | ✅ |
-| Trainer: hedef vs gerçek uyum grafiği (son 30 gün) | ✅ |
-| Athlete: günlük özet kart (Dashboard'a entegre) | ✅ |
-| Bildirim: athlete günlük logu atladığında trainer'a uyarı (opsiyonel) | ✅ |
-| Privacy: nutrition data varsayılan `coach_only` | ⬜ |
-
-### B — Öğün & Yemek Bazlı Takip
-
-Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
-
-| Task | Status |
-|------|--------|
-| `Meal` entity — öğün (sabah / öğle / akşam / ara öğün) | ✅ |
-| `FoodItem` entity — yemek adı + besin değerleri (kalori, protein, karb, yağ, lif) | ✅ |
-| `MealEntry` entity — öğüne eklenen yemek + miktar (gram/porsiyon) | ✅ |
-| Food database seeding — manuel başlangıç listesi (TR yemekleri dahil) | ✅ |
-| OpenFoodFacts veya USDA API entegrasyonu (barcode lookup) | 🔲 |
-| `GET /api/nutrition/foods?q=` — yemek arama | ✅ |
-| `POST /api/nutrition/foods` — özel yemek oluştur (trainer/athlete) | ✅ |
-| `POST /api/nutrition/meals` — öğün oluştur + yemek ekle | ✅ |
-| `GET /api/nutrition/meals/{athleteId}?date=` — günlük öğün detayı | ✅ |
-| Günlük toplam otomatik hesap (manual A logunu ezmeden) | ✅ |
-| Öğün bazlı görünüm: athlete için sabah/öğle/akşam/ara öğün kartları | ✅ |
-| Trainer: athlete öğün geçmişini görebilir (coaching relationship gerekli) | ✅ |
-| Tarif / favori yemek kaydetme | 🔲 |
+| Görev | Zorluk | Notlar |
+|-------|--------|--------|
+| Domain + HTTPS | S | Hostinger'da DNS + Nginx SSL (Let's Encrypt) |
+| PostgreSQL scheduled backups | M | `pg_dump` cron + R2'ye yükleme, restore testi |
+| Staging environment | M | Ayrı R2 bucket + DB + Docker Compose override |
+| Product analytics events | M | Mixpanel veya PostHog entegrasyonu |
+| Disable SSH password login on VPS | S | `/etc/ssh/sshd_config` → `PasswordAuthentication no` |
 
 ---
 
-## P2 — Gym & Community
+## Gelecek — P2: Gym & Community
 
-### Gym Entity
+> Bağımlılık: Phase 11 tamamlandı ✅ — başlanabilir
 
-| Task | Status |
-|------|--------|
-| Gym create/edit (name, logo, cover, visibility) | 🔲 |
-| Multi-gym membership (user belongs to multiple gyms) | 🔲 |
-| Gym invite flow (owner invites by email) | 🔲 |
-| Gym member role management (Owner / Coach / Member) | 🔲 |
-
-### Gym Feed
-
-| Task | Status |
-|------|--------|
-| Gym feed post (text + media) | 🔲 |
-| Comments + reactions on feed posts | 🔲 |
-| Gym feed moderation (admin + gym owner) | 🔲 |
-| Gym feed notification (new post → members) | 🔲 |
-
-### Leaderboards
-
-| Task | Status |
-|------|--------|
-| Personal Records — display in analytics screen | ✅ |
-| Gym leaderboard (top lifts per exercise, per period) | 🔲 |
-| Global leaderboard (verified PRs only) | 🔲 |
-| PR evidence video submission + verification | 🔲 |
-| Verified PR badge | 🔲 |
+| Görev | Zorluk | Notlar |
+|-------|--------|--------|
+| Gym entity (isim, logo, kapak, görünürlük) | L | `Gym` + `GymMembership` entity; multi-gym üyelik |
+| Gym davet akışı (e-posta ile) | S | Davet token, kabul/red akışı |
+| Gym üye rol yönetimi (Owner / Coach / Member) | M | Enum + permission gate |
+| Gym feed post (metin + medya) | L | `GymPost` entity, feed endpoint, web bileşeni |
+| Feed yorumlar + reaksiyonlar | M | `GymPostComment`, `GymPostReaction` |
+| Gym feed moderasyonu | S | Owner/Coach post silme, üye ban |
+| Gym leaderboard (antrenman bazlı sıralama) | M | Üye bazlı hacim/oturum sayısı; haftalık/aylık |
+| Global leaderboard (doğrulanmış PR'lar) | L | `verified_pr` flag; herkese açık liste |
+| PR kanıt video gönderimi + doğrulama | L | Admin/trainer doğrulama kuyruğu |
 
 ---
 
-## P3 — AI, Growth & Monetization
+## Gelecek — P3: AI Koçluk
 
-### AI Features
+> Bağımlılık: Phase 13 (audit log) + standart program şeması
 
-| Task | Status |
-|------|--------|
-| Standardize program schema for AI prompt | 🔲 |
-| AI program draft (OpenAI integration) — trainer edits before save | 🔲 |
-| AI coaching suggestions (load progression, missed workout detection) | 🔲 |
-| Trainer approval gate for AI suggestions | 🔲 |
-| AI audit metadata (source tag on AI-generated programs) | 🔲 |
-
-### Mobile App
-
-| Task | Status |
-|------|--------|
-| React Native project setup (Expo managed workflow) | 🔲 |
-| Auth flow + expo-secure-store token storage | 🔲 |
-| Athlete Workout Mode (set-by-set logging) | 🔲 |
-| Offline-tolerant session draft (SQLite / expo-secure-store) | 🔲 |
-| Push notifications (FCM + APNs, device token storage) | 🔲 |
-| Camera capture + gallery upload | 🔲 |
-| Resumable + background upload for videos | 🔲 |
-
-### Monetization
-
-| Task | Status |
-|------|--------|
-| Subscription model (trainer plans, gym plans) | 🔲 |
-| Storage quota policy per plan tier | 🔲 |
-| Ad placement config (feed/discovery only; exclude WorkoutMode) | 🔲 |
-| Export/download policy (data portability) | 🔲 |
+| Görev | Zorluk | Notlar |
+|-------|--------|--------|
+| Program şeması AI prompt için standardize et | M | JSON schema + system prompt tasarımı |
+| AI program taslağı (OpenAI) | L | Trainer isteği → AI draft → trainer düzenleyip kaydeder |
+| AI koç önerileri (yük progresyonu) | L | Geçmiş oturumları analiz et → set/ağırlık öneri |
+| Trainer onay kapısı | M | AI önerileri doğrudan uygulanmaz; trainer onaylar |
 
 ---
 
-## Infrastructure & Quality
+## Tamamlananlar ✅
 
-| Task | Status |
-|------|--------|
-| Domain + HTTPS (currently IP:port) | ⬜ |
-| PostgreSQL scheduled backups with restore verification | ⬜ |
-| Staging environment (separate R2 bucket, DB) | ⬜ |
-| Product analytics events (Mixpanel / PostHog) | ⬜ |
-| Disable SSH password login on VPS | ⬜ |
-| Structured audit log table for admin actions | ✅ |
+### Altyapı & Auth
+- JWT auth + refresh token rotasyonu
+- E-posta doğrulama altyapısı
+- Admin panel (kullanıcı yönetimi, egzersiz yönetimi, istatistik)
+- Admin audit log (aktör, işlem, hedef, IP — Phase 13)
+- Orphan media cleanup background servisi (24s GC)
+- Media raporlama + admin moderasyon kuyruğu (Phase 16)
 
----
+### Koçluk Çekirdeği
+- Trainer-athlete ilişki yaşam döngüsü (pending → accepted → ended)
+- Program oluşturucu (gün yapısı, egzersiz, set, tekrar şablonu)
+- Program şablonları — trainer **ve** athlete kendi şablonlarını oluşturabilir (Phase 17)
+- Program versiyonlama + güncelleme bildirimleri
+- Workout Mode (set-set kayıt, ısınma setleri, RPE)
+- Oturum geçmişi + analitik (RPE trend, hacim, tutarlılık, PR'lar)
+- Kişisel rekorlar (UPSERT — tamamlama anında)
+- Bugünkü antrenman widget'ı (Dashboard)
 
-## Completed (P0 — Core Coaching)
+### Sosyal & Keşif
+- Sosyal bağlantılar + takip sistemi
+- Genel programlar (yayınla, beğen, kaydet, çatallayı al)
+- Doğrudan mesajlaşma (program referansları ile)
+- Uygulama içi bildirimler + SignalR gerçek zamanlı
 
-✅ JWT auth + refresh token rotation  
-✅ Trainer-athlete relationship lifecycle  
-✅ Program Builder (repeat pattern, templates, per-set weights)  
-✅ Workout Mode (set-by-set logging, warm-up sets, RPE)  
-✅ Session history + analytics (RPE trend, volume, consistency, PRs)  
-✅ Body metrics (9 fields, trend graphs)  
-✅ Exercise library (141+ exercises, seeded)  
-✅ In-app notifications + SignalR real-time  
-✅ Direct messaging with program references  
-✅ Admin panel  
-✅ Dark mode + TR/EN i18n  
-✅ Public programs (publish, like, save, fork, version)  
-✅ Social connections + follow system  
-✅ Program versioning + update notifications  
-✅ Avatar + cover photo (Cloudflare R2)  
-✅ Published program cover photo  
-✅ Progress photos (upload, timeline, before/after, trainer view)  
-✅ Progress photo body metric linking (9-field snapshots + comparison deltas)  
-✅ Submission & feedback videos (athlete upload + trainer video/audio feedback)  
-✅ Nutrition tracking MVP (daily goals, logs, adherence graph, Dashboard card)  
-✅ Nutrition meals (food library, meal entries, computed totals, trainer view)  
-✅ Missed workout and nutrition alerts (daily check + duplicate suppression)  
-✅ Exercise demo videos (upload by trainer/admin, view in picker + WorkoutMode)  
-✅ Personal Records display in athlete analytics  
-✅ Today's workout widget (Dashboard)  
-✅ Athlete analytics screen  
-✅ Admin audit log (action history with actor, target, detail, IP — Phase 13)  
-✅ Orphan media asset cleanup (background GC, 24h interval)  
+### Medya
+- Avatar + kapak fotoğrafı (Cloudflare R2)
+- Yayınlanan program kapak fotoğrafı
+- İlerleme fotoğrafları (yükleme, zaman çizelgesi, önce/sonra, trainer görünümü)
+- İlerleme fotoğrafı vücut ölçüm bağlantısı (9 alanlı snapshot + karşılaştırma — Phase 14)
+- Submission ve geri bildirim videoları
+- Egzersiz demo videoları (yükle, seç, Workout Mode'da göster)
+
+### Beslenme
+- Beslenme hedefi (kalori, protein, karb, yağ) + günlük log
+- Beslenme takibi: öğün, yemek, porsiyon (52 TR yemek seeding)
+- Eksik antrenman ve beslenme bildirimleri (7 gün / 3 gün — Phase 15)
+
+### Analitik & Profil
+- Vücut metrikleri (9 alan, trend grafikleri)
+- Egzersiz kütüphanesi (141+ egzersiz, global seeding)
+- Athlete analitik ekranı
+- Dark mode + TR/EN i18n
+- Profil gizlilik ayarları
