@@ -5,8 +5,10 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 
 ## Aktif Spec Dosyaları
 
-| Dosya | Feature | Zorluk | Durum |
-|-------|---------|--------|-------|
+| Dosya | Feature | Agent | Zorluk |
+|-------|---------|-------|--------|
+| [spec-gym-community.md](spec-gym-community.md) | Phase 19 — Gym & Community | Diğer agent | L |
+| [spec-ai-coaching.md](spec-ai-coaching.md) | Phase 20 — AI Koçluk | Primary agent (beklemede) | M |
 
 Diğer adaylar için bkz: [backlog.md](../backlog.md)
 
