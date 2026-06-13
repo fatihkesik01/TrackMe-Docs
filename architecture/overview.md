@@ -43,7 +43,9 @@ The Web container proxies `/api/` and `/hubs/` to the API on the shared Docker n
 
 1. `db.Database.MigrateAsync()` — applies all pending EF Core migrations (up to 10 retries, 3s apart)
 2. `ExerciseSeeder.SeedAsync(db)` — seeds global exercise library if table is empty
-3. `RefreshTokenCleanupService` starts — background service, purges expired/revoked refresh tokens
+3. `FoodItemSeeder.SeedAsync(db)` — seeds the global Turkish food library when no global foods exist
+4. `RefreshTokenCleanupService` starts — background service, purges expired/revoked refresh tokens every 24 h
+5. `OrphanMediaCleanupService` starts — background service, soft-deletes and removes from R2 any `MediaAsset` rows not referenced by any entity (avatar, cover, progress photo, submission, feedback, exercise demo), with a 1-hour grace period; runs every 24 h
 
 ## Core Roles & Navigation
 
@@ -93,7 +95,7 @@ Athlete selects Program Day → Start Workout
 ## Data Ownership (Athlete-Centric)
 
 - Programs belong to an athlete (`athlete_id` FK required, `trainer_id` FK optional)
-- Sessions, body metrics, nutrition goals, nutrition logs, PRs belong to an athlete
+- Sessions, body metrics, nutrition goals, nutrition logs, meals, meal entries, and PRs belong to an athlete
 - A trainer accesses athlete data only through an accepted `trainer_athlete_relationships` record
 - Social connections grant messaging + privacy-filtered profile only — never coaching data
 
@@ -118,9 +120,11 @@ Athlete selects Program Day → Start Workout
 | Media: avatar + cover photo + program cover | ✅ Live |
 | Progress photos (upload, timeline, before/after, trainer view) | ✅ Live |
 | Nutrition tracking MVP (goals, daily logs, adherence) | ✅ Live |
+| Nutrition meals (food search, meal cards, trainer view) | ✅ Live |
 | Admin panel | ✅ Live |
 | Dark mode + i18n (TR/EN) | ✅ Live |
 | Submission/feedback videos | ✅ Live |
+| Orphan media asset cleanup (background GC) | ✅ Live |
 | Mobile app (React Native) | 🔲 Planned |
 | Gym system + leaderboard | 🔲 Planned |
 | AI coaching suggestions | 🔲 Planned |

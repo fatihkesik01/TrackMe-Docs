@@ -43,7 +43,7 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 |------|--------|
 | Media upload size limits (per-user quota enforcement) | ⬜ |
 | Video compression plan (pre-upload, server, or transcoding) | ⬜ |
-| Orphan asset cleanup job (GC for uploaded-but-unlinked assets) | ⬜ |
+| Orphan asset cleanup job (GC for uploaded-but-unlinked assets) | ✅ |
 | Media reporting (flag on `MediaAsset`) | ⬜ |
 | Admin media moderation queue | ⬜ |
 
@@ -74,18 +74,18 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 
 | Task | Status |
 |------|--------|
-| `Meal` entity — öğün (sabah / öğle / akşam / ara öğün) | 🔲 |
-| `FoodItem` entity — yemek adı + besin değerleri (kalori, protein, karb, yağ, lif) | 🔲 |
-| `MealEntry` entity — öğüne eklenen yemek + miktar (gram/porsiyon) | 🔲 |
-| Food database seeding — manuel başlangıç listesi (TR yemekleri dahil) | 🔲 |
+| `Meal` entity — öğün (sabah / öğle / akşam / ara öğün) | ✅ |
+| `FoodItem` entity — yemek adı + besin değerleri (kalori, protein, karb, yağ, lif) | ✅ |
+| `MealEntry` entity — öğüne eklenen yemek + miktar (gram/porsiyon) | ✅ |
+| Food database seeding — manuel başlangıç listesi (TR yemekleri dahil) | ✅ |
 | OpenFoodFacts veya USDA API entegrasyonu (barcode lookup) | 🔲 |
-| `GET /api/nutrition/foods?q=` — yemek arama | 🔲 |
-| `POST /api/nutrition/foods` — özel yemek oluştur (trainer/athlete) | 🔲 |
-| `POST /api/nutrition/meals` — öğün oluştur + yemek ekle | 🔲 |
-| `GET /api/nutrition/meals/{athleteId}?date=` — günlük öğün detayı | 🔲 |
-| Günlük toplam otomatik hesap (A logunu öğünlerden türet) | 🔲 |
-| Öğün bazlı görünüm: athlete için sabah/öğle/akşam kartları | 🔲 |
-| Trainer: athlete öğün geçmişini görebilir (coaching relationship gerekli) | 🔲 |
+| `GET /api/nutrition/foods?q=` — yemek arama | ✅ |
+| `POST /api/nutrition/foods` — özel yemek oluştur (trainer/athlete) | ✅ |
+| `POST /api/nutrition/meals` — öğün oluştur + yemek ekle | ✅ |
+| `GET /api/nutrition/meals/{athleteId}?date=` — günlük öğün detayı | ✅ |
+| Günlük toplam otomatik hesap (manual A logunu ezmeden) | ✅ |
+| Öğün bazlı görünüm: athlete için sabah/öğle/akşam/ara öğün kartları | ✅ |
+| Trainer: athlete öğün geçmişini görebilir (coaching relationship gerekli) | ✅ |
 | Tarif / favori yemek kaydetme | 🔲 |
 
 ---
@@ -191,6 +191,7 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 ✅ Progress photos (upload, timeline, before/after, trainer view)  
 ✅ Submission & feedback videos (athlete upload + trainer video/audio feedback)  
 ✅ Nutrition tracking MVP (daily goals, logs, adherence graph, Dashboard card)  
+✅ Nutrition meals (food library, meal entries, computed totals, trainer view)  
 ✅ Exercise demo videos (upload by trainer/admin, view in picker + WorkoutMode)  
 ✅ Personal Records display in athlete analytics  
 ✅ Today's workout widget (Dashboard)  

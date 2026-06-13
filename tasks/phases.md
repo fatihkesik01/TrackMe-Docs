@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 11 complete.** 57 EF Core migrations. Exercise demo videos now ship through the exercise library, picker, and WorkoutMode.
+**Phase 12 complete.** 58 EF Core migrations. Nutrition now supports searchable foods, meal entries, computed daily totals, and trainer read-only meal history.
 
 ---
 
@@ -102,11 +102,20 @@
 - Public media proxy playback for `MediaPurpose.ExerciseVideo`
 - Demo video controls in the exercise library, program exercise picker, and WorkoutMode
 
+### Phase 12 — Nutrition Meals
+
+- `FoodItem`, `Meal`, and `MealEntry` entities with fully snake_case PostgreSQL mappings
+- Searchable global/custom food library with barcode uniqueness and 52 seeded Turkish staples
+- Breakfast, lunch, dinner, and snack containers with gram-based macro calculation at save time
+- Athlete meal CRUD and computed day totals without overwriting manual `DailyNutritionLog` values
+- Trainer read-only daily meal history guarded by accepted coaching relationships
+- Athlete meal cards, food search/custom food modal, date navigation, and trainer meal view
+
 ---
 
 ## Next Phases (Planned)
 
-### Phase 12 — Mobile MVP (P3)
+### Phase 13 — Mobile MVP (P3)
 
 Depends on: Stable API, Phase 8-11 complete
 
@@ -118,7 +127,7 @@ Depends on: Stable API, Phase 8-11 complete
 | Offline session draft | M |
 | Push notifications (FCM + APNs) | M |
 
-### Phase 13 — Gym & Community (P2)
+### Phase 14 — Gym & Community (P2)
 
 Depends on: Phase 11 or parallel
 
@@ -130,7 +139,7 @@ Depends on: Phase 11 or parallel
 | Gym leaderboard | M |
 | Global leaderboard | M |
 
-### Phase 14 — AI (P3)
+### Phase 15 — AI (P3)
 
 Depends on: Phase 13, standardized program schema
 
@@ -157,6 +166,7 @@ Depends on: Phase 13, standardized program schema
 | 9 | SubmissionVideos | 55 |
 | 10 | NutritionTracking | 56 |
 | 11 | ExerciseDemoVideo | 57 |
+| 12 | NutritionMeals | 58 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

@@ -265,3 +265,13 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 - Demo binaries remain in R2/local media storage under `exercises/{exerciseId}/demo/{mediaId}.{ext}`
 
 **Total migrations as of Phase 11: 57**
+
+## Migration History (Phase 12)
+
+`Phase12_NutritionMeals` adds:
+- `food_items` with per-100g calorie/protein/carbohydrate/fat/fiber values, global/custom ownership, searchable name index, and filtered unique barcode index
+- `meals` with `athlete_id`, `date`, integer `meal_type`, notes, and `(athlete_id, date)` lookup index
+- `meal_entries` with food and meal foreign keys, gram amount, and macros calculated and stored at save time
+- Cascade delete from athlete to meals and meal to entries; restrict food deletion while entries reference it
+
+**Total migrations as of Phase 12: 58**
