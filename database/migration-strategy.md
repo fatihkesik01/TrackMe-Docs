@@ -275,3 +275,12 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 - Cascade delete from athlete to meals and meal to entries; restrict food deletion while entries reference it
 
 **Total migrations as of Phase 12: 58**
+
+## Migration History (Phase 14)
+
+`Phase14_ProgressPhotoBodyMetricLink` adds:
+- `progress_photos.body_metric_id` nullable uuid FK to `body_metrics.id`
+- Index on `body_metric_id` for linked snapshot lookup
+- `ON DELETE SET NULL` so deleting a body metric preserves the progress photo
+
+**Total migrations as of Phase 14: 60**

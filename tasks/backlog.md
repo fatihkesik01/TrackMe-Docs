@@ -15,7 +15,7 @@ Items are organized by epic and phase. Status: ✅ Done · ⬜ Pending · 🔲 F
 | Progress photo timeline (date-grouped grid) | ✅ |
 | Before/after comparison modal (side-by-side viewer) | ✅ |
 | Trainer access to athlete's shared progress photos | ✅ |
-| Body metric linking (attach metric snapshot to photo) | ⬜ |
+| Body metric linking (attach metric snapshot to photo) | ✅ |
 
 ### Submission & Feedback Videos
 
@@ -189,6 +189,7 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 ✅ Avatar + cover photo (Cloudflare R2)  
 ✅ Published program cover photo  
 ✅ Progress photos (upload, timeline, before/after, trainer view)  
+✅ Progress photo body metric linking (9-field snapshots + comparison deltas)  
 ✅ Submission & feedback videos (athlete upload + trainer video/audio feedback)  
 ✅ Nutrition tracking MVP (daily goals, logs, adherence graph, Dashboard card)  
 ✅ Nutrition meals (food library, meal entries, computed totals, trainer view)  

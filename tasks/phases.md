@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 13 complete.** 59 EF Core migrations. Admin audit log now records all sensitive admin actions with actor, target, detail, and IP address.
+**Phase 14 complete.** 60 EF Core migrations. Progress photos can now link to a full nine-field body metric snapshot for athlete comparisons and trainer review.
 
 ---
 
@@ -119,11 +119,19 @@
 - Admin panel: Audit Log card with action filter dropdown
 - IP address captured per request; logs saved atomically within each admin action
 
+### Phase 14 — Progress Photo Body Metric Linking
+
+- Nullable `progress_photos.body_metric_id` FK with `ON DELETE SET NULL`
+- Upload and patch ownership validation for athlete body metrics
+- Full nine-field body metric snapshots in athlete and trainer photo lightboxes
+- Before/after comparison includes per-field metric deltas
+- Upload modal can select from the athlete's existing dated body measurements
+
 ---
 
 ## Next Phases (Planned)
 
-### Phase 14 — Mobile MVP (P3)
+### Phase 15 — Mobile MVP (P3)
 
 Depends on: Stable API, Phase 8-11 complete
 
@@ -135,7 +143,7 @@ Depends on: Stable API, Phase 8-11 complete
 | Offline session draft | M |
 | Push notifications (FCM + APNs) | M |
 
-### Phase 15 — Gym & Community (P2)
+### Phase 16 — Gym & Community (P2)
 
 Depends on: Phase 11 or parallel
 
@@ -147,7 +155,7 @@ Depends on: Phase 11 or parallel
 | Gym leaderboard | M |
 | Global leaderboard | M |
 
-### Phase 16 — AI (P3)
+### Phase 17 — AI (P3)
 
 Depends on: Phase 13, standardized program schema
 
@@ -176,6 +184,7 @@ Depends on: Phase 13, standardized program schema
 | 11 | ExerciseDemoVideo | 57 |
 | 12 | NutritionMeals | 58 |
 | 13 | AdminAuditLog | 59 |
+| 14 | ProgressPhotoBodyMetricLink | 60 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 
