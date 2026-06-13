@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 12 complete.** 58 EF Core migrations. Nutrition now supports searchable foods, meal entries, computed daily totals, and trainer read-only meal history.
+**Phase 13 complete.** 59 EF Core migrations. Admin audit log now records all sensitive admin actions with actor, target, detail, and IP address.
 
 ---
 
@@ -111,11 +111,19 @@
 - Trainer read-only daily meal history guarded by accepted coaching relationships
 - Athlete meal cards, food search/custom food modal, date navigation, and trainer meal view
 
+### Phase 13 — Admin Audit Log
+
+- `AdminAuditLog` entity (`actor_user_id`, `action`, `target_user_id`, `target_email`, `detail`, `ip_address`, `created_at`)
+- Logged actions: `user.update`, `user.deactivate`, `exercise.restore`, `exercise.seed`, `data.reset`
+- `GET /api/admin/audit-log` — paginated list, filterable by `action`
+- Admin panel: Audit Log card with action filter dropdown
+- IP address captured per request; logs saved atomically within each admin action
+
 ---
 
 ## Next Phases (Planned)
 
-### Phase 13 — Mobile MVP (P3)
+### Phase 14 — Mobile MVP (P3)
 
 Depends on: Stable API, Phase 8-11 complete
 
@@ -127,7 +135,7 @@ Depends on: Stable API, Phase 8-11 complete
 | Offline session draft | M |
 | Push notifications (FCM + APNs) | M |
 
-### Phase 14 — Gym & Community (P2)
+### Phase 15 — Gym & Community (P2)
 
 Depends on: Phase 11 or parallel
 
@@ -139,7 +147,7 @@ Depends on: Phase 11 or parallel
 | Gym leaderboard | M |
 | Global leaderboard | M |
 
-### Phase 15 — AI (P3)
+### Phase 16 — AI (P3)
 
 Depends on: Phase 13, standardized program schema
 
@@ -167,6 +175,7 @@ Depends on: Phase 13, standardized program schema
 | 10 | NutritionTracking | 56 |
 | 11 | ExerciseDemoVideo | 57 |
 | 12 | NutritionMeals | 58 |
+| 13 | AdminAuditLog | 59 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

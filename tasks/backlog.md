@@ -166,7 +166,7 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 | Staging environment (separate R2 bucket, DB) | ⬜ |
 | Product analytics events (Mixpanel / PostHog) | ⬜ |
 | Disable SSH password login on VPS | ⬜ |
-| Structured audit log table for admin actions | ⬜ |
+| Structured audit log table for admin actions | ✅ |
 
 ---
 
@@ -196,3 +196,5 @@ Bağımlılık: A tamamlanmış olmalı. Food database entegrasyonu gerektirir.
 ✅ Personal Records display in athlete analytics  
 ✅ Today's workout widget (Dashboard)  
 ✅ Athlete analytics screen  
+✅ Admin audit log (action history with actor, target, detail, IP — Phase 13)  
+✅ Orphan media asset cleanup (background GC, 24h interval)  

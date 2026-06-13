@@ -125,6 +125,7 @@ Athlete selects Program Day → Start Workout
 | Dark mode + i18n (TR/EN) | ✅ Live |
 | Submission/feedback videos | ✅ Live |
 | Orphan media asset cleanup (background GC) | ✅ Live |
+| Admin audit log (action history, IP tracking) | ✅ Live |
 | Mobile app (React Native) | 🔲 Planned |
 | Gym system + leaderboard | 🔲 Planned |
 | AI coaching suggestions | 🔲 Planned |
