@@ -34,9 +34,9 @@ Spec: [tasks/specs/exercise-demo-videos.md](specs/exercise-demo-videos.md)
 
 | Task | Status |
 |------|--------|
-| Exercise demo video (link to exercise, official vs user-generated) | ⬜ |
-| Video display in exercise picker | ⬜ |
-| Video display in WorkoutMode | ⬜ |
+| Exercise demo video (link to exercise, official vs user-generated) | ✅ |
+| Video display in exercise picker | ✅ |
+| Video display in WorkoutMode | ✅ |
 | Thumbnail generation (server or R2 Transform) | ⬜ |
 
 ### Media Infrastructure

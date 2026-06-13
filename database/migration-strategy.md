@@ -255,3 +255,13 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 - Unique index on `(athlete_id, date)`; the API uses upsert behavior for same-day logs.
 
 **Total migrations as of Phase 10: 56**
+
+## Migration History (Phase 11)
+
+`Phase11_ExerciseDemoVideo` adds:
+- `exercises.demo_video_media_asset_id` nullable uuid FK to `media_assets.id`
+- `ON DELETE SET NULL` so media removal cannot delete an exercise
+- Index on `demo_video_media_asset_id`
+- Demo binaries remain in R2/local media storage under `exercises/{exerciseId}/demo/{mediaId}.{ext}`
+
+**Total migrations as of Phase 11: 57**

@@ -112,6 +112,7 @@ Athlete selects Program Day → Start Workout
 | Analytics (RPE, volume, consistency, PRs) | ✅ Live |
 | Body metrics (9 fields) | ✅ Live |
 | Exercise library (141+ exercises) | ✅ Live |
+| Exercise demo videos (library, picker, WorkoutMode) | ✅ Live |
 | In-app notifications + SignalR realtime | ✅ Live |
 | Direct messaging (with program refs) | ✅ Live |
 | Media: avatar + cover photo + program cover | ✅ Live |
@@ -123,4 +124,3 @@ Athlete selects Program Day → Start Workout
 | Mobile app (React Native) | 🔲 Planned |
 | Gym system + leaderboard | 🔲 Planned |
 | AI coaching suggestions | 🔲 Planned |
-

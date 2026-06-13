@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 10 complete.** 56 EF Core migrations. All P0 features live in production. Submission videos, trainer video/audio feedback, and Nutrition Tracking MVP shipped.
+**Phase 11 complete.** 57 EF Core migrations. Exercise demo videos now ship through the exercise library, picker, and WorkoutMode.
 
 ---
 
@@ -94,13 +94,21 @@
 - Trainer Athlete Detail Nutrition tab: set/update goal and last-30-day adherence list
 - Dashboard Nutrition Today card for athletes with an active goal
 
+### Phase 11 - Exercise Demo Videos
+
+- Nullable `exercises.demo_video_media_asset_id` FK to `media_assets`
+- Trainer upload/delete for owned private exercises; admin upload/delete for global exercises
+- MP4/WebM validation through the existing Phase 9 video media pipeline
+- Public media proxy playback for `MediaPurpose.ExerciseVideo`
+- Demo video controls in the exercise library, program exercise picker, and WorkoutMode
+
 ---
 
 ## Next Phases (Planned)
 
-### Phase 11 — Mobile MVP (P3)
+### Phase 12 — Mobile MVP (P3)
 
-Depends on: Stable API, Phase 8–9 complete
+Depends on: Stable API, Phase 8-11 complete
 
 | Task | Effort |
 |------|--------|
@@ -110,9 +118,9 @@ Depends on: Stable API, Phase 8–9 complete
 | Offline session draft | M |
 | Push notifications (FCM + APNs) | M |
 
-### Phase 12 — Gym & Community (P2)
+### Phase 13 - Gym & Community (P2)
 
-Depends on: Phase 9 or parallel
+Depends on: Phase 11 or parallel
 
 | Task | Effort |
 |------|--------|
@@ -122,9 +130,9 @@ Depends on: Phase 9 or parallel
 | Gym leaderboard | M |
 | Global leaderboard | M |
 
-### Phase 13 — AI (P3)
+### Phase 14 - AI (P3)
 
-Depends on: Phase 11, standardized program schema
+Depends on: Phase 13, standardized program schema
 
 | Task | Effort |
 |------|--------|
@@ -148,6 +156,7 @@ Depends on: Phase 11, standardized program schema
 | 8 | ProgressPhotos | 54 |
 | 9 | SubmissionVideos | 55 |
 | 10 | NutritionTracking | 56 |
+| 11 | ExerciseDemoVideo | 57 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 
