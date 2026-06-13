@@ -118,7 +118,7 @@ Spec: [tasks/specs/pr-display.md](specs/pr-display.md) (frontend only — backen
 
 | Task | Status |
 |------|--------|
-| Personal Records — display in analytics screen | ⬜ |
+| Personal Records — display in analytics screen | ✅ |
 | Gym leaderboard (top lifts per exercise, per period) | 🔲 |
 | Global leaderboard (verified PRs only) | 🔲 |
 | PR evidence video submission + verification | 🔲 |
