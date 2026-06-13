@@ -8,7 +8,6 @@ Durum: ✅ Tamamlandı · ⬜ Yapılabilir (kod işi) · 🔲 Gelecek (plan)
 
 | Görev | Epic | Zorluk | Notlar |
 |-------|------|--------|--------|
-| Privacy: nutrition data varsayılan `coach_only` | Nutrition | S | Athlete profiline `nutrition_visibility` alanı ekle |
 | Thumbnail generation for videos | Media | L | Cloudflare R2 Image Transform veya FFmpeg sidecar |
 | Video compression plan | Media | M | Pre-upload client-side veya server-side transcode kararı |
 
@@ -96,6 +95,7 @@ Durum: ✅ Tamamlandı · ⬜ Yapılabilir (kod işi) · 🔲 Gelecek (plan)
 - Beslenme hedefi (kalori, protein, karb, yağ) + günlük log
 - Beslenme takibi: öğün, yemek, porsiyon (52 TR yemek seeding)
 - Eksik antrenman ve beslenme bildirimleri (7 gün / 3 gün — Phase 15)
+- Beslenme gizliliği: athlete `nutrition_visibility` alanı (`CoachOnly` varsayılan, `Private` seçeneği — Phase 18)
 
 ### Analitik & Profil
 - Vücut metrikleri (9 alan, trend grafikleri)

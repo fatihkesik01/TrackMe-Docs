@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 17 complete.** 63 EF Core migrations. Athletes can now create and use their own program templates — previously only trainers could. `athlete_id` FK added to `program_templates`; all template ownership checks updated.
+**Phase 18 complete.** 64 EF Core migrations. Athletes can now set their nutrition data to Private, blocking trainer read access to nutrition goals, logs, and meals. `nutrition_visibility` column added to `athletes`; `CoachOnly` is the default.
 
 ---
 
@@ -155,11 +155,21 @@
 - `OwnerName` field replaces `TrainerName` in DTOs (shows trainer, athlete, or "System")
 - `ResolveAthleteProfileIdAsync` helper added to `TemplateEndpoints`
 
+### Phase 18 — Nutrition Privacy
+
+- `nutrition_visibility` varchar(20) column added to `athletes` with default `CoachOnly`
+- `NutritionVisibility` enum: `CoachOnly = 0` (default), `Private = 1`; stored as string in DB
+- Trainer read access blocked when `Private`: `GetGoal`, `GetAthleteLogs` (NutritionEndpoints), `GetAthleteMeals` (MealEndpoints)
+- Goal write (`SetGoal`, `UpdateGoal`) intentionally NOT blocked — coaching write actions remain accessible
+- `PATCH /api/auth/profile` accepts optional `nutritionVisibility: "Private" | "CoachOnly"`
+- `GET /api/auth/me` returns `nutritionVisibility` string for authenticated athletes
+- ProfileView: athlete-only radio card (between Privacy Settings and Featured Exercises) with TR/EN i18n
+
 ---
 
 ## Next Phases (Planned)
 
-### Phase 18 — Gym & Community (P2)
+### Phase 19 — Gym & Community (P2)
 
 Depends on: Phase 11 or parallel
 
@@ -174,7 +184,7 @@ Depends on: Phase 11 or parallel
 | Global leaderboard | M |
 | PR proof video + verification | L |
 
-### Phase 19 — AI Coaching (P3)
+### Phase 20 — AI Coaching (P3)
 
 Depends on: Phase 13, standardized program schema
 
@@ -208,6 +218,7 @@ Depends on: Phase 13, standardized program schema
 | 15 | MissedActivityNotification | 61 |
 | 16 | MediaReporting | 62 |
 | 17 | AthleteTemplates | 63 |
+| 18 | NutritionVisibility | 64 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

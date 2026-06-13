@@ -80,7 +80,7 @@ TrackMe-Web/src/
 
 ## Mevcut migration sayısı
 
-**Phase 17 sonrası: 63 migration**
+**Phase 18 sonrası: 64 migration**
 
 ## Production bilgileri
 

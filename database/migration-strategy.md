@@ -322,3 +322,12 @@ The database port is bound to `127.0.0.1` on the VPS only. It is not exposed pub
 Athletes can now own program templates independently of trainers. The `trainer_id` column remains; a template belongs to exactly one owner (trainer or athlete) or neither (system/admin).
 
 **Total migrations as of Phase 17: 63**
+
+## Migration History (Phase 18)
+
+`Phase18_NutritionVisibility` adds:
+- `athletes.nutrition_visibility` — varchar(20) NOT NULL, default `'CoachOnly'`; stored as string enum (`CoachOnly`, `Private`)
+
+Athletes can toggle visibility via `PATCH /api/auth/profile` with `nutritionVisibility` field. When set to `Private`, trainer read access to `GetGoal`, `GetAthleteLogs`, and `GetAthleteMeals` returns 403. Goal write operations remain accessible.
+
+**Total migrations as of Phase 18: 64**
