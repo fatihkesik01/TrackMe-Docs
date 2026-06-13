@@ -5,9 +5,11 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 
 ## Aktif Spec Dosyaları
 
-Şu an aktif spec bulunmuyor. Yeni bir task alınacağında bu klasöre dosya eklenir.
+| Dosya | Feature | Zorluk | Durum |
+|-------|---------|--------|-------|
+| [spec-media-upload-quota.md](spec-media-upload-quota.md) | Per-user media storage quota | M | ⬜ Hazır |
 
-Sıradaki adaylar için bkz: [backlog.md](../backlog.md)
+Diğer adaylar için bkz: [backlog.md](../backlog.md)
 
 ## Tamamlanan Spec'ler (dosyalar silindi)
 
