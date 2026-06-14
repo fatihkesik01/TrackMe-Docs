@@ -85,7 +85,7 @@ TrackMe-Web/src/
 
 ## Production bilgileri
 
-- **API**: http://187.77.92.30:5050
-- **Scalar docs**: http://187.77.92.30:5050/scalar/v1
-- **Web**: http://187.77.92.30:8080
+- **API**: https://gymhan.com/api
+- **Scalar docs**: https://gymhan.com/api/scalar/v1
+- **Web**: https://gymhan.com
 - **Deploy**: VPS'te `docker compose up -d --build` — migrations startup'ta otomatik çalışır

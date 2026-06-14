@@ -33,11 +33,11 @@ The Web container proxies `/api/` and `/hubs/` to the API on the shared Docker n
 
 | Resource | URL |
 |----------|-----|
-| Web App | http://187.77.92.30:8080 |
-| API | http://187.77.92.30:5050 |
-| Health check | http://187.77.92.30:5050/health |
-| Scalar API docs | http://187.77.92.30:5050/scalar/v1 |
-| OpenAPI JSON | http://187.77.92.30:5050/openapi/v1.json |
+| Web App | https://gymhan.com |
+| API | https://gymhan.com/api |
+| Health check | https://gymhan.com/api/health |
+| Scalar API docs | https://gymhan.com/api/scalar/v1 |
+| OpenAPI JSON | https://gymhan.com/api/openapi/v1.json |
 
 ## API Startup Sequence
 
@@ -132,6 +132,7 @@ Athlete selects Program Day → Start Workout
 | Orphan media asset cleanup (background GC) | ✅ Live |
 | Admin audit log (action history, IP tracking) | ✅ Live |
 | Media reporting + admin moderation queue | ✅ Live |
+| AI program draft generation (Groq, trainer → accept → WorkoutProgram) | ✅ Live |
+| Nutrition privacy (athlete controls trainer read access) | ✅ Live |
 | Mobile app (React Native) | 🔲 Planned |
-| Gym system + leaderboard | 🔲 Planned |
-| AI coaching suggestions | 🔲 Planned |
+| Gym system + community feed + leaderboard | 🔲 Planned |
