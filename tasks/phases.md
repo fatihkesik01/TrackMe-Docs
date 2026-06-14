@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Phase 18 complete.** 64 EF Core migrations. Athletes can now set their nutrition data to Private, blocking trainer read access to nutrition goals, logs, and meals. `nutrition_visibility` column added to `athletes`; `CoachOnly` is the default.
+**Phase 20 complete.** 65 EF Core migrations. Trainers can now request AI-generated program drafts (via Groq — free tier), review the day/exercise structure, and accept to create a real `WorkoutProgram`. Phase 19 (Gym & Community) is skipped for now — will be implemented separately.
 
 ---
 
@@ -191,24 +191,17 @@ Bağımlılık yok — hemen başlanabilir.
 
 ---
 
-### Phase 20 — AI Koçluk (P3)
+### Phase 20 — AI Koçluk ✅
 
-Bağımlılık: Phase 13 ✅ — OpenAI API key gerekir (`OPENAI_API_KEY` env).
-
-**Yeni entity:** `AiProgramDraft` — trainer, athlete, context JSON, response JSON, status (Pending/Accepted/Rejected), timestamps
-
-**Migration:** `Phase20_AiProgramDraft`
-
-**Backend:**
-- OpenAI HTTP client kaydı (`IHttpClientFactory`)
-- System prompt: trainer egzersiz kütüphanesi (ilk 50) + athlete son 30 gün özeti + `WorkoutProgram` JSON şeması
-- `POST /api/programs/ai-draft` — Request: `{ athleteId, goals, availableDays, fitnessLevel }` → AI çağrısı → taslak kaydet → döndür
-- `GET /api/programs/ai-draft/{id}` — Taslak detayı (trainer kendi taslağı)
-- `POST /api/programs/ai-draft/{id}/accept` — Taslaktan gerçek program + günler + egzersizler oluştur
+- `AiProgramDraft` entity — trainer, athlete, context JSON (prompt), response JSON (AI taslağı), status (Pending/Accepted/Rejected)
+- **Groq API** kullanılır (ücretsiz, `llama-3.1-70b-versatile`); `GROQ_API_KEY` env var
+- `POST /api/programs/ai-draft` — trainer egzersiz kütüphanesi + athlete geçmişi prompt'a eklenir, Groq'a gönderilir, taslak kaydedilir
+- `GET /api/programs/ai-draft` — trainer kendi son 20 taslağı
+- `GET /api/programs/ai-draft/{id}` — taslak detayı
+- `POST /api/programs/ai-draft/{id}/accept` — taslaktan gerçek `WorkoutProgram` + günler + egzersizler oluşturulur
 - `POST /api/programs/ai-draft/{id}/reject` — Status → Rejected
-- Admin audit log: `ai.draft.accepted`
-
-**Frontend:** "AI ile Oluştur" butonu (Program Builder, trainer only), `AiDraftModal.jsx` (taslak görüntüle + düzenle), Kabul/Reddet akışı, "AI Önerisi" badge
+- Geçersiz `exerciseId` varsa atlanır (validIds kontrolü)
+- Frontend: "AI ile Oluştur" butonu (trainer, ProgramsView), `AiDraftModal.jsx` iki adım (form → taslak görüntüle), Kabul/Reddet/Yeniden Oluştur
 
 ---
 
@@ -234,6 +227,7 @@ Bağımlılık: Phase 13 ✅ — OpenAI API key gerekir (`OPENAI_API_KEY` env).
 | 16 | MediaReporting | 62 |
 | 17 | AthleteTemplates | 63 |
 | 18 | NutritionVisibility | 64 |
+| 20 | AiProgramDraft | 65 |
 
 Full list: [database/migration-strategy.md](../database/migration-strategy.md)
 

@@ -331,3 +331,21 @@ Athletes can now own program templates independently of trainers. The `trainer_i
 Athletes can toggle visibility via `PATCH /api/auth/profile` with `nutritionVisibility` field. When set to `Private`, trainer read access to `GetGoal`, `GetAthleteLogs`, and `GetAthleteMeals` returns 403. Goal write operations remain accessible.
 
 **Total migrations as of Phase 18: 64**
+
+## Migration History (Phase 20)
+
+`Phase20_AiProgramDraft` adds:
+- `ai_program_drafts` table:
+  - `id` uuid PK
+  - `trainer_id` uuid FK → `trainers` (cascade delete)
+  - `athlete_id` uuid FK → `athletes` (cascade delete)
+  - `context_json` text NOT NULL — prompt context (exercise library + athlete history)
+  - `response_json` text NOT NULL — raw Groq API response JSON
+  - `status` varchar(20) NOT NULL, default `Pending` (enum string: Pending/Accepted/Rejected)
+  - `created_at` timestamptz NOT NULL
+  - `reviewed_at` timestamptz nullable
+- Index on `(trainer_id, created_at)` for trainer's draft list queries
+
+Phase 19 (Gym & Community) was skipped; this migration is numbered 65 despite being "Phase 20."
+
+**Total migrations as of Phase 20: 65**

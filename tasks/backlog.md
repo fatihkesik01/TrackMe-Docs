@@ -72,42 +72,6 @@ Durum: ✅ Tamamlandı · ⬜ Yapılabilir (kod işi) · 🔲 Gelecek (plan)
 
 ---
 
-## 🔲 Phase 20 — AI Koçluk
-
-> **Bağımlılık**: Phase 13 (audit log) tamamlandı ✅ — başlanabilir.  
-> OpenAI API key env var olarak eklenmeli: `OPENAI_API_KEY`.
-
-### Entity (migration gerekir)
-
-| Entity | Alanlar |
-|--------|---------|
-| `AiProgramDraft` | `id`, `trainer_id` FK→trainers, `athlete_id` nullable FK→athletes, `context_json` (text — prompt context), `response_json` (text — AI'dan dönen ham yapı), `status` (Pending/Accepted/Rejected enum→string), `created_at`, `reviewed_at` nullable |
-
-### Backend
-
-| Görev | Detay |
-|-------|-------|
-| OpenAI client kaydı | `builder.Services.AddHttpClient("openai")` + `OPENAI_API_KEY` env var |
-| Program JSON schema | `ProgramDaySchema` — gün adı, egzersizler, set/tekrar/RPE/dinlenme alanları; AI prompt'a eklenir |
-| System prompt | Trainer'ın egzersiz kütüphanesi (ilk 50 egzersiz) + athlete'in son 30 günlük hacim/RPE özeti + şema |
-| `POST /api/programs/ai-draft` | Request: `{ athleteId, goals, availableDays, fitnessLevel }` → AI'ya gönder → `AiProgramDraft` kaydet → taslak yapıyı döndür |
-| `GET /api/programs/ai-draft/{id}` | Taslak detayı (trainer kendi taslağını görebilir) |
-| `POST /api/programs/ai-draft/{id}/accept` | Taslaktaki gün yapısını gerçek `WorkoutProgram` + günler + egzersizler olarak kaydet |
-| `POST /api/programs/ai-draft/{id}/reject` | Status → Rejected |
-| Audit log | `AiDraftAccepted` action admin audit log'a kaydedilsin |
-
-### Frontend
-
-| Bileşen | İçerik |
-|---------|--------|
-| Program Builder'da "AI ile Oluştur" butonu | Sadece trainer; form: hedef, gün sayısı, seviye |
-| `AiDraftModal.jsx` | AI'dan dönen taslak — gün + egzersiz listesi; her egzersizi düzenlenebilir yap |
-| Kabul / Reddet butonları | Kabul → `POST /accept` → Program Builder'a yönlendir |
-| "AI Önerisi" badge | AI ile oluşturulan programlarda görünür |
-
-### i18n keys (TR/EN)
-`aiDraft`, `aiDraftCreate`, `aiDraftGoals`, `aiDraftDays`, `aiDraftLevel`, `aiDraftGenerating`, `aiDraftAccept`, `aiDraftReject`, `aiDraftBadge`
-
 ---
 
 ## 🔧 Infrastructure (DevOps, Kod Gerektirmez)
@@ -175,6 +139,10 @@ Durum: ✅ Tamamlandı · ⬜ Yapılabilir (kod işi) · 🔲 Gelecek (plan)
 - Beslenme takibi: öğün, yemek, porsiyon (52 TR yemek seeding)
 - Eksik antrenman ve beslenme bildirimleri (7 gün / 3 gün — Phase 15)
 - Beslenme gizliliği: athlete `nutrition_visibility` alanı (`CoachOnly` varsayılan, `Private` seçeneği — Phase 18)
+
+### AI Koçluk
+- AI program taslağı (Groq `llama-3.1-70b-versatile` — Phase 20): trainer hedef/gün/seviye girer → AI gün+egzersiz yapısı üretir → trainer inceler → kabul eder → gerçek `WorkoutProgram` oluşur
+- `AiProgramDraft` entity, `GROQ_API_KEY` env var, `AiDraftModal.jsx`, "AI ile Oluştur" butonu (ProgramsView, trainer only)
 
 ### Analitik & Profil
 - Vücut metrikleri (9 alan, trend grafikleri)

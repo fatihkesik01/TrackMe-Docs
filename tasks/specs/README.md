@@ -8,7 +8,6 @@ Entity tanımından endpoint mantığına, frontend bileşenlerine kadar tüm ad
 | Dosya | Feature | Agent | Zorluk |
 |-------|---------|-------|--------|
 | [spec-gym-community.md](spec-gym-community.md) | Phase 19 — Gym & Community | Diğer agent | L |
-| [spec-ai-coaching.md](spec-ai-coaching.md) | Phase 20 — AI Koçluk | Primary agent (beklemede) | M |
 
 Diğer adaylar için bkz: [backlog.md](../backlog.md)
 
@@ -82,7 +81,7 @@ TrackMe-Web/src/
 
 ## Mevcut migration sayısı
 
-**Phase 18 sonrası: 64 migration**
+**Phase 20 sonrası: 65 migration**
 
 ## Production bilgileri
 
